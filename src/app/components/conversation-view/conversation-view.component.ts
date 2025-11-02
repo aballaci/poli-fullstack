@@ -69,9 +69,9 @@ export class ConversationViewComponent implements OnDestroy {
         // In challenge mode, go directly to the summary.
         // In practice mode, show the completion screen.
         if (this.practiceMode() === 'challenge') {
-            this.mode.set('summary');
+            this.setMode('summary');
         } else {
-            this.mode.set('completed');
+            this.setMode('completed');
         }
     }
   }
@@ -81,7 +81,25 @@ export class ConversationViewComponent implements OnDestroy {
     this.router.navigate(['/selector']);
   }
 
+  private clearSummaryIfLeaving(): void {
+    if (this.mode() === 'summary') {
+      this.store.resetConversationHistory();
+    }
+  }
+
+  setMode(newMode: ConversationViewMode): void {
+    this.clearSummaryIfLeaving();
+    this.mode.set(newMode);
+  }
+
   setPracticeMode(newPracticeMode: 'practice' | 'challenge'): void {
+    // If switching between 'practice' and 'challenge', reset the session progress.
+    if (this.practiceMode() !== newPracticeMode) {
+      this.store.resetConversationHistory();
+      this.currentSentenceIndex.set(0);
+    }
+    
+    this.clearSummaryIfLeaving();
     this.store.setPracticeMode(newPracticeMode);
     this.mode.set('practice');
   }
@@ -99,17 +117,17 @@ export class ConversationViewComponent implements OnDestroy {
   repeatSession(): void {
     this.store.resetConversationHistory();
     this.currentSentenceIndex.set(0);
-    this.mode.set('practice'); // Stays in the current practice/challenge mode
+    this.setMode('practice'); // Stays in the current practice/challenge mode
   }
 
   startChallengeMode(): void {
     this.store.setPracticeMode('challenge');
     this.store.resetConversationHistory();
     this.currentSentenceIndex.set(0);
-    this.mode.set('practice');
+    this.setMode('practice');
   }
 
   viewSummary(): void {
-    this.mode.set('summary');
+    this.setMode('summary');
   }
 }

@@ -5,13 +5,16 @@ import { ConversationViewComponent } from './components/conversation-view/conver
 import { SettingsComponent } from './components/settings/settings.component';
 import { conversationGuard } from './guards/conversation.guard';
 import { languageSetupGuard } from './guards/language-setup.guard';
+import { WelcomeComponent } from './components/welcome/welcome.component';
+import { introGuard } from './guards/intro.guard';
 
 export const routes: Routes = [
   { path: 'wizard', component: LanguageWizardComponent },
+  { path: 'welcome', component: WelcomeComponent },
   { 
     path: 'selector', 
     component: ScenarioSelectorComponent, 
-    canActivate: [languageSetupGuard] 
+    canActivate: [languageSetupGuard, introGuard] 
   },
   { 
     path: 'conversation', 

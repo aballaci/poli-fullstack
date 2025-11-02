@@ -1,0 +1,16 @@
+<div class="max-w-4xl mx-auto">
+  <div class="bg-[var(--c-bg-surface)] rounded-xl shadow-lg">
+    <div class="p-6 sm:p-8">
+      <app-intro></app-intro>
+    </div>
+    <div class="px-6 sm:px-8 py-4 bg-[var(--c-bg-muted)] border-t border-[var(--c-border-subtle)] flex flex-wrap justify-between items-center gap-4 rounded-b-xl">
+      <label class="flex items-center space-x-2 text-sm text-[var(--c-text-body)] cursor-pointer">
+        <input type="checkbox" [checked]="dontShowIntroAgain()" (change)="onDontShowAgainChange($event)" class="rounded text-[var(--color-primary)] focus:ring-[var(--color-primary)]" />
+        <span>Don't show this again on startup</span>
+      </label>
+      <button (click)="proceedToApp()" class="bg-[var(--color-primary)] text-white font-semibold py-2 px-5 rounded-lg hover:opacity-90 transition-opacity">
+        Got it!
+      </button>
+    </div>
+  </div>
+</div>
