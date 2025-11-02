@@ -1,0 +1,51 @@
+<div class="min-h-[300px] flex flex-col justify-center items-center my-8 w-full">
+  @if (flashcards().length > 0 && currentFlashcard(); as card) {
+    <div class="w-full md:w-[540px] mb-4">
+        <p class="text-center text-sm font-semibold text-slate-500">
+            Card {{ activeFlashcardIndex() + 1 }} of {{ flashcards().length }}
+        </p>
+        <div class="flashcard-container h-96 mt-2" [class]="currentAnimation()">
+            <div class="flashcard relative w-full h-full" [class.is-flipped]="isCardFlipped()" (click)="flipCard()">
+                <!-- Front Face -->
+                <div class="flashcard-face flashcard-front rounded-xl shadow-lg p-6 bg-sky-200 text-sky-900">
+                    <h3 class="text-6xl font-bold">{{ card.word | titlecase }}</h3>
+                </div>
+                <!-- Back Face -->
+                <div class="flashcard-face flashcard-back bg-violet-200 text-violet-900 rounded-xl shadow-lg p-6 overflow-y-auto">
+                    <div class="text-center">
+                        <h3 class="text-6xl font-bold">{{ card.translation | titlecase }}</h3>
+                        @if (card.examples && card.examples.length > 0) {
+                            <ul class="mt-4 text-left text-lg text-violet-700 space-y-1 list-disc list-inside">
+                            @for(example of card.examples; track example) {
+                                <li>{{ example }}</li>
+                            }
+                            </ul>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Flashcard Navigation -->
+    <div class="mt-8 w-full md:w-[540px] flex items-center justify-center gap-8">
+        <button (click)="goToPreviousCard()" [disabled]="isFirstCard()" class="bg-slate-200 text-slate-700 font-semibold py-2 px-5 rounded-lg hover:bg-slate-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            <i class="fa-solid fa-chevron-left mr-2"></i>
+            Prev
+        </button>
+        <button (click)="flipCard()" class="text-slate-500 font-semibold flex items-center gap-2 hover:text-sky-600">
+            <i class="fa-solid fa-rotate"></i>
+            Flip Card
+        </button>
+        <button (click)="goToNextCard()" [disabled]="isLastCard()" class="bg-sky-500 text-white font-semibold py-2 px-5 rounded-lg hover:bg-sky-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            Next
+            <i class="fa-solid fa-chevron-right ml-2"></i>
+        </button>
+    </div>
+  } @else {
+    <div class="text-center text-slate-500">
+        <i class="fa-solid fa-clone text-4xl mb-4"></i>
+        <h3 class="text-xl font-semibold">No Flashcards Available</h3>
+        <p class="mt-1">This scenario has no highlighted words to practice.</p>
+    </div>
+  }
+</div>

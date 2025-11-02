@@ -1,0 +1,137 @@
+<div class="max-w-5xl mx-auto">
+  <!-- Tabs -->
+  <div class="mb-6 flex border-b border-[var(--c-border-subtle)]">
+    <button (click)="activeTab.set('topics')" class="px-4 py-3 font-semibold transition-colors" [class.text-[var(--color-primary)]]="activeTab() === 'topics'" [class.border-b-2]="activeTab() === 'topics'" [class.border-[var(--color-primary)]]="activeTab() === 'topics'" [class.text-[var(--c-text-muted)]]="activeTab() !== 'topics'" [class.hover:text-[var(--c-text-body)]]="activeTab() !== 'topics'">
+      <i class="fa-solid fa-layer-group mr-2"></i> From Topics
+    </button>
+    <button (click)="activeTab.set('custom')" class="px-4 py-3 font-semibold transition-colors" [class.text-[var(--color-primary)]]="activeTab() === 'custom'" [class.border-b-2]="activeTab() === 'custom'" [class.border-[var(--color-primary)]]="activeTab() === 'custom'" [class.text-[var(--c-text-muted)]]="activeTab() !== 'custom'" [class.hover:text-[var(--c-text-body)]]="activeTab() !== 'custom'">
+      <i class="fa-solid fa-paste mr-2"></i> Use Custom Text
+    </button>
+    <button (click)="activeTab.set('history')" [disabled]="historyScenarios().length === 0" class="px-4 py-3 font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed" [class.text-[var(--color-primary)]]="activeTab() === 'history'" [class.border-b-2]="activeTab() === 'history'" [class.border-[var(--color-primary)]]="activeTab() === 'history'" [class.text-[var(--c-text-muted)]]="activeTab() !== 'history'" [class.hover:text-[var(--c-text-body)]]="activeTab() !== 'history'">
+      <i class="fa-solid fa-clock-rotate-left mr-2"></i> History ({{ historyScenarios().length }})
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div class="bg-[var(--c-bg-surface)] rounded-xl shadow-lg p-6 sm:p-8 min-h-[500px]">
+    @switch (activeTab()) {
+      @case ('topics') {
+        @switch (wizardStep()) {
+          @case ('category') {
+            <div class="animate-fade-in">
+              <h2 class="text-2xl font-bold text-[var(--c-text-headings)] mb-2">Choose a Category</h2>
+              <p class="text-[var(--c-text-muted)] mb-6">Select a category to see available practice topics.</p>
+              <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                  @for (category of topics(); track category.id) {
+                    <button (click)="selectCategory(category)" 
+                            class="p-4 rounded-2xl flex flex-col items-center justify-center space-y-3 h-36 text-center transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-1 bg-[var(--c-bg-muted)] border-2 border-transparent"
+                            [ngClass]="categoryColors[category.id]?.borderHover || 'hover:border-slate-400'">
+                        <i [class]="'fa-solid text-4xl ' + category.icon + ' ' + (categoryColors[category.id]?.icon || 'text-slate-500')"></i>
+                        <span class="font-semibold text-[var(--c-text-headings)]">{{ category.label }}</span>
+                    </button>
+                  }
+              </div>
+            </div>
+          }
+          @case ('subtopic') {
+            @if (activeCategory(); as category) {
+              <div class="animate-fade-in">
+                <div class="flex items-center mb-4">
+                    <button (click)="goBackToCategories()" class="text-[var(--c-text-muted)] hover:text-[var(--color-primary)] mr-3 p-2 rounded-full hover:bg-[var(--c-bg-muted)] transition-colors">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <h2 class="text-2xl font-bold flex items-center gap-3" [class]="categoryColors[category.id]?.icon || 'text-[var(--c-text-headings)]'">
+                        <i [class]="'fa-solid ' + category.icon"></i>
+                        {{ category.label }}
+                    </h2>
+                </div>
+                <p class="text-[var(--c-text-muted)] mb-6 ml-12">Select one or more topics to build your practice scenario.</p>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 ml-12">
+                  @for (subtopic of category.children; track subtopic.id) {
+                      <button (click)="toggleTopic(subtopic)" 
+                              [class]="'p-4 rounded-2xl flex flex-col items-center justify-center space-y-3 h-36 text-center transition-all duration-200 bg-[var(--c-bg-muted)] border-2 shadow-sm hover:shadow-md hover:-translate-y-1 ' + (isSelected(subtopic) ? (categoryColors[category.id]?.borderSelected || 'border-sky-500') : ('border-transparent ' + (categoryColors[category.id]?.borderHover || 'hover:border-slate-400')))">
+                          <i [class]="'text-4xl ' + subtopic.icon + ' ' + (categoryColors[category.id]?.icon || 'text-slate-500')"></i>
+                          <span class="font-semibold text-sm text-[var(--c-text-headings)]">{{ subtopic.label }}</span>
+                      </button>
+                  }
+                </div>
+                <div class="mt-8 pt-6 border-t border-[var(--c-border-subtle)] flex justify-end">
+                      <button (click)="generateFromTopics()" [disabled]="selectedTopics().size === 0 || state() === 'loading'" class="bg-sky-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-sky-600 transition-colors disabled:bg-slate-400 disabled:cursor-not-allowed flex items-center justify-center min-w-[200px]">
+                        @if (state() === 'loading') {
+                          <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          <span>{{ loadingMessage() }}</span>
+                        } @else {
+                          <span>Generate Scenario ({{ selectedTopics().size }})</span>
+                        }
+                      </button>
+                    </div>
+              </div>
+            }
+          }
+        }
+      }
+      @case ('custom') {
+        <div>
+          <h2 class="text-2xl font-bold text-[var(--c-text-headings)] mb-2">Use Your Own Text</h2>
+          <p class="text-[var(--c-text-muted)] mb-6">Paste any text below to create a personalized practice session.</p>
+          
+          <textarea [value]="customText()" (input)="onCustomTextInput($event)" rows="8" placeholder="e.g., paste a paragraph from a news article, a song lyric, or an email..." class="w-full p-3 rounded-lg bg-[var(--c-bg-muted)] border border-[var(--c-border-subtle)] focus:ring-2 focus:ring-[var(--color-primary)] focus:outline-none transition-shadow"></textarea>
+          
+          <div class="mt-6 pt-6 border-t border-[var(--c-border-subtle)] flex justify-end">
+            <button (click)="generateFromCustomText()" [disabled]="!customText().trim() || state() === 'loading'" class="bg-sky-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-sky-600 transition-colors disabled:bg-slate-400 disabled:cursor-not-allowed flex items-center justify-center min-w-[200px]">
+              @if (state() === 'loading') {
+                 <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>{{ loadingMessage() }}</span>
+              } @else {
+                <span>Create Session</span>
+              }
+            </button>
+          </div>
+        </div>
+      }
+       @case ('history') {
+        <div>
+          <h2 class="text-2xl font-bold text-[var(--c-text-headings)] mb-2">Practice History</h2>
+          <p class="text-[var(--c-text-muted)] mb-6">Select a previously generated scenario to practice it again.</p>
+          
+          @if (state() === 'loading' && selectedHistoryId()) {
+            <div class="text-center py-10">
+                <svg class="animate-spin mx-auto h-8 w-8 text-[var(--color-primary)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <p class="mt-4 font-semibold text-[var(--c-text-body)]">{{ loadingMessage() }}</p>
+            </div>
+          } @else {
+            <div class="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
+                @for (scenario of historyScenarios(); track scenario.id) {
+                  <button (click)="loadFromHistory(scenario.id)" class="w-full text-left p-4 bg-[var(--c-bg-muted)] rounded-lg hover:bg-[var(--c-border-subtle)] hover:shadow-md transition-all duration-200 transform hover:-translate-y-px">
+                    <div class="flex justify-between items-start">
+                       <div>
+                          <p class="font-semibold text-[var(--c-text-headings)]">{{ scenario.name }}</p>
+                          <p class="text-sm text-[var(--c-text-muted)] mt-1">{{ scenario.description }}</p>
+                       </div>
+                       <span class="ml-4 flex-shrink-0 font-mono text-xs bg-[var(--c-bg-surface)] text-[var(--c-text-muted)] px-2 py-1 rounded-full">{{ scenario.difficulty_level }}</span>
+                    </div>
+                  </button>
+                }
+            </div>
+          }
+        </div>
+      }
+    }
+
+    @if (error()) {
+        <div class="mt-6 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-r-lg" role="alert">
+            <p class="font-bold">An Error Occurred</p>
+            <p>{{ error() }}</p>
+        </div>
+    }
+  </div>
+</div>

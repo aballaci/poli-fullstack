@@ -1,0 +1,7 @@
+{
+  "name": "Poli",
+  "description": "An AI-powered web application for language learning, focusing on conversation practice across various scenarios and difficulty levels.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
