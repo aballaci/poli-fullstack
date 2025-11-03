@@ -62,15 +62,24 @@ export class ScenarioSelectorComponent implements OnInit {
   // History tab state
   historyScenarios = signal<ScenarioSummary[]>([]);
   selectedHistoryId = signal<string | null>(null);
+  filterByCurrentLevel = signal(false);
 
   // Organized history by topic and difficulty
   readonly organizedHistory = computed(() => {
     const scenarios = this.historyScenarios();
+    const currentDifficulty = this.store.difficultyLevel();
+    const filterByLevel = this.filterByCurrentLevel();
+    
+    // Filter by current difficulty level if toggle is on
+    const filteredScenarios = filterByLevel && currentDifficulty 
+      ? scenarios.filter(s => s.difficulty_level === currentDifficulty)
+      : scenarios;
+    
     const organized: { [topic: string]: { [difficulty: string]: ScenarioSummary[] } } = {};
     
     const difficultyOrder = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
     
-    for (const scenario of scenarios) {
+    for (const scenario of filteredScenarios) {
       const topic = scenario.topic || 'Other';
       const difficulty = scenario.difficulty_level;
       
