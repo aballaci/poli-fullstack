@@ -3,12 +3,17 @@ backend:
   phases:
     build:
       commands:
-        - npm ci --cache .npm --prefer-offline
+        - rm -rf node_modules || true
+        - npm cache clean --force || true
+        - npm install --legacy-peer-deps
         - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
 frontend:
   phases:
     preBuild:
       commands:
+        - rm -rf node_modules || true
+        - npm cache clean --force || true
+        - npm install --legacy-peer-deps
         - npx ng version
     build:
       commands:
@@ -17,7 +22,3 @@ frontend:
     baseDirectory: dist/amplify-angular-template/browser
     files:
       - '**/*'
-  cache:
-    paths:
-      - .npm/**/*
-      - node_modules/**/*
