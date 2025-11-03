@@ -50,17 +50,14 @@ export class SessionStore {
   });
   
   // All highlighted words from the current scenario, for flashcards
+  // Only collects from target language to ensure examples are always in target language
   readonly allHighlightedWords = computed(() => {
     const scenario = this.activeScenario();
     if (!scenario) return [];
     
     const words = new Map<string, HighlightedWord>();
     scenario.sentences.forEach(s => {
-        s.source.highlighted_words.forEach(w => {
-            if (!words.has(w.word.toLowerCase())) {
-                words.set(w.word.toLowerCase(), w);
-            }
-        });
+        // Only collect from target language sentences to ensure examples are in target language
         s.target.highlighted_words.forEach(w => {
             if (!words.has(w.word.toLowerCase())) {
                 words.set(w.word.toLowerCase(), w);

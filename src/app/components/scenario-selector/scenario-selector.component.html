@@ -45,7 +45,7 @@
                         {{ category.label }}
                     </h2>
                 </div>
-                <p class="text-[var(--c-text-muted)] mb-6 ml-12">Select one or more topics to build your practice scenario.</p>
+                <p class="text-[var(--c-text-muted)] mb-6 ml-12">Select one or more topics to find existing scenarios or create a new one.</p>
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 ml-12">
                   @for (subtopic of category.children; track subtopic.id) {
                       <button (click)="toggleTopic(subtopic)" 
