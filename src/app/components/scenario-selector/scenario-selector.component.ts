@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -62,6 +62,56 @@ export class ScenarioSelectorComponent implements OnInit {
   // History tab state
   historyScenarios = signal<ScenarioSummary[]>([]);
   selectedHistoryId = signal<string | null>(null);
+
+  // Organized history by topic and difficulty
+  readonly organizedHistory = computed(() => {
+    const scenarios = this.historyScenarios();
+    const organized: { [topic: string]: { [difficulty: string]: ScenarioSummary[] } } = {};
+    
+    const difficultyOrder = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+    
+    for (const scenario of scenarios) {
+      const topic = scenario.topic || 'Other';
+      const difficulty = scenario.difficulty_level;
+      
+      if (!organized[topic]) {
+        organized[topic] = {};
+      }
+      if (!organized[topic][difficulty]) {
+        organized[topic][difficulty] = [];
+      }
+      organized[topic][difficulty].push(scenario);
+    }
+    
+    // Sort topics alphabetically
+    const sortedTopics = Object.keys(organized).sort();
+    const result: { topic: string; difficulties: { difficulty: string; scenarios: ScenarioSummary[] }[] }[] = [];
+    
+    for (const topic of sortedTopics) {
+      const difficulties: { difficulty: string; scenarios: ScenarioSummary[] }[] = [];
+      // Sort difficulties in order
+      for (const diff of difficultyOrder) {
+        if (organized[topic][diff]) {
+          difficulties.push({
+            difficulty: diff,
+            scenarios: organized[topic][diff]
+          });
+        }
+      }
+      // Add any difficulties not in the standard list
+      for (const diff of Object.keys(organized[topic])) {
+        if (!difficultyOrder.includes(diff)) {
+          difficulties.push({
+            difficulty: diff,
+            scenarios: organized[topic][diff]
+          });
+        }
+      }
+      result.push({ topic, difficulties });
+    }
+    
+    return result;
+  });
 
   // Loading state
   private loadingInterval: any;

@@ -35,6 +35,7 @@ export interface ScenarioSummary {
   name: string;
   description: string;
   difficulty_level: string;
+  topic?: string;
 }
 
 export interface SpeechAssessment {

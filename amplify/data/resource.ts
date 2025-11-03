@@ -3,12 +3,6 @@ import { scenarioGenerator } from '../functions/scenario-generator/resource';
 
 const schema = a.schema({
 
-    Todo: a
-    .model({
-      content: a.string(),
-    })
-    .authorization((allow) => [allow.owner()]),
-
   Scenario: a.model({
     id: a.id().required(),
     topic: a.string().required(),
@@ -25,7 +19,7 @@ const schema = a.schema({
     .secondaryIndexes((index) => [
       index("scenarioKey").name("byScenarioKey"),
     ])
-    .authorization((allow) => [allow.owner()]),
+    .authorization((allow) => [allow.authenticated()]),
 
 
   generateScenario: a

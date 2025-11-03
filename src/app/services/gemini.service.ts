@@ -330,7 +330,7 @@ export class GeminiService {
 
     const difficultyLevels = this.languageService.difficultyLevels;
 
-    const listScenariosQuery = /* GraphQL */ `
+        const listScenariosQuery = /* GraphQL */ `
       query ListScenarios(
         $sourceLanguage: String!
         $targetLanguage: String!
@@ -349,6 +349,7 @@ export class GeminiService {
             name
             description
             difficulty_level
+            topic
           }
         }
       }

@@ -25,3 +25,15 @@ See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more inform
 This library is licensed under the MIT-0 License. See the LICENSE file.
 user: aballaci@gmail.com
 pass: VTmV@aJQruRf885
+
+npx ampx sandbox secret set GEMINI_API_KEY
+
+AIzaSyBJbQGrwNynuijqLA7y7InQPUYIvemRo8M
+
+
+npx ampx sandbox --stream-function-logs
+
+Oauth2
+npx ampx sandbox secret set GOOGLE_CLIENT_ID
+
+npx amplify sandbox secret set GOOGLE_CLIENT_SECRET
