@@ -25,8 +25,8 @@
                   @for (category of topics(); track category.id) {
                     <button (click)="selectCategory(category)" 
                             class="p-4 rounded-2xl flex flex-col items-center justify-center space-y-3 h-36 text-center transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-1 bg-[var(--c-bg-muted)] border-2 border-transparent"
-                            [ngClass]="categoryColors[category.id]?.borderHover || 'hover:border-slate-400'">
-                        <i [class]="'fa-solid text-4xl ' + category.icon + ' ' + (categoryColors[category.id]?.icon || 'text-slate-500')"></i>
+                            [ngClass]="(categoryColors[category.id] && categoryColors[category.id].borderHover) || 'hover:border-slate-400'">
+                        <i [class]="'fa-solid text-4xl ' + category.icon + ' ' + ((categoryColors[category.id] && categoryColors[category.id].icon) || 'text-slate-500')"></i>
                         <span class="font-semibold text-[var(--c-text-headings)]">{{ category.label }}</span>
                     </button>
                   }
@@ -40,7 +40,7 @@
                     <button (click)="goBackToCategories()" class="text-[var(--c-text-muted)] hover:text-[var(--color-primary)] mr-3 p-2 rounded-full hover:bg-[var(--c-bg-muted)] transition-colors">
                         <i class="fa-solid fa-arrow-left"></i>
                     </button>
-                    <h2 class="text-2xl font-bold flex items-center gap-3" [class]="categoryColors[category.id]?.icon || 'text-[var(--c-text-headings)]'">
+                    <h2 class="text-2xl font-bold flex items-center gap-3" [class]="(categoryColors[category.id] && categoryColors[category.id].icon) || 'text-[var(--c-text-headings)]'">
                         <i [class]="'fa-solid ' + category.icon"></i>
                         {{ category.label }}
                     </h2>
@@ -49,8 +49,8 @@
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 ml-12">
                   @for (subtopic of category.children; track subtopic.id) {
                       <button (click)="toggleTopic(subtopic)" 
-                              [class]="'p-4 rounded-2xl flex flex-col items-center justify-center space-y-3 h-36 text-center transition-all duration-200 bg-[var(--c-bg-muted)] border-2 shadow-sm hover:shadow-md hover:-translate-y-1 ' + (isSelected(subtopic) ? (categoryColors[category.id]?.borderSelected || 'border-sky-500') : ('border-transparent ' + (categoryColors[category.id]?.borderHover || 'hover:border-slate-400')))">
-                          <i [class]="'text-4xl ' + subtopic.icon + ' ' + (categoryColors[category.id]?.icon || 'text-slate-500')"></i>
+                              [class]="'p-4 rounded-2xl flex flex-col items-center justify-center space-y-3 h-36 text-center transition-all duration-200 bg-[var(--c-bg-muted)] border-2 shadow-sm hover:shadow-md hover:-translate-y-1 ' + (isSelected(subtopic) ? ((categoryColors[category.id] && categoryColors[category.id].borderSelected) || 'border-sky-500') : ('border-transparent ' + ((categoryColors[category.id] && categoryColors[category.id].borderHover) || 'hover:border-slate-400')))">
+                          <i [class]="'text-4xl ' + subtopic.icon + ' ' + ((categoryColors[category.id] && categoryColors[category.id].icon) || 'text-slate-500')"></i>
                           <span class="font-semibold text-sm text-[var(--c-text-headings)]">{{ subtopic.label }}</span>
                       </button>
                   }

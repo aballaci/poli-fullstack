@@ -1,91 +1,79 @@
 <amplify-authenticator>
-  <ng-template
-    amplifySlot="authenticated"
-    let-user="user"
-    let-signOut="signOut"
-  >
+  <ng-template amplifySlot="authenticated" let-user="user" let-signOut="signOut">
     <div class="bg-[var(--c-bg-body)] text-[var(--c-text-body)] min-h-screen font-sans flex flex-col">
-  <!-- Header -->
-  <header class="bg-[var(--c-bg-surface)]/80 backdrop-blur-sm sticky top-0 z-20 border-b border-[var(--c-border-subtle)]">
-    <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <a routerLink="/selector" class="flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded-lg">
-              <!-- Icon with blob background -->
-              <div class="relative w-10 h-10 flex items-center justify-center mr-1">
-                <!-- Inline SVG for the blob shape -->
-                <svg class="absolute w-full h-full text-sky-200 dark:text-sky-800/50" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                    <path fill="currentColor" d="M48.4,-57.8C62.4,-51.7,73.3,-37.2,77.5,-20.9C81.8,-4.6,79.5,13.6,70.9,28.2C62.3,42.8,47.4,53.8,31.7,61.9C16,70.1,-0.5,75.4,-15.7,72.4C-30.9,69.4,-44.8,58.1,-55.8,44.9C-66.8,31.8,-75,16.8,-76.3,-0.1C-77.6,-16.9,-72.2,-32.7,-61.8,-44.7C-51.4,-56.7,-36,-64.9,-21.2,-68.3C-6.4,-71.7,7.8,-70.2,21.3,-66.1C34.9,-61.9,48.4,-57.8,48.4,-57.8Z" transform="translate(100 100) scale(1.1)"></path>
-                </svg>
-                <!-- Material Icon on top -->
-                <span class="material-symbols-outlined relative text-sky-700 dark:text-sky-300 text-2xl">
-                  target
-                </span>
+      <!-- Header -->
+      <header
+        class="bg-[var(--c-bg-surface)]/80 backdrop-blur-sm sticky top-0 z-20 border-b border-[var(--c-border-subtle)]">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex items-center justify-between h-16">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <a routerLink="/selector"
+                  class="flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded-lg">
+                  <!-- Icon with blob background -->
+                  <div class="relative w-10 h-10 flex items-center justify-center mr-1">
+                    <!-- Inline SVG for the blob shape -->
+                    <svg class="absolute w-full h-full text-sky-200 dark:text-sky-800/50" viewBox="0 0 200 200"
+                      xmlns="http://www.w3.org/2000/svg">
+                      <path fill="currentColor"
+                        d="M48.4,-57.8C62.4,-51.7,73.3,-37.2,77.5,-20.9C81.8,-4.6,79.5,13.6,70.9,28.2C62.3,42.8,47.4,53.8,31.7,61.9C16,70.1,-0.5,75.4,-15.7,72.4C-30.9,69.4,-44.8,58.1,-55.8,44.9C-66.8,31.8,-75,16.8,-76.3,-0.1C-77.6,-16.9,-72.2,-32.7,-61.8,-44.7C-51.4,-56.7,-36,-64.9,-21.2,-68.3C-6.4,-71.7,7.8,-70.2,21.3,-66.1C34.9,-61.9,48.4,-57.8,48.4,-57.8Z"
+                        transform="translate(100 100) scale(1.1)"></path>
+                    </svg>
+                    <!-- Material Icon on top -->
+                    <span class="material-symbols-outlined relative text-sky-700 dark:text-sky-300 text-2xl">
+                      target
+                    </span>
+                  </div>
+                  <!-- Logo Text -->
+                  <h1 class="text-3xl font-bold text-[var(--c-text-headings)] [font-family:'Hachi_Maru_Pop',_cursive]">
+                    Poli
+                  </h1>
+                </a>
               </div>
-              <!-- Logo Text -->
-              <h1 class="text-3xl font-bold text-[var(--c-text-headings)] [font-family:'Hachi_Maru_Pop',_cursive]">
-                Poli
-              </h1>
-            </a>
-          </div>
-        </div>
-        @if (store.isConfigured()) {
-          <div class="flex items-center space-x-4">
-             <div class="text-sm text-[var(--c-text-muted)] hidden sm:flex items-center gap-2">
+            </div>
+            @if (store.isConfigured()) {
+            <div class="flex items-center space-x-4">
+              <div class="text-sm text-[var(--c-text-muted)] hidden sm:flex items-center gap-2">
                 <span class="fi fi-{{ store.sourceLanguage()?.flag }}"></span>
                 <span class="text-[var(--c-text-body)]">{{ store.sourceLanguage()?.display_name }}</span>
                 <i class="fa-solid fa-arrow-right-long"></i>
                 <span class="fi fi-{{ store.targetLanguage()?.flag }}"></span>
                 <span class="text-[var(--c-text-body)]">{{ store.targetLanguage()?.display_name }}</span>
-                <span class="ml-2 font-mono text-xs bg-[var(--c-bg-muted)] text-[var(--c-text-muted)] px-2 py-1 rounded-full">{{ store.difficultyLevel() }}</span>
+                <span
+                  class="ml-2 font-mono text-xs bg-[var(--c-bg-muted)] text-[var(--c-text-muted)] px-2 py-1 rounded-full">{{
+                  store.difficultyLevel() }}</span>
+              </div>
+              <a routerLink="/intro" title="How it works"
+                class="text-[var(--c-text-muted)] hover:text-[var(--color-primary)] transition-colors">
+                <i class="fa-solid fa-circle-question text-xl"></i>
+              </a>
+              <button (click)="themeService.toggleTheme()"
+                [title]="'Switch to ' + (themeService.theme() === 'light' ? 'dark' : 'light') + ' mode'"
+                class="text-[var(--c-text-muted)] hover:text-[var(--color-primary)] transition-colors">
+                <i class="fa-solid fa-circle-half-stroke text-xl"></i>
+              </button>
+              <a routerLink="/settings" title="Settings"
+                class="text-[var(--c-text-muted)] hover:text-[var(--color-primary)] transition-colors">
+                <i class="fa-solid fa-gear text-xl"></i>
+              </a>
             </div>
-            <button (click)="showIntro.set(true)" title="How it works" class="text-[var(--c-text-muted)] hover:text-[var(--color-primary)] transition-colors">
-              <i class="fa-solid fa-circle-question text-xl"></i>
-            </button>
-            <button (click)="themeService.toggleTheme()" [title]="'Switch to ' + (themeService.theme() === 'light' ? 'dark' : 'light') + ' mode'" class="text-[var(--c-text-muted)] hover:text-[var(--color-primary)] transition-colors">
-              <i class="fa-solid fa-circle-half-stroke text-xl"></i>
-            </button>
-            <a routerLink="/settings" title="Settings" class="text-[var(--c-text-muted)] hover:text-[var(--color-primary)] transition-colors">
-              <i class="fa-solid fa-gear text-xl"></i>
-            </a>
+            }
           </div>
-        }
-      </div>
-    </nav>
-  </header>
+        </nav>
+      </header>
 
-  <!-- Main Content -->
-  <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow overflow-y-auto">
-    <router-outlet></router-outlet>
-  </main>
+      <!-- Main Content -->
+      <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow overflow-y-auto">
+        <router-outlet></router-outlet>
+      </main>
 
-  <!-- Footer -->
-  <footer class="bg-[var(--c-bg-muted)] text-center p-4 text-sm text-[var(--c-text-muted)] border-t border-[var(--c-border-subtle)]">
-    <div class="flex justify-center items-center gap-2">
-      <p>Poli &copy; 2024. Powered by AI.</p>
+      <!-- Footer -->
+      <footer
+        class="bg-[var(--c-bg-muted)] text-center p-4 text-sm text-[var(--c-text-muted)] border-t border-[var(--c-border-subtle)]">
+        <div class="flex justify-center items-center gap-2">
+          <p>Poli &copy; 2024. Powered by AI.</p>
+        </div>
+      </footer>
     </div>
-  </footer>
-</div>
-
-<!-- Intro Modal -->
-@if (showIntro()) {
-  <div class="fixed inset-0 bg-black/60 z-40 flex items-center justify-center p-4 animate-fade-in" (click)="closeIntro()">
-    <div class="bg-[var(--c-bg-surface)] rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col" (click)="$event.stopPropagation()">
-      <div class="p-6 sm:p-8 overflow-y-auto">
-        <app-intro />
-      </div>
-      <div class="px-6 sm:px-8 py-4 bg-[var(--c-bg-muted)] border-t border-[var(--c-border-subtle)] flex flex-wrap justify-between items-center gap-4">
-        <label class="flex items-center space-x-2 text-sm text-[var(--c-text-body)] cursor-pointer">
-          <input type="checkbox" [checked]="dontShowIntroAgain()" (change)="onDontShowAgainChange($event)" class="rounded text-[var(--color-primary)] focus:ring-[var(--color-primary)]" />
-          <span>Don't show this again on startup</span>
-        </label>
-        <button (click)="closeIntro()" class="bg-[var(--color-primary)] text-white font-semibold py-2 px-5 rounded-lg hover:opacity-90 transition-opacity">
-          Got it!
-        </button>
-      </div>
-    </div>
-  </div>
-}
   </ng-template>
 </amplify-authenticator>

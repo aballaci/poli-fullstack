@@ -1,9 +1,17 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { SessionStore } from '../../state/session.store';
 import { ThemeService } from '../../services/theme.service';
 import { LanguageService } from '../../services/language.service';
+import { getCurrentUser, fetchUserAttributes } from 'aws-amplify/auth';
+
+interface UserInfo {
+  username: string;
+  name?: string;
+  email?: string;
+  picture?: string;
+}
 
 @Component({
   selector: 'app-settings',
@@ -20,6 +28,35 @@ import { LanguageService } from '../../services/language.service';
   </div>
 
   <div class="space-y-8">
+    <!-- User Info -->
+    @if (userInfo()) {
+      <div class="bg-[var(--c-bg-surface)] p-6 rounded-lg shadow-sm border border-[var(--c-border-subtle)]">
+        <h2 class="text-xl font-semibold mb-4 text-[var(--c-text-headings)]">Account</h2>
+        <div class="flex items-center gap-4">
+          <!-- Avatar -->
+          @if (userInfo()!.picture) {
+            <img [src]="userInfo()!.picture" [alt]="userInfo()!.name || 'User avatar'" class="w-16 h-16 rounded-full border-2 border-[var(--c-border-subtle)]">
+          } @else {
+            <div class="w-16 h-16 rounded-full bg-sky-500 flex items-center justify-center text-white text-2xl font-bold border-2 border-[var(--c-border-subtle)]">
+              {{ getInitials() }}
+            </div>
+          }
+          <!-- User Details -->
+          <div class="flex-1">
+            @if (userInfo()!.name) {
+              <h3 class="text-lg font-semibold text-[var(--c-text-headings)]">{{ userInfo()!.name }}</h3>
+            }
+            @if (userInfo()!.email) {
+              <p class="text-sm text-[var(--c-text-muted)] mt-1">{{ userInfo()!.email }}</p>
+            }
+            @if (!userInfo()!.name && !userInfo()!.email) {
+              <p class="text-sm text-[var(--c-text-muted)]">{{ userInfo()!.username }}</p>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
     <!-- Language & Difficulty Settings -->
     <div class="bg-[var(--c-bg-surface)] p-6 rounded-lg shadow-sm border border-[var(--c-border-subtle)]">
       <h2 class="text-xl font-semibold mb-4 text-[var(--c-text-headings)]">Learning Path</h2>
@@ -131,11 +168,12 @@ import { LanguageService } from '../../services/language.service';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SettingsComponent {
+export class SettingsComponent implements OnInit {
   store = inject(SessionStore);
   themeService = inject(ThemeService);
   languageService = inject(LanguageService);
   router = inject(Router);
+  cdr = inject(ChangeDetectorRef);
 
   readonly sourceLanguage = this.store.sourceLanguage;
   readonly targetLanguage = this.store.targetLanguage;
@@ -144,6 +182,50 @@ export class SettingsComponent {
   readonly mockApiMode = this.store.mockApiMode;
   readonly readingFontSize = this.store.readingFontSize;
   readonly isDevMode = this.languageService.isDevMode;
+
+  userInfo = signal<UserInfo | null>(null);
+
+  async ngOnInit(): Promise<void> {
+    await this.loadUserInfo();
+  }
+
+  private async loadUserInfo(): Promise<void> {
+    try {
+      const user = await getCurrentUser();
+      const attributes = await fetchUserAttributes();
+
+      const info: UserInfo = {
+        username: user.username,
+        email: attributes.email,
+        name: attributes.name || attributes.given_name || (attributes as any)['custom:name'],
+        picture: attributes.picture || (attributes as any)['custom:picture']
+      };
+
+      this.userInfo.set(info);
+      this.cdr.markForCheck();
+    } catch (error) {
+      console.error('Failed to load user info:', error);
+    }
+  }
+
+  getInitials(): string {
+    const info = this.userInfo();
+    if (!info) return '?';
+
+    if (info.name) {
+      const parts = info.name.trim().split(/\s+/);
+      if (parts.length >= 2) {
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+      }
+      return parts[0][0].toUpperCase();
+    }
+
+    if (info.email) {
+      return info.email[0].toUpperCase();
+    }
+
+    return info.username[0].toUpperCase();
+  }
 
   toggleTheme(): void {
     this.themeService.toggleTheme();

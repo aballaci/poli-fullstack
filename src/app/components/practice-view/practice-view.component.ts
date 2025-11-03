@@ -73,11 +73,7 @@ export class PracticeViewComponent implements OnDestroy {
   recordingState = signal<RecordingState>('idle');
   isPeeking = signal(false);
   error = signal<string | null>(null);
-  
-  // Instructions State
-  showInstructions = signal(!this.store.practiceInstructionsSeen());
-  dontShowAgain = signal(false);
-  
+
   // Speech Recognition State
   private recognition: any | null = null;
   isSpeechRecognitionSupported = false;
@@ -94,7 +90,7 @@ export class PracticeViewComponent implements OnDestroy {
   readonly practiceMode = this.store.practiceMode;
   readonly useAI = this.store.useAIComparison;
   readonly flow = this.store.flowDirection;
-  
+
   readonly isLastSentence = computed(() => this.currentSentenceIndex() === this.totalSentences() - 1);
 
   readonly progress = computed(() => {
@@ -105,18 +101,18 @@ export class PracticeViewComponent implements OnDestroy {
 
   readonly prompt = computed<{ part: SentencePart, lang: Language }>(() => {
     const s = this.sentence();
-    return this.flow() === 'source-to-target' 
-      ? { part: s.source, lang: this.sourceLang() } 
+    return this.flow() === 'source-to-target'
+      ? { part: s.source, lang: this.sourceLang() }
       : { part: s.target, lang: this.targetLang() };
   });
 
   readonly challenge = computed<{ part: SentencePart, lang: Language }>(() => {
     const s = this.sentence();
-    return this.flow() === 'source-to-target' 
-      ? { part: s.target, lang: this.targetLang() } 
+    return this.flow() === 'source-to-target'
+      ? { part: s.target, lang: this.targetLang() }
       : { part: s.source, lang: this.sourceLang() };
   });
-  
+
   readonly isChallengeVisible = computed(() => {
     if (this.practiceStep() === 'initial' || this.practiceStep() === 'result') {
       return true;
@@ -133,11 +129,11 @@ export class PracticeViewComponent implements OnDestroy {
   });
 
   constructor() {
-     if (typeof window !== 'undefined') {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (SpeechRecognition) {
-            this.isSpeechRecognitionSupported = true;
-        }
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        this.isSpeechRecognitionSupported = true;
+      }
     }
 
     // Reset component state when the input sentence changes
@@ -156,17 +152,6 @@ export class PracticeViewComponent implements OnDestroy {
       clearInterval(this.countdownInterval);
     }
   }
-  
-  onDontShowAgainChange(event: Event): void {
-    this.dontShowAgain.set((event.target as HTMLInputElement).checked);
-  }
-
-  closeInstructions(): void {
-    if (this.dontShowAgain()) {
-      this.store.setPracticeInstructionsSeen(true);
-    }
-    this.showInstructions.set(false);
-  }
 
   startPracticeAttempt(): void {
     if (this.recordingState() !== 'idle' || this.practiceStep() !== 'initial') return;
@@ -175,25 +160,25 @@ export class PracticeViewComponent implements OnDestroy {
     this.countdownValue.set(3);
 
     this.countdownInterval = setInterval(() => {
-        this.countdownValue.update(val => {
-            const newValue = (val ?? 1) - 1;
-            if (newValue > 0) {
-                return newValue;
-            } else {
-                clearInterval(this.countdownInterval);
-                this.countdownInterval = null;
-                this.practiceStep.set('prompting');
-                this.startRecognition();
-                return null;
-            }
-        });
+      this.countdownValue.update(val => {
+        const newValue = (val ?? 1) - 1;
+        if (newValue > 0) {
+          return newValue;
+        } else {
+          clearInterval(this.countdownInterval);
+          this.countdownInterval = null;
+          this.practiceStep.set('prompting');
+          this.startRecognition();
+          return null;
+        }
+      });
     }, 1000);
   }
 
   stopRecording(): void {
-      if (this.recordingState() === 'listening' && this.recognition) {
-          this.recognition.stop();
-      }
+    if (this.recordingState() === 'listening' && this.recognition) {
+      this.recognition.stop();
+    }
   }
 
   peek(): void {
@@ -207,7 +192,7 @@ export class PracticeViewComponent implements OnDestroy {
       this.error.set('Speech recognition is not supported by your browser.');
       return;
     }
-    
+
     this.resetAttemptState();
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -227,7 +212,7 @@ export class PracticeViewComponent implements OnDestroy {
     this.recognition.onerror = (event: any) => this.handleRecognitionError(event.error);
     this.recognition.onend = () => {
       if (this.recordingState() === 'listening') {
-          this.recordingState.set('idle');
+        this.recordingState.set('idle');
       }
       this.recognition = null;
     };
@@ -240,22 +225,22 @@ export class PracticeViewComponent implements OnDestroy {
       this.handleRecognitionError('audio-capture');
     }
   }
-  
+
   private handleRecognitionError(errorType: string): void {
-      let message = 'An unknown speech recognition error occurred.';
-      if (errorType === 'no-speech') message = "We didn't hear anything. Please try speaking again.";
-      else if (errorType === 'audio-capture') message = 'There was a problem with your microphone. Please check permissions.';
-      else if (errorType === 'not-allowed') message = 'Microphone access was denied. Please allow it in your browser settings.';
-      this.error.set(message);
-      this.recordingState.set('idle');
-      this.recognition = null;
+    let message = 'An unknown speech recognition error occurred.';
+    if (errorType === 'no-speech') message = "We didn't hear anything. Please try speaking again.";
+    else if (errorType === 'audio-capture') message = 'There was a problem with your microphone. Please check permissions.';
+    else if (errorType === 'not-allowed') message = 'Microphone access was denied. Please allow it in your browser settings.';
+    this.error.set(message);
+    this.recordingState.set('idle');
+    this.recognition = null;
   }
 
   private async processSpeech(): Promise<void> {
     this.practiceStep.set('result');
     const transcript = this.userTranscript();
     const sentence = this.sentence();
-    
+
     if (this.useAI()) {
       try {
         const assessment = await this.gemini.assessPronunciation(this.challenge().part.text, transcript, this.challenge().lang);
@@ -279,7 +264,7 @@ export class PracticeViewComponent implements OnDestroy {
         overall_feedback: similarity >= 70 ? 'Good job! The text matches well.' : 'Keep practicing, there are some differences in the text.',
         suggestions: []
       };
-      
+
       this.currentAssessment.set(mockAssessment);
       this.store.addSentenceResult(sentence, mockAssessment, transcript);
       this.playResultSound(similarity >= 70);
@@ -289,12 +274,12 @@ export class PracticeViewComponent implements OnDestroy {
   retry(): void {
     this.resetForNewSentence();
   }
-  
+
   private resetForNewSentence(): void {
     this.practiceStep.set('initial');
     if (this.countdownInterval) {
-        clearInterval(this.countdownInterval);
-        this.countdownInterval = null;
+      clearInterval(this.countdownInterval);
+      this.countdownInterval = null;
     }
     this.countdownValue.set(null);
     this.resetAttemptState();
@@ -314,31 +299,31 @@ export class PracticeViewComponent implements OnDestroy {
     const audio = new Audio(`${baseUrl}${fileName}`);
     audio.play().catch(e => console.error(`[Audio] Failed to play ${fileName}`, e));
   }
-  
+
   private calculateStringSimilarity(str1: string, str2: string): number {
     const s1 = str1.toLowerCase().trim();
     const s2 = str2.toLowerCase().trim();
 
     const costs: number[] = [];
     for (let i = 0; i <= s1.length; i++) {
-        let lastValue = i;
-        for (let j = 0; j <= s2.length; j++) {
-            if (i === 0) {
-                costs[j] = j;
-            } else {
-                if (j > 0) {
-                    let newValue = costs[j - 1];
-                    if (s1.charAt(i - 1) !== s2.charAt(j - 1)) {
-                        newValue = Math.min(newValue, lastValue, costs[j]) + 1;
-                    }
-                    costs[j - 1] = lastValue;
-                    lastValue = newValue;
-                }
+      let lastValue = i;
+      for (let j = 0; j <= s2.length; j++) {
+        if (i === 0) {
+          costs[j] = j;
+        } else {
+          if (j > 0) {
+            let newValue = costs[j - 1];
+            if (s1.charAt(i - 1) !== s2.charAt(j - 1)) {
+              newValue = Math.min(newValue, lastValue, costs[j]) + 1;
             }
+            costs[j - 1] = lastValue;
+            lastValue = newValue;
+          }
         }
-        if (i > 0) {
-            costs[s2.length] = lastValue;
-        }
+      }
+      if (i > 0) {
+        costs[s2.length] = lastValue;
+      }
     }
     const distance = costs[s2.length];
     const maxLength = Math.max(s1.length, s2.length);
