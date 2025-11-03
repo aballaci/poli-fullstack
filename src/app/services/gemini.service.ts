@@ -411,19 +411,18 @@ export class GeminiService {
       return Promise.resolve([]);
     }
 
-    const listByTopicQuery = /* GraphQL */ `
-      query ListScenariosByTopic(
+    // Use the same approach as multiple topics since database stores topics as comma-separated strings
+    const baseListQuery = /* GraphQL */ `
+      query ListScenariosByLevel(
         $sourceLanguage: String!
         $targetLanguage: String!
         $difficulty: String!
-        $topic: String!
       ) {
         listScenarios(
           filter: {
             sourceLang: { eq: $sourceLanguage }
             targetLang: { eq: $targetLanguage }
             difficulty_level: { eq: $difficulty }
-            topic: { eq: $topic }
           },
           limit: 1000
         ) {
@@ -440,12 +439,11 @@ export class GeminiService {
 
     try {
       const response = await this.client.graphql({
-        query: listByTopicQuery,
+        query: baseListQuery,
         variables: {
           sourceLanguage: sourceLang.display_name,
           targetLanguage: targetLang.display_name,
           difficulty,
-          topic,
         },
       });
 
@@ -458,7 +456,14 @@ export class GeminiService {
       }
 
       const items = (response as any).data?.listScenarios?.items || [];
-      return (items as ScenarioSummary[]).filter(Boolean);
+      const all: ScenarioSummary[] = (items as ScenarioSummary[]).filter(Boolean);
+
+      // Filter by topic substring since topics are stored as comma-separated strings
+      const topicLower = topic.trim().toLowerCase();
+      return all.filter(s => {
+        const subject = (s.topic || '').toLowerCase();
+        return subject.includes(topicLower);
+      });
     } catch (error) {
       this.handleError(
         error,
@@ -469,6 +474,94 @@ export class GeminiService {
           topic,
         },
         'listExistingScenariosByTopic'
+      );
+    }
+  }
+
+  async listExistingScenariosByTopics(
+    sourceLang: Language,
+    targetLang: Language,
+    difficulty: string,
+    topics: string[]
+  ): Promise<ScenarioSummary[]> {
+    if (this.languageService.isDevMode && this.store.mockApiMode()) {
+      console.warn('--- MOCK API MODE: Returning empty list for "listExistingScenariosByTopics". ---');
+      return Promise.resolve([]);
+    }
+
+    // Reuse the base list by difficulty and languages, then filter on the client
+    const baseListQuery = /* GraphQL */ `
+      query ListScenariosByLevel(
+        $sourceLanguage: String!
+        $targetLanguage: String!
+        $difficulty: String!
+      ) {
+        listScenarios(
+          filter: {
+            sourceLang: { eq: $sourceLanguage }
+            targetLang: { eq: $targetLanguage }
+            difficulty_level: { eq: $difficulty }
+          },
+          limit: 1000
+        ) {
+          items {
+            id
+            name
+            description
+            difficulty_level
+            topic
+          }
+        }
+      }
+    `;
+
+    try {
+      const response = await this.client.graphql({
+        query: baseListQuery,
+        variables: {
+          sourceLanguage: sourceLang.display_name,
+          targetLanguage: targetLang.display_name,
+          difficulty,
+        },
+      });
+
+      if ('subscribe' in response) {
+        throw new Error('Unexpected subscription result for a GraphQL query.');
+      }
+
+      if (response.errors) {
+        throw { errors: response.errors };
+      }
+
+      const items = (response as any).data?.listScenarios?.items || [];
+      const all: ScenarioSummary[] = (items as ScenarioSummary[]).filter(Boolean);
+      const required = topics.map(t => t.trim()).filter(Boolean);
+      if (required.length === 0) return all;
+
+      // Construct the comma-separated topic string that would be stored in the database
+      const commaSeparatedTopic = required.join(', ');
+      const commaSeparatedTopicLower = commaSeparatedTopic.toLowerCase();
+
+      return all.filter(s => {
+        const subject = (s.topic || '').toLowerCase();
+        // First try exact match of the comma-separated format
+        if (subject === commaSeparatedTopicLower) {
+          return true;
+        }
+        // Also check if all topics are contained in the stored topic string
+        // This handles cases where the stored topic might have a different order or additional topics
+        return required.every(t => subject.includes(t.toLowerCase()));
+      });
+    } catch (error) {
+      this.handleError(
+        error,
+        {
+          sourceLang: sourceLang.display_name,
+          targetLang: targetLang.display_name,
+          difficulty,
+          topics,
+        },
+        'listExistingScenariosByTopics'
       );
     }
   }

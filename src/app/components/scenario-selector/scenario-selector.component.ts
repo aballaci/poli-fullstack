@@ -207,15 +207,19 @@ export class ScenarioSelectorComponent implements OnInit {
       } else {
         newSet.add(topic);
       }
+
+      // Fetch existing scenarios after updating the set
+      const updatedTopics = Array.from(newSet);
+      if (updatedTopics.length === 0) {
+        this.matchingScenarios.set(null);
+      } else if (updatedTopics.length === 1) {
+        this.fetchExistingMatches(updatedTopics[0]);
+      } else {
+        this.fetchExistingMatchesForMultiple(updatedTopics);
+      }
+
       return newSet;
     });
-    // Fetch existing scenarios only when a single topic is selected
-    const topics = Array.from(this.selectedTopics());
-    if (topics.length === 1) {
-      this.fetchExistingMatches(topics[0]);
-    } else {
-      this.matchingScenarios.set(null);
-    }
   }
 
   isSelected(topic: Subtopic): boolean {
@@ -242,6 +246,33 @@ export class ScenarioSelectorComponent implements OnInit {
       this.matchingScenarios.set(scenarios);
     } catch (e) {
       console.error('[ScenarioSelector] Failed to fetch existing scenarios by topic', e);
+      this.matchingScenarios.set([]);
+    } finally {
+      this.isFetchingMatches.set(false);
+    }
+  }
+
+  private async fetchExistingMatchesForMultiple(topics: Subtopic[]): Promise<void> {
+    const sourceLang = this.store.sourceLanguage();
+    const targetLang = this.store.targetLanguage();
+    const difficulty = this.store.difficultyLevel();
+
+    if (!sourceLang || !targetLang || !difficulty) {
+      this.matchingScenarios.set(null);
+      return;
+    }
+    this.isFetchingMatches.set(true);
+    try {
+      const topicLabels = topics.map(t => t.label);
+      const scenarios = await this.geminiService.listExistingScenariosByTopics(
+        sourceLang,
+        targetLang,
+        difficulty,
+        topicLabels
+      );
+      this.matchingScenarios.set(scenarios);
+    } catch (e) {
+      console.error('[ScenarioSelector] Failed to fetch existing scenarios for multiple topics', e);
       this.matchingScenarios.set([]);
     } finally {
       this.isFetchingMatches.set(false);
