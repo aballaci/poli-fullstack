@@ -35,25 +35,29 @@ export class ScenarioSelectorComponent implements OnInit {
   state = signal<SelectorState>('idle');
   error = signal<string | null>(null);
   activeTab = signal<'topics' | 'custom' | 'history'>('topics');
-  
+
   // Topics tab state
   topics = signal<Category[]>(TOPICS_DATA);
   selectedTopics = signal<Set<Subtopic>>(new Set());
   wizardStep = signal<'category' | 'subtopic'>('category');
   activeCategory = signal<Category | null>(null);
-  
+
+  // Matching scenarios for a selected topic
+  isFetchingMatches = signal(false);
+  matchingScenarios = signal<ScenarioSummary[] | null>(null);
+
   // Colors for category cards
   protected readonly categoryColors: { [key: string]: { icon: string; borderHover: string; borderSelected: string; } } = {
-    'everyday-social':    { icon: 'text-sky-500',    borderHover: 'hover:border-sky-400',    borderSelected: 'border-sky-400' },
-    'travel-transport':   { icon: 'text-violet-500',  borderHover: 'hover:border-violet-400', borderSelected: 'border-violet-400' },
-    'food-dining':        { icon: 'text-emerald-500', borderHover: 'hover:border-emerald-400',borderSelected: 'border-emerald-400' },
-    'home-family':        { icon: 'text-rose-500',    borderHover: 'hover:border-rose-400',   borderSelected: 'border-rose-400' },
-    'work-professions':   { icon: 'text-slate-500',   borderHover: 'hover:border-slate-400',  borderSelected: 'border-slate-400' },
-    'education-academia': { icon: 'text-amber-500',   borderHover: 'hover:border-amber-400',  borderSelected: 'border-amber-400' },
-    'culture-media':      { icon: 'text-fuchsia-500', borderHover: 'hover:border-fuchsia-400',borderSelected: 'border-fuchsia-400' },
-    'health-wellness':    { icon: 'text-red-500',     borderHover: 'hover:border-red-400',    borderSelected: 'border-red-400' },
-    'shopping-money':     { icon: 'text-lime-500',    borderHover: 'hover:border-lime-400',   borderSelected: 'border-lime-400' },
-    'civic-logistics':    { icon: 'text-cyan-500',    borderHover: 'hover:border-cyan-400',   borderSelected: 'border-cyan-400' },
+    'everyday-social': { icon: 'text-sky-500', borderHover: 'hover:border-sky-400', borderSelected: 'border-sky-400' },
+    'travel-transport': { icon: 'text-violet-500', borderHover: 'hover:border-violet-400', borderSelected: 'border-violet-400' },
+    'food-dining': { icon: 'text-emerald-500', borderHover: 'hover:border-emerald-400', borderSelected: 'border-emerald-400' },
+    'home-family': { icon: 'text-rose-500', borderHover: 'hover:border-rose-400', borderSelected: 'border-rose-400' },
+    'work-professions': { icon: 'text-slate-500', borderHover: 'hover:border-slate-400', borderSelected: 'border-slate-400' },
+    'education-academia': { icon: 'text-amber-500', borderHover: 'hover:border-amber-400', borderSelected: 'border-amber-400' },
+    'culture-media': { icon: 'text-fuchsia-500', borderHover: 'hover:border-fuchsia-400', borderSelected: 'border-fuchsia-400' },
+    'health-wellness': { icon: 'text-red-500', borderHover: 'hover:border-red-400', borderSelected: 'border-red-400' },
+    'shopping-money': { icon: 'text-lime-500', borderHover: 'hover:border-lime-400', borderSelected: 'border-lime-400' },
+    'civic-logistics': { icon: 'text-cyan-500', borderHover: 'hover:border-cyan-400', borderSelected: 'border-cyan-400' },
   };
 
   // Custom text tab state
@@ -69,20 +73,20 @@ export class ScenarioSelectorComponent implements OnInit {
     const scenarios = this.historyScenarios();
     const currentDifficulty = this.store.difficultyLevel();
     const filterByLevel = this.filterByCurrentLevel();
-    
+
     // Filter by current difficulty level if toggle is on
-    const filteredScenarios = filterByLevel && currentDifficulty 
+    const filteredScenarios = filterByLevel && currentDifficulty
       ? scenarios.filter(s => s.difficulty_level === currentDifficulty)
       : scenarios;
-    
+
     const organized: { [topic: string]: { [difficulty: string]: ScenarioSummary[] } } = {};
-    
+
     const difficultyOrder = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
-    
+
     for (const scenario of filteredScenarios) {
       const topic = scenario.topic || 'Other';
       const difficulty = scenario.difficulty_level;
-      
+
       if (!organized[topic]) {
         organized[topic] = {};
       }
@@ -91,11 +95,11 @@ export class ScenarioSelectorComponent implements OnInit {
       }
       organized[topic][difficulty].push(scenario);
     }
-    
+
     // Sort topics alphabetically
     const sortedTopics = Object.keys(organized).sort();
     const result: { topic: string; difficulties: { difficulty: string; scenarios: ScenarioSummary[] }[] }[] = [];
-    
+
     for (const topic of sortedTopics) {
       const difficulties: { difficulty: string; scenarios: ScenarioSummary[] }[] = [];
       // Sort difficulties in order
@@ -118,7 +122,7 @@ export class ScenarioSelectorComponent implements OnInit {
       }
       result.push({ topic, difficulties });
     }
-    
+
     return result;
   });
 
@@ -171,12 +175,12 @@ export class ScenarioSelectorComponent implements OnInit {
       // Don't show a blocking error for this non-critical feature.
       this.error.set(`Could not load practice history: ${e.message}`);
     } finally {
-        if (this.state() !== 'error') {
-            this.state.set('idle');
-        }
+      if (this.state() !== 'error') {
+        this.state.set('idle');
+      }
     }
   }
-  
+
   onCustomTextInput(event: Event): void {
     this.customText.set((event.target as HTMLTextAreaElement).value);
   }
@@ -184,6 +188,8 @@ export class ScenarioSelectorComponent implements OnInit {
   selectCategory(category: Category): void {
     this.activeCategory.set(category);
     this.wizardStep.set('subtopic');
+    // Reset matches when changing category
+    this.matchingScenarios.set(null);
   }
 
   goBackToCategories(): void {
@@ -203,12 +209,45 @@ export class ScenarioSelectorComponent implements OnInit {
       }
       return newSet;
     });
+    // Fetch existing scenarios only when a single topic is selected
+    const topics = Array.from(this.selectedTopics());
+    if (topics.length === 1) {
+      this.fetchExistingMatches(topics[0]);
+    } else {
+      this.matchingScenarios.set(null);
+    }
   }
 
   isSelected(topic: Subtopic): boolean {
     return this.selectedTopics().has(topic);
   }
-  
+
+  private async fetchExistingMatches(topic: Subtopic): Promise<void> {
+    const sourceLang = this.store.sourceLanguage();
+    const targetLang = this.store.targetLanguage();
+    const difficulty = this.store.difficultyLevel();
+
+    if (!sourceLang || !targetLang || !difficulty) {
+      this.matchingScenarios.set(null);
+      return;
+    }
+    this.isFetchingMatches.set(true);
+    try {
+      const scenarios = await this.geminiService.listExistingScenariosByTopic(
+        sourceLang,
+        targetLang,
+        difficulty,
+        topic.label
+      );
+      this.matchingScenarios.set(scenarios);
+    } catch (e) {
+      console.error('[ScenarioSelector] Failed to fetch existing scenarios by topic', e);
+      this.matchingScenarios.set([]);
+    } finally {
+      this.isFetchingMatches.set(false);
+    }
+  }
+
   async generateFromTopics(): Promise<void> {
     this.state.set('loading');
     this.error.set(null);
@@ -270,10 +309,10 @@ export class ScenarioSelectorComponent implements OnInit {
       this.error.set(e.message || 'An unexpected error occurred.');
       this.state.set('error');
     } finally {
-        this.stopLoadingMessages();
-        if (this.state() !== 'error') {
-            this.state.set('idle');
-        }
+      this.stopLoadingMessages();
+      if (this.state() !== 'error') {
+        this.state.set('idle');
+      }
     }
   }
 
@@ -283,19 +322,19 @@ export class ScenarioSelectorComponent implements OnInit {
     this.error.set(null);
     this.startLoadingMessages();
     try {
-        const scenario = await this.geminiService.getScenarioById(id);
-        this.store.startConversation(scenario);
-        this.router.navigate(['/conversation']);
+      const scenario = await this.geminiService.getScenarioById(id);
+      this.store.startConversation(scenario);
+      this.router.navigate(['/conversation']);
     } catch (e: any) {
-        console.error(`[ScenarioSelector] Error loading scenario ${id} from history`, e);
-        this.error.set(e.message || 'An unexpected error occurred while loading the scenario.');
-        this.state.set('error');
+      console.error(`[ScenarioSelector] Error loading scenario ${id} from history`, e);
+      this.error.set(e.message || 'An unexpected error occurred while loading the scenario.');
+      this.state.set('error');
     } finally {
-        this.stopLoadingMessages();
-        if (this.state() !== 'error') {
-            this.state.set('idle');
-        }
-        this.selectedHistoryId.set(null);
+      this.stopLoadingMessages();
+      if (this.state() !== 'error') {
+        this.state.set('idle');
+      }
+      this.selectedHistoryId.set(null);
     }
   }
 }

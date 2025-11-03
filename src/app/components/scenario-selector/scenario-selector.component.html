@@ -55,6 +55,33 @@
                       </button>
                   }
                 </div>
+
+                <!-- Matching Existing Scenarios (single selected topic) -->
+                @if (matchingScenarios() !== null) {
+                  <div class="mt-8">
+                    <h3 class="text-lg font-semibold text-[var(--c-text-headings)] mb-2">Matching Scenarios</h3>
+                    @if (isFetchingMatches()) {
+                      <div class="text-sm text-[var(--c-text-muted)] flex items-center gap-2">
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                        <span>Loading...</span>
+                      </div>
+                    } @else if (matchingScenarios()!.length === 0) {
+                      <p class="text-sm text-[var(--c-text-muted)]">No scenarios found for this topic and level.</p>
+                    } @else {
+                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        @for (scenario of matchingScenarios()!; track scenario.id) {
+                          <button (click)="loadFromHistory(scenario.id)" class="text-left p-3 bg-[var(--c-bg-muted)] rounded-lg hover:bg-[var(--c-border-subtle)] transition-colors">
+                            <p class="font-semibold text-sm text-[var(--c-text-headings)] truncate">{{ scenario.name }}</p>
+                            <div class="mt-1 flex items-center gap-2 text-xs text-[var(--c-text-muted)]">
+                              <span class="font-mono bg-[var(--c-bg-surface)] px-2 py-0.5 rounded">{{ scenario.difficulty_level }}</span>
+                              @if (scenario.topic) { <span class="truncate">{{ scenario.topic }}</span> }
+                            </div>
+                          </button>
+                        }
+                      </div>
+                    }
+                  </div>
+                }
                 <div class="mt-8 pt-6 border-t border-[var(--c-border-subtle)] flex justify-end">
                       <button (click)="generateFromTopics()" [disabled]="selectedTopics().size === 0 || state() === 'loading'" class="bg-sky-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-sky-600 transition-colors disabled:bg-slate-400 disabled:cursor-not-allowed flex items-center justify-center min-w-[200px]">
                         @if (state() === 'loading') {

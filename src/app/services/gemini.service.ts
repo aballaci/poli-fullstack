@@ -17,12 +17,12 @@ export class GeminiService {
     // This key has been hardcoded to resolve persistent API authentication issues.
     // In a production environment, this should be handled via secure environment variables.
     const apiKey = "1234567890abcdef1234567890abcdef"; // Replace with your actual API key
-    
+
     if (apiKey) {
       console.log(`[GeminiService] Using hardcoded API Key, starting with: ${apiKey.substring(0, 8)}...`);
       this.ai = new GoogleGenAI({ apiKey });
     } else {
-       // This block should not be reached with a hardcoded key, but is kept as a fallback.
+      // This block should not be reached with a hardcoded key, but is kept as a fallback.
       console.warn(
         "Gemini API key is not configured. AI-powered features will fall back to mock data. "
       );
@@ -109,41 +109,41 @@ export class GeminiService {
     console.error(`[GeminiService:${functionName}] An error occurred.`);
     console.error(`[GeminiService:${functionName}] Context:`, context);
     console.error(`[GeminiService:${functionName}] Original Error:`, error);
-    
+
     if (error && typeof error === 'object') {
-        const anyError = error as any;
-        // Check for Google AI error structure: { error: { message: '...' } }
-        if (anyError.error && typeof anyError.error.message === 'string') {
-            detailedMessage = anyError.error.message;
-            if (detailedMessage.includes('API Key not found')) {
-                friendlyMessage = 'The configured Gemini API key is invalid or missing. AI features are unavailable.';
-            } else if (detailedMessage.toLowerCase().includes('quota')) {
-                friendlyMessage = 'The AI service quota has been exceeded. Please try again later.';
-            } else {
-                friendlyMessage = `AI Service Error: ${detailedMessage}`;
-            }
-        // Check for GraphQL error structure: { errors: [{ message: '...' }] }
-        } else if (Array.isArray(anyError.errors) && anyError.errors.length > 0 && anyError.errors[0].message) {
-            detailedMessage = anyError.errors.map((e: { message: string }) => e.message).join('; ');
-            friendlyMessage = `Data Service Error: ${detailedMessage}`;
-        // Standard Error object
-        } else if (typeof anyError.message === 'string') {
-            detailedMessage = anyError.message;
-            friendlyMessage = detailedMessage;
+      const anyError = error as any;
+      // Check for Google AI error structure: { error: { message: '...' } }
+      if (anyError.error && typeof anyError.error.message === 'string') {
+        detailedMessage = anyError.error.message;
+        if (detailedMessage.includes('API Key not found')) {
+          friendlyMessage = 'The configured Gemini API key is invalid or missing. AI features are unavailable.';
+        } else if (detailedMessage.toLowerCase().includes('quota')) {
+          friendlyMessage = 'The AI service quota has been exceeded. Please try again later.';
         } else {
-             try {
-                detailedMessage = JSON.stringify(error);
-             } catch {
-                detailedMessage = 'Could not stringify error object.';
-             }
+          friendlyMessage = `AI Service Error: ${detailedMessage}`;
         }
-    } else if (error) {
-        detailedMessage = String(error);
+        // Check for GraphQL error structure: { errors: [{ message: '...' }] }
+      } else if (Array.isArray(anyError.errors) && anyError.errors.length > 0 && anyError.errors[0].message) {
+        detailedMessage = anyError.errors.map((e: { message: string }) => e.message).join('; ');
+        friendlyMessage = `Data Service Error: ${detailedMessage}`;
+        // Standard Error object
+      } else if (typeof anyError.message === 'string') {
+        detailedMessage = anyError.message;
         friendlyMessage = detailedMessage;
+      } else {
+        try {
+          detailedMessage = JSON.stringify(error);
+        } catch {
+          detailedMessage = 'Could not stringify error object.';
+        }
+      }
+    } else if (error) {
+      detailedMessage = String(error);
+      friendlyMessage = detailedMessage;
     }
-    
+
     console.error(`[GeminiService:${functionName}] Parsed Error: ${detailedMessage}`);
-    
+
     // Throw the user-friendly message to be displayed in the UI
     throw new Error(friendlyMessage);
   }
@@ -157,7 +157,7 @@ export class GeminiService {
       mockScenario.difficulty_level = difficulty;
       return mockScenario;
     }
-    
+
     const generateScenarioQuery = /* GraphQL */ `
       query GenerateScenario($topic: String!, $difficulty: String!, $sourceLang: String!, $targetLang: String!) {
         generateScenario(topic: $topic, difficulty: $difficulty, sourceLang: $sourceLang, targetLang: $targetLang) {
@@ -189,7 +189,7 @@ export class GeminiService {
         console.error("Invalid response from backend:", response.data);
         throw new Error("The backend returned an invalid or empty scenario. Please try again.");
       }
-      
+
       const scenarioString = response.data.generateScenario.scenario;
       const scenario = JSON.parse(scenarioString) as ConversationScenario;
       return scenario;
@@ -219,7 +219,7 @@ export class GeminiService {
       mockScenario.difficulty_level = difficulty;
       return mockScenario;
     }
-    
+
     const fromLang = textLanguage === 'source' ? sourceLang.display_name : targetLang.display_name;
     const toLang = textLanguage === 'source' ? targetLang.display_name : sourceLang.display_name;
 
@@ -242,31 +242,31 @@ export class GeminiService {
     7.  Ensure all IDs are unique strings (e.g., using UUID format).
     8.  The 'source' object in the JSON must contain the text in ${sourceLang.display_name}, and the 'target' object must contain the text in ${targetLang.display_name}.`;
 
-     try {
-        const response = await this.ai.models.generateContent({
-            model: "gemini-2.5-flash",
-            contents: prompt,
-            config: {
-                responseMimeType: "application/json",
-                responseSchema: this.scenarioSchema,
-            },
-        });
-        const jsonStr = response.text?.trim() || '';
-        const scenario = JSON.parse(jsonStr) as ConversationScenario;
-        return scenario;
+    try {
+      const response = await this.ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: prompt,
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: this.scenarioSchema,
+        },
+      });
+      const jsonStr = response.text?.trim() || '';
+      const scenario = JSON.parse(jsonStr) as ConversationScenario;
+      return scenario;
 
     } catch (error) {
-        this.handleError(
-          error,
-          {
-            textLanguage,
-            difficulty,
-            sourceLang: sourceLang.display_name,
-            targetLang: targetLang.display_name,
-            textLength: text.length,
-          },
-          'processCustomText'
-        );
+      this.handleError(
+        error,
+        {
+          textLanguage,
+          difficulty,
+          sourceLang: sourceLang.display_name,
+          targetLang: targetLang.display_name,
+          textLength: text.length,
+        },
+        'processCustomText'
+      );
     }
   }
 
@@ -277,7 +277,7 @@ export class GeminiService {
       await new Promise(resolve => setTimeout(resolve, 500));
       return MOCK_ASSESSMENT;
     }
-    
+
     console.info("transcript:", userTranscript);
     const prompt = `Act as an expert language tutor for a student learning ${language.display_name}.
     The student is practicing the following sentence:
@@ -294,22 +294,22 @@ export class GeminiService {
     - \`pronunciation_score\`: An integer score from 0 to 100, where 100 is perfect pronunciation.
     - \`fluency_score\`: An integer score from 0 to 100, where 100 is perfectly fluent.
     - \`suggestions\`: An array of 1-3 short, actionable tips for improvement. Focus on specific words or sounds the user likely struggled with based on the transcription differences. If the attempt is near-perfect, provide a single encouraging suggestion. If it is perfect, return an empty array.`;
-    
+
     try {
       const response = await this.ai.models.generateContent({
-          model: "gemini-2.5-flash",
-          contents: prompt,
-          config: {
-              responseMimeType: "application/json",
-              responseSchema: this.assessmentSchema,
-          },
+        model: "gemini-2.5-flash",
+        contents: prompt,
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: this.assessmentSchema,
+        },
       });
       const jsonStr = response.text?.trim() || '';
       const assessment = JSON.parse(jsonStr) as SpeechAssessment;
       console.log('[GeminiService:assessPronunciation] Prompt:', prompt);
       console.log('[GeminiService:assessPronunciation] Assessment:', assessment);
       return assessment;
-    } catch(error) {
+    } catch (error) {
       this.handleError(
         error,
         {
@@ -330,7 +330,7 @@ export class GeminiService {
 
     const difficultyLevels = this.languageService.difficultyLevels;
 
-        const listScenariosQuery = /* GraphQL */ `
+    const listScenariosQuery = /* GraphQL */ `
       query ListScenarios(
         $sourceLanguage: String!
         $targetLanguage: String!
@@ -373,18 +373,18 @@ export class GeminiService {
       for (const response of responses) {
         if ('subscribe' in response) {
           console.warn('Unexpected subscription result for a GraphQL query in listPracticeScenarios.');
-          continue; 
+          continue;
         }
-        
+
         if (response.errors) {
-            throw { errors: response.errors };
+          throw { errors: response.errors };
         }
 
         const items = response.data?.listScenarios?.items || [];
         const validItems = (items as ScenarioSummary[]).filter(item => item);
         allScenarios.push(...validItems);
       }
-      
+
       return allScenarios;
 
     } catch (error) {
@@ -396,6 +396,79 @@ export class GeminiService {
           requestedDifficulties: difficultyLevels,
         },
         'listPracticeScenarios'
+      );
+    }
+  }
+
+  async listExistingScenariosByTopic(
+    sourceLang: Language,
+    targetLang: Language,
+    difficulty: string,
+    topic: string
+  ): Promise<ScenarioSummary[]> {
+    if (this.languageService.isDevMode && this.store.mockApiMode()) {
+      console.warn('--- MOCK API MODE: Returning empty list for "listExistingScenariosByTopic". ---');
+      return Promise.resolve([]);
+    }
+
+    const listByTopicQuery = /* GraphQL */ `
+      query ListScenariosByTopic(
+        $sourceLanguage: String!
+        $targetLanguage: String!
+        $difficulty: String!
+        $topic: String!
+      ) {
+        listScenarios(
+          filter: {
+            sourceLang: { eq: $sourceLanguage }
+            targetLang: { eq: $targetLanguage }
+            difficulty_level: { eq: $difficulty }
+            topic: { eq: $topic }
+          },
+          limit: 1000
+        ) {
+          items {
+            id
+            name
+            description
+            difficulty_level
+            topic
+          }
+        }
+      }
+    `;
+
+    try {
+      const response = await this.client.graphql({
+        query: listByTopicQuery,
+        variables: {
+          sourceLanguage: sourceLang.display_name,
+          targetLanguage: targetLang.display_name,
+          difficulty,
+          topic,
+        },
+      });
+
+      if ('subscribe' in response) {
+        throw new Error('Unexpected subscription result for a GraphQL query.');
+      }
+
+      if (response.errors) {
+        throw { errors: response.errors };
+      }
+
+      const items = (response as any).data?.listScenarios?.items || [];
+      return (items as ScenarioSummary[]).filter(Boolean);
+    } catch (error) {
+      this.handleError(
+        error,
+        {
+          sourceLang: sourceLang.display_name,
+          targetLang: targetLang.display_name,
+          difficulty,
+          topic,
+        },
+        'listExistingScenariosByTopic'
       );
     }
   }
@@ -424,7 +497,7 @@ export class GeminiService {
         query: getScenarioQuery,
         variables: { id }
       });
-      
+
       if ('subscribe' in response) {
         throw new Error('Unexpected subscription result for a GraphQL query.');
       }
@@ -432,7 +505,7 @@ export class GeminiService {
       if (response.errors) {
         throw { errors: response.errors };
       }
-      
+
       if (!response.data?.getScenario?.scenario) {
         console.error("Invalid response from backend:", response.data);
         throw new Error("The backend returned an invalid or empty scenario. It might have been deleted.");
