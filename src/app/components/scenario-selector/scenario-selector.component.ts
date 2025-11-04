@@ -7,13 +7,14 @@ import { LanguageService } from '../../services/language.service';
 import { SessionStore } from '../../state/session.store';
 import { ConversationScenario, ScenarioSummary } from '../../models';
 import { TOPICS_DATA, Category, Subtopic } from '../../topics.data';
+import { ScenarioCatalogComponent } from '../scenario-catalog/scenario-catalog.component';
 
 type SelectorState = 'idle' | 'loading' | 'error';
 
 @Component({
   selector: 'app-scenario-selector',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ScenarioCatalogComponent],
   templateUrl: './scenario-selector.component.html',
   styles: [`
     .animate-fade-in {
@@ -34,7 +35,7 @@ export class ScenarioSelectorComponent implements OnInit {
 
   state = signal<SelectorState>('idle');
   error = signal<string | null>(null);
-  activeTab = signal<'topics' | 'custom' | 'history'>('topics');
+  activeTab = signal<'topics' | 'custom' | 'catalog'>('topics');
 
   // Topics tab state
   topics = signal<Category[]>(TOPICS_DATA);
@@ -63,68 +64,6 @@ export class ScenarioSelectorComponent implements OnInit {
   // Custom text tab state
   customText = signal('');
 
-  // History tab state
-  historyScenarios = signal<ScenarioSummary[]>([]);
-  selectedHistoryId = signal<string | null>(null);
-  filterByCurrentLevel = signal(false);
-
-  // Organized history by topic and difficulty
-  readonly organizedHistory = computed(() => {
-    const scenarios = this.historyScenarios();
-    const currentDifficulty = this.store.difficultyLevel();
-    const filterByLevel = this.filterByCurrentLevel();
-
-    // Filter by current difficulty level if toggle is on
-    const filteredScenarios = filterByLevel && currentDifficulty
-      ? scenarios.filter(s => s.difficulty_level === currentDifficulty)
-      : scenarios;
-
-    const organized: { [topic: string]: { [difficulty: string]: ScenarioSummary[] } } = {};
-
-    const difficultyOrder = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
-
-    for (const scenario of filteredScenarios) {
-      const topic = scenario.topic || 'Other';
-      const difficulty = scenario.difficulty_level;
-
-      if (!organized[topic]) {
-        organized[topic] = {};
-      }
-      if (!organized[topic][difficulty]) {
-        organized[topic][difficulty] = [];
-      }
-      organized[topic][difficulty].push(scenario);
-    }
-
-    // Sort topics alphabetically
-    const sortedTopics = Object.keys(organized).sort();
-    const result: { topic: string; difficulties: { difficulty: string; scenarios: ScenarioSummary[] }[] }[] = [];
-
-    for (const topic of sortedTopics) {
-      const difficulties: { difficulty: string; scenarios: ScenarioSummary[] }[] = [];
-      // Sort difficulties in order
-      for (const diff of difficultyOrder) {
-        if (organized[topic][diff]) {
-          difficulties.push({
-            difficulty: diff,
-            scenarios: organized[topic][diff]
-          });
-        }
-      }
-      // Add any difficulties not in the standard list
-      for (const diff of Object.keys(organized[topic])) {
-        if (!difficultyOrder.includes(diff)) {
-          difficulties.push({
-            difficulty: diff,
-            scenarios: organized[topic][diff]
-          });
-        }
-      }
-      result.push({ topic, difficulties });
-    }
-
-    return result;
-  });
 
   // Loading state
   private loadingInterval: any;
@@ -140,7 +79,7 @@ export class ScenarioSelectorComponent implements OnInit {
   loadingMessage = signal(this.loadingMessages[0]);
 
   ngOnInit(): void {
-    this.loadHistory();
+    // History loading is now handled by PresentScenariosComponent
   }
 
   private startLoadingMessages(): void {
@@ -159,27 +98,6 @@ export class ScenarioSelectorComponent implements OnInit {
     }
   }
 
-  async loadHistory(): Promise<void> {
-    const sourceLang = this.store.sourceLanguage();
-    const targetLang = this.store.targetLanguage();
-    if (!sourceLang || !targetLang) {
-      // Cannot load history without languages set.
-      return;
-    }
-    this.state.set('loading');
-    try {
-      const scenarios = await this.geminiService.listPracticeScenarios(sourceLang, targetLang);
-      this.historyScenarios.set(scenarios);
-    } catch (e: any) {
-      console.error('[ScenarioSelector] Failed to load history', e);
-      // Don't show a blocking error for this non-critical feature.
-      this.error.set(`Could not load practice history: ${e.message}`);
-    } finally {
-      if (this.state() !== 'error') {
-        this.state.set('idle');
-      }
-    }
-  }
 
   onCustomTextInput(event: Event): void {
     this.customText.set((event.target as HTMLTextAreaElement).value);
@@ -349,7 +267,6 @@ export class ScenarioSelectorComponent implements OnInit {
 
   async loadFromHistory(id: string): Promise<void> {
     this.state.set('loading');
-    this.selectedHistoryId.set(id);
     this.error.set(null);
     this.startLoadingMessages();
     try {
@@ -357,7 +274,7 @@ export class ScenarioSelectorComponent implements OnInit {
       this.store.startConversation(scenario);
       this.router.navigate(['/conversation']);
     } catch (e: any) {
-      console.error(`[ScenarioSelector] Error loading scenario ${id} from history`, e);
+      console.error(`[ScenarioSelector] Error loading scenario ${id}`, e);
       this.error.set(e.message || 'An unexpected error occurred while loading the scenario.');
       this.state.set('error');
     } finally {
@@ -365,7 +282,7 @@ export class ScenarioSelectorComponent implements OnInit {
       if (this.state() !== 'error') {
         this.state.set('idle');
       }
-      this.selectedHistoryId.set(null);
     }
   }
+
 }
