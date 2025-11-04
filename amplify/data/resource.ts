@@ -1,5 +1,6 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 import { scenarioGenerator } from '../functions/scenario-generator/resource';
+import { pronunciationAssessor } from '../functions/pronunciation-assessor/resource';
 
 const schema = a.schema({
 
@@ -33,6 +34,17 @@ const schema = a.schema({
     .returns(a.ref('Scenario'))
     .authorization((allow) => [allow.authenticated()])
     .handler(a.handler.function(scenarioGenerator)),
+
+  assessPronunciation: a
+    .query()
+    .arguments({
+      originalText: a.string().required(),
+      userTranscript: a.string().required(),
+      language: a.string().required(),
+    })
+    .returns(a.json())
+    .authorization((allow) => [allow.authenticated()])
+    .handler(a.handler.function(pronunciationAssessor)),
 
 });
 

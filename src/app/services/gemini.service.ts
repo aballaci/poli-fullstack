@@ -271,44 +271,66 @@ export class GeminiService {
   }
 
   async assessPronunciation(originalText: string, userTranscript: string, language: Language): Promise<SpeechAssessment> {
-    if ((this.languageService.isDevMode && this.store.mockApiMode()) || !this.ai) {
-      const logReason = !this.ai ? 'API key missing' : 'mock API mode enabled';
-      console.warn(`--- FALLBACK MODE (${logReason}): Returning mock assessment. ---`);
+    if (this.languageService.isDevMode && this.store.mockApiMode()) {
+      console.warn('--- MOCK API MODE: Returning mock assessment. ---');
       await new Promise(resolve => setTimeout(resolve, 500));
       return MOCK_ASSESSMENT;
     }
 
-    console.info("transcript:", userTranscript);
-    const prompt = `Act as an expert language tutor for a student learning ${language.display_name}.
-    The student is practicing the following sentence:
-    Original Sentence: "${originalText}"
-
-    The student spoke the sentence, and their speech was transcribed as:
-    User's Attempt: "${userTranscript}"
-
-    Based on a comparison of the original sentence and the user's attempt, please provide a pronunciation and fluency assessment. Assume that differences in the transcription are due to pronunciation errors.
-
-    Provide your response as a valid JSON object matching the provided schema.
-
-    - \`overall_feedback\`: A brief, encouraging summary of their performance.
-    - \`pronunciation_score\`: An integer score from 0 to 100, where 100 is perfect pronunciation.
-    - \`fluency_score\`: An integer score from 0 to 100, where 100 is perfectly fluent.
-    - \`suggestions\`: An array of 1-3 short, actionable tips for improvement. Focus on specific words or sounds the user likely struggled with based on the transcription differences. If the attempt is near-perfect, provide a single encouraging suggestion. If it is perfect, return an empty array.`;
+    const assessPronunciationQuery = /* GraphQL */ `
+      query AssessPronunciation($originalText: String!, $userTranscript: String!, $language: String!) {
+        assessPronunciation(originalText: $originalText, userTranscript: $userTranscript, language: $language)
+      }
+    `;
 
     try {
-      const response = await this.ai.models.generateContent({
-        model: "gemini-2.5-flash",
-        contents: prompt,
-        config: {
-          responseMimeType: "application/json",
-          responseSchema: this.assessmentSchema,
-        },
+      const response = await this.client.graphql({
+        query: assessPronunciationQuery,
+        variables: {
+          originalText,
+          userTranscript,
+          language: language.display_name,
+        }
       });
-      const jsonStr = response.text?.trim() || '';
-      const assessment = JSON.parse(jsonStr) as SpeechAssessment;
-      console.log('[GeminiService:assessPronunciation] Prompt:', prompt);
-      console.log('[GeminiService:assessPronunciation] Assessment:', assessment);
+
+      if ('subscribe' in response) {
+        throw new Error('Unexpected subscription result for a GraphQL query.');
+      }
+
+      if (response.errors) {
+        throw { errors: response.errors };
+      }
+
+      if (!response.data?.assessPronunciation) {
+        console.error("Invalid response from backend:", response.data);
+        throw new Error("The backend returned an invalid or empty assessment. Please try again.");
+      }
+
+      // Handle JSON response - it might be a string or already parsed
+      let assessment: SpeechAssessment;
+      const rawAssessment = response.data.assessPronunciation;
+
+      console.log('[GeminiService:assessPronunciation] Raw response type:', typeof rawAssessment);
+      console.log('[GeminiService:assessPronunciation] Raw response:', rawAssessment);
+
+      if (typeof rawAssessment === 'string') {
+        // Parse if it's a JSON string
+        try {
+          assessment = JSON.parse(rawAssessment) as SpeechAssessment;
+        } catch (parseError) {
+          console.error('[GeminiService:assessPronunciation] JSON parse error:', parseError);
+          throw new Error("Failed to parse assessment response from backend.");
+        }
+      } else if (typeof rawAssessment === 'object' && rawAssessment !== null) {
+        // Already an object
+        assessment = rawAssessment as SpeechAssessment;
+      } else {
+        throw new Error(`Unexpected response type: ${typeof rawAssessment}`);
+      }
+
+      console.log('[GeminiService:assessPronunciation] Parsed assessment:', assessment);
       return assessment;
+
     } catch (error) {
       this.handleError(
         error,
