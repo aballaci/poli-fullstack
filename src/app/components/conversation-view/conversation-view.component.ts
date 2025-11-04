@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnDestroy, signal, computed, effect } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestroy, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { SessionStore } from '../../state/session.store';
@@ -20,6 +20,7 @@ type ConversationViewMode = 'reading' | 'practice' | 'summary' | 'flashcards' | 
 export class ConversationViewComponent implements OnDestroy {
   store = inject(SessionStore);
   router = inject(Router);
+  cdr = inject(ChangeDetectorRef);
 
   // Component state
   mode = signal<ConversationViewMode>('reading');
@@ -63,14 +64,25 @@ export class ConversationViewComponent implements OnDestroy {
   }
 
   nextSentence(): void {
+    console.log('[ConversationView] nextSentence called');
+    console.log('[ConversationView] Current index:', this.currentSentenceIndex());
+    console.log('[ConversationView] Is last sentence:', this.isLastSentence());
+    console.log('[ConversationView] Practice mode:', this.practiceMode());
+    
     if (!this.isLastSentence()) {
+        console.log('[ConversationView] Moving to next sentence');
         this.currentSentenceIndex.update(i => i + 1);
+        // Force change detection to ensure UI updates
+        this.cdr.detectChanges();
     } else {
+        console.log('[ConversationView] Last sentence reached');
         // In challenge mode, go directly to the summary.
         // In practice mode, show the completion screen.
         if (this.practiceMode() === 'challenge') {
+            console.log('[ConversationView] Setting mode to summary');
             this.setMode('summary');
         } else {
+            console.log('[ConversationView] Setting mode to completed');
             this.setMode('completed');
         }
     }

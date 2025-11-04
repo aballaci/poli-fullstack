@@ -64,6 +64,15 @@ export class PracticeViewComponent implements OnDestroy {
   totalSentences = input.required<number>();
   nextSentence = output<void>();
 
+  goToNextSentence(): void {
+    console.log('[PracticeView] goToNextSentence called');
+    console.log('[PracticeView] Current sentence index:', this.currentSentenceIndex());
+    console.log('[PracticeView] Total sentences:', this.totalSentences());
+    console.log('[PracticeView] Is last sentence:', this.isLastSentence());
+    this.nextSentence.emit();
+    console.log('[PracticeView] nextSentence.emit() called');
+  }
+
   // Injected services
   store = inject(SessionStore);
   gemini = inject(GeminiService);

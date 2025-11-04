@@ -180,7 +180,7 @@
         <div class="flex justify-center items-center gap-4">
           @if (isSuccessfulAttempt()) {
           @if (practiceMode() === 'challenge') {
-          <button (click)="nextSentence.emit()"
+          <button (click)="goToNextSentence()"
             class="flex items-center px-6 py-3 text-lg font-semibold text-white transition-colors rounded-md bg-sky-500 hover:bg-sky-600">
             @if (isLastSentence()) {
             <span>Finish</span>
