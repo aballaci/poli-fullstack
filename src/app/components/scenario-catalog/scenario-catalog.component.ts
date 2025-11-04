@@ -24,63 +24,54 @@ export class ScenarioCatalogComponent implements OnInit, OnDestroy {
     loadingMessage = signal('Loading scenarios...');
     error = signal<string | null>(null);
 
-    // Organized catalog by topic and difficulty
-    readonly organizedCatalog = computed(() => {
+    // Flatten catalog to a simple list for card display
+    readonly catalogList = computed(() => {
         const scenarios = this.scenarios();
         const currentDifficulty = this.store.difficultyLevel();
         const filterByLevel = this.filterByCurrentLevel();
 
         // Filter by current difficulty level if toggle is on
-        const filteredScenarios = filterByLevel && currentDifficulty
+        let filteredScenarios = filterByLevel && currentDifficulty
             ? scenarios.filter(s => s.difficulty_level === currentDifficulty)
             : scenarios;
 
-        const organized: { [topic: string]: { [difficulty: string]: ScenarioSummary[] } } = {};
-
-        const difficultyOrder = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
-
-        for (const scenario of filteredScenarios) {
-            const topic = scenario.topic || 'Other';
-            const difficulty = scenario.difficulty_level;
-
-            if (!organized[topic]) {
-                organized[topic] = {};
-            }
-            if (!organized[topic][difficulty]) {
-                organized[topic][difficulty] = [];
-            }
-            organized[topic][difficulty].push(scenario);
-        }
-
-        // Sort topics alphabetically
-        const sortedTopics = Object.keys(organized).sort();
-        const result: { topic: string; difficulties: { difficulty: string; scenarios: ScenarioSummary[] }[] }[] = [];
-
-        for (const topic of sortedTopics) {
-            const difficulties: { difficulty: string; scenarios: ScenarioSummary[] }[] = [];
-            // Sort difficulties in order
-            for (const diff of difficultyOrder) {
-                if (organized[topic][diff]) {
-                    difficulties.push({
-                        difficulty: diff,
-                        scenarios: organized[topic][diff]
-                    });
-                }
-            }
-            // Add any difficulties not in the standard list
-            for (const diff of Object.keys(organized[topic])) {
-                if (!difficultyOrder.includes(diff)) {
-                    difficulties.push({
-                        difficulty: diff,
-                        scenarios: organized[topic][diff]
-                    });
-                }
-            }
-            result.push({ topic, difficulties });
-        }
-
-        return result;
+        // Sort by name alphabetically
+        return filteredScenarios.sort((a, b) => a.name.localeCompare(b.name));
     });
+
+    // Helper to get difficulty level tag color and text with sweet colors
+    getDifficultyTag(difficulty: string): { text: string; bgColor: string; textColor: string } {
+        const level = difficulty.toUpperCase();
+        if (level === 'A1' || level === 'A2') {
+            // Soft mint/emerald for beginner
+            return { text: 'Beginner', bgColor: 'bg-emerald-50 dark:bg-emerald-900/30', textColor: 'text-emerald-600 dark:text-emerald-300' };
+        } else if (level === 'B1' || level === 'B2') {
+            // Soft peach/amber for intermediate
+            return { text: 'Intermediate', bgColor: 'bg-amber-50 dark:bg-amber-900/30', textColor: 'text-amber-600 dark:text-amber-300' };
+        } else if (level === 'C1' || level === 'C2') {
+            // Soft rose/pink for advanced
+            return { text: 'Advanced', bgColor: 'bg-rose-50 dark:bg-rose-900/30', textColor: 'text-rose-600 dark:text-rose-300' };
+        }
+        return { text: difficulty, bgColor: 'bg-slate-100 dark:bg-slate-700', textColor: 'text-slate-600 dark:text-slate-300' };
+    }
+
+    // Helper to get difficulty tag classes as a single string
+    getDifficultyTagClasses(difficulty: string): string {
+        const tag = this.getDifficultyTag(difficulty);
+        return `px-2.5 py-1 rounded-md text-xs font-medium ${tag.bgColor} ${tag.textColor}`;
+    }
+
+    // Helper to get difficulty tag text
+    getDifficultyTagText(difficulty: string): string {
+        return this.getDifficultyTag(difficulty).text;
+    }
+
+    // Helper to get category tag (derive from topic or use generic)
+    getCategoryTag(topic?: string): string {
+        if (!topic) return 'General';
+        // Extract main category from topic (first part before comma)
+        return topic.split(',')[0].trim();
+    }
 
     // Loading state
     private loadingInterval: any;
@@ -144,6 +135,13 @@ export class ScenarioCatalogComponent implements OnInit, OnDestroy {
             this.stopLoadingMessages();
             this.selectedScenarioId.set(null);
         }
+    }
+
+    formatDate(): string {
+        // Return a placeholder date for now - could be enhanced with actual scenario creation date
+        const now = new Date();
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        return `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
     }
 
     ngOnDestroy(): void {

@@ -1,5 +1,5 @@
 <div>
-  <div class="flex items-center justify-between mb-4">
+  <div class="flex items-center justify-between mb-6">
     <h2 class="text-2xl font-bold text-[var(--c-text-headings)]">Scenario Catalog</h2>
     <label class="flex items-center gap-2 text-sm text-[var(--c-text-muted)] cursor-pointer">
       <input 
@@ -19,39 +19,48 @@
         </svg>
         <p class="mt-4 font-semibold text-[var(--c-text-body)]">{{ loadingMessage() }}</p>
     </div>
-  } @else if (organizedCatalog().length === 0) {
+  } @else if (catalogList().length === 0) {
     <div class="text-center py-10 text-[var(--c-text-muted)]">
       <i class="fa-solid fa-book text-4xl mb-4 opacity-50"></i>
       <p>No scenarios available yet. Generate a scenario to get started!</p>
     </div>
   } @else {
     <div class="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
-      @for (group of organizedCatalog(); track group.topic) {
-        <div class="border border-[var(--c-border-subtle)] rounded-lg overflow-hidden">
-          <div class="bg-[var(--c-bg-muted)] px-3 py-2 border-b border-[var(--c-border-subtle)]">
-            <h3 class="text-sm font-semibold text-[var(--c-text-headings)]">{{ group.topic }}</h3>
-          </div>
-          <div class="p-2">
-            @for (diffGroup of group.difficulties; track diffGroup.difficulty) {
-              <div class="mb-2 last:mb-0">
-                <div class="flex items-center gap-2 mb-1.5">
-                  <span class="font-mono text-xs bg-[var(--c-bg-surface)] text-[var(--c-text-muted)] px-2 py-0.5 rounded">{{ diffGroup.difficulty }}</span>
-                  <span class="text-xs text-[var(--c-text-muted)]">{{ diffGroup.scenarios.length }}</span>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 ml-3">
-                  @for (scenario of diffGroup.scenarios; track scenario.id) {
-                    <button 
-                      (click)="loadScenario(scenario.id)" 
-                      class="text-left p-2 bg-[var(--c-bg-muted)] rounded hover:bg-[var(--c-border-subtle)] transition-colors group">
-                      <p class="font-medium text-xs text-[var(--c-text-headings)] group-hover:text-[var(--color-primary)] truncate">{{ scenario.name }}</p>
-                      <p class="text-xs text-[var(--c-text-muted)] mt-0.5 line-clamp-1">{{ scenario.description }}</p>
-                    </button>
-                  }
-                </div>
+      @for (scenario of catalogList(); track scenario.id) {
+        <button 
+          (click)="loadScenario(scenario.id)"
+          class="w-full text-left bg-white dark:bg-[var(--c-bg-surface)] rounded-lg shadow-sm hover:shadow-md transition-all duration-200 p-4 border border-[var(--c-border-subtle)] hover:border-[var(--color-primary)]/30 group">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex-1 min-w-0">
+              <!-- Title -->
+              <h3 class="font-bold text-[var(--c-text-headings)] text-base mb-1.5 group-hover:text-[var(--color-primary)] transition-colors">
+                {{ scenario.name }}
+              </h3>
+              <!-- Description -->
+              <p class="text-sm text-[var(--c-text-muted)] mb-3 line-clamp-2">
+                {{ scenario.description }}
+              </p>
+              <!-- Tags -->
+              <div class="flex items-center gap-2 flex-wrap">
+                @if (scenario.difficulty_level) {
+                  <span [class]="getDifficultyTagClasses(scenario.difficulty_level)">
+                    {{ getDifficultyTagText(scenario.difficulty_level) }}
+                  </span>
+                }
+                <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300">
+                  {{ getCategoryTag(scenario.topic) }}
+                </span>
               </div>
-            }
+            </div>
+            <!-- Date and Arrow -->
+            <div class="flex items-center gap-3 flex-shrink-0">
+              <span class="text-sm text-[var(--c-text-muted)] whitespace-nowrap">
+                {{ formatDate() }}
+              </span>
+              <i class="fa-solid fa-chevron-right text-[var(--c-text-muted)] group-hover:text-[var(--color-primary)] transition-colors"></i>
+            </div>
           </div>
-        </div>
+        </button>
       }
     </div>
   }

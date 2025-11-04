@@ -23,52 +23,68 @@ export class ScenarioHistoryComponent implements OnInit, OnDestroy {
   loadingMessage = signal('Loading history...');
   error = signal<string | null>(null);
 
-  // Organized history by topic and difficulty
-  readonly organizedHistory = computed(() => {
-    const allItems = this.historyItems();
-    const currentDifficulty = this.store.difficultyLevel();
-
-    const organized: { [topic: string]: { [difficulty: string]: HistoryItem[] } } = {};
-    const difficultyOrder = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
-
-    for (const item of allItems) {
-      const topic = item.topic || item.category || 'Other';
-      const difficulty = item.difficulty;
-
-      if (!organized[topic]) {
-        organized[topic] = {};
-      }
-      if (!organized[topic][difficulty]) {
-        organized[topic][difficulty] = [];
-      }
-      organized[topic][difficulty].push(item);
-    }
-
-    const sortedTopics = Object.keys(organized).sort();
-    const result: { topic: string; difficulties: { difficulty: string; scenarios: HistoryItem[] }[] }[] = [];
-
-    for (const topic of sortedTopics) {
-      const difficulties: { difficulty: string; scenarios: HistoryItem[] }[] = [];
-      for (const diff of difficultyOrder) {
-        if (organized[topic][diff]) {
-          difficulties.push({
-            difficulty: diff,
-            scenarios: organized[topic][diff]
-          });
-        }
-      }
-      for (const diff of Object.keys(organized[topic])) {
-        if (!difficultyOrder.includes(diff)) {
-          difficulties.push({
-            difficulty: diff,
-            scenarios: organized[topic][diff]
-          });
-        }
-      }
-      result.push({ topic, difficulties });
-    }
-    return result;
+  // Flatten history to a simple list for card display
+  readonly historyList = computed(() => {
+    const items = this.historyItems();
+    // Sort by date (most recent first)
+    return [...items].sort((a, b) => {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
   });
+
+  // Helper to get difficulty level tag color and text with sweet colors
+  getDifficultyTag(difficulty: string): { text: string; bgColor: string; textColor: string } {
+    const level = difficulty.toUpperCase();
+    if (level === 'A1' || level === 'A2') {
+      // Soft mint/emerald for beginner
+      return { 
+        text: 'Beginner', 
+        bgColor: 'bg-emerald-50 dark:bg-emerald-900/30', 
+        textColor: 'text-emerald-600 dark:text-emerald-300' 
+      };
+    } else if (level === 'B1' || level === 'B2') {
+      // Soft peach/amber for intermediate
+      return { 
+        text: 'Intermediate', 
+        bgColor: 'bg-amber-50 dark:bg-amber-900/30', 
+        textColor: 'text-amber-600 dark:text-amber-300' 
+      };
+    } else if (level === 'C1' || level === 'C2') {
+      // Soft rose/pink for advanced
+      return { 
+        text: 'Advanced', 
+        bgColor: 'bg-rose-50 dark:bg-rose-900/30', 
+        textColor: 'text-rose-600 dark:text-rose-300' 
+      };
+    }
+    return { 
+      text: difficulty, 
+      bgColor: 'bg-slate-100 dark:bg-slate-700', 
+      textColor: 'text-slate-600 dark:text-slate-300' 
+    };
+  }
+
+  // Helper to get difficulty tag classes as a single string
+  getDifficultyTagClasses(difficulty: string): string {
+    const tag = this.getDifficultyTag(difficulty);
+    return `px-2.5 py-1 rounded-md text-xs font-medium ${tag.bgColor} ${tag.textColor}`;
+  }
+
+  // Helper to get difficulty tag text
+  getDifficultyTagText(difficulty: string): string {
+    return this.getDifficultyTag(difficulty).text;
+  }
+
+  // Helper to get category/topic tag with sweet colors
+  getCategoryTag(topic?: string, category?: string): string {
+    return topic || category || 'General';
+  }
+
+  // Helper to get category tag classes
+  getCategoryTagClasses(): string {
+    // Soft lavender/indigo for category
+    return 'px-2.5 py-1 rounded-md text-xs font-medium bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300';
+  }
 
   private loadingInterval: any;
   private loadingMessages = [
