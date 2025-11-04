@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input, OnDestroy, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, effect, inject, input, NgZone, OnDestroy, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SessionStore } from '../../state/session.store';
 import { GeminiService } from '../../services/gemini.service';
@@ -67,6 +67,8 @@ export class PracticeViewComponent implements OnDestroy {
   // Injected services
   store = inject(SessionStore);
   gemini = inject(GeminiService);
+  cdr = inject(ChangeDetectorRef);
+  zone = inject(NgZone);
 
   // Component State
   practiceStep = signal<PracticeStep>('initial');
@@ -81,6 +83,13 @@ export class PracticeViewComponent implements OnDestroy {
 
   // Assessment State
   currentAssessment = signal<SpeechAssessment | null>(null);
+  
+  // Computed signal to help with template detection
+  readonly hasAssessment = computed(() => {
+    const assessment = this.currentAssessment();
+    console.log('[PracticeView] hasAssessment computed, assessment:', assessment);
+    return assessment !== null;
+  });
 
   // Countdown State
   countdownValue = signal<number | null>(null);
@@ -114,9 +123,11 @@ export class PracticeViewComponent implements OnDestroy {
   });
 
   readonly isChallengeVisible = computed(() => {
-    if (this.practiceStep() === 'initial' || this.practiceStep() === 'result') {
+    // Show challenge during initial, result, and countdown steps
+    if (this.practiceStep() === 'initial' || this.practiceStep() === 'result' || this.recordingState() === 'countdown') {
       return true;
     }
+    // During prompting, only show if in practice mode and peeking
     return this.practiceMode() === 'practice' && this.isPeeking();
   });
 
@@ -126,6 +137,10 @@ export class PracticeViewComponent implements OnDestroy {
       return false;
     }
     return assessment.pronunciation_score >= 70;
+  });
+
+  readonly canStartPractice = computed(() => {
+    return this.recordingState() === 'idle' && this.practiceStep() === 'initial';
   });
 
   constructor() {
@@ -154,8 +169,16 @@ export class PracticeViewComponent implements OnDestroy {
   }
 
   startPracticeAttempt(): void {
-    if (this.recordingState() !== 'idle' || this.practiceStep() !== 'initial') return;
+    console.log('[PracticeView] startPracticeAttempt called');
+    console.log('[PracticeView] Current state - recordingState:', this.recordingState(), 'practiceStep:', this.practiceStep());
+    console.log('[PracticeView] canStartPractice:', this.canStartPractice());
+    
+    if (!this.canStartPractice()) {
+      console.warn('[PracticeView] Cannot start - recordingState:', this.recordingState(), 'practiceStep:', this.practiceStep(), 'canStartPractice:', this.canStartPractice());
+      return;
+    }
 
+    console.log('[PracticeView] Starting practice attempt');
     this.recordingState.set('countdown');
     this.countdownValue.set(3);
 
@@ -211,8 +234,14 @@ export class PracticeViewComponent implements OnDestroy {
 
     this.recognition.onerror = (event: any) => this.handleRecognitionError(event.error);
     this.recognition.onend = () => {
+      // If still listening when onend fires (pause detection), transition to processing
+      // If already processing, the state will be reset after assessment completes
       if (this.recordingState() === 'listening') {
-        this.recordingState.set('idle');
+        // If we have a result, it will be processed. If not, reset to idle
+        if (!this.userTranscript()) {
+          this.recordingState.set('idle');
+        }
+        // Otherwise, state will remain 'processing' until processSpeech completes
       }
       this.recognition = null;
     };
@@ -243,15 +272,49 @@ export class PracticeViewComponent implements OnDestroy {
 
     if (this.useAI()) {
       try {
+        console.log('[PracticeView] Fetching assessment...');
         const assessment = await this.gemini.assessPronunciation(this.challenge().part.text, transcript, this.challenge().lang);
+        console.log('[PracticeView] Assessment received:', assessment);
+        console.log('[PracticeView] Assessment type:', typeof assessment);
+        console.log('[PracticeView] Assessment keys:', Object.keys(assessment || {}));
+        
+        // Validate assessment structure
+        if (!assessment || typeof assessment !== 'object') {
+          throw new Error('Invalid assessment received from server');
+        }
+        
+        if (typeof assessment.pronunciation_score !== 'number' || typeof assessment.fluency_score !== 'number') {
+          console.error('[PracticeView] Invalid assessment scores:', assessment);
+          throw new Error('Assessment missing required scores');
+        }
+        
+        // Set assessment signal - this should trigger change detection automatically
         this.currentAssessment.set(assessment);
+        console.log('[PracticeView] Assessment signal set, current value:', this.currentAssessment());
+        console.log('[PracticeView] Assessment pronunciation_score:', this.currentAssessment()?.pronunciation_score);
+        console.log('[PracticeView] Assessment fluency_score:', this.currentAssessment()?.fluency_score);
+        
         this.store.addSentenceResult(sentence, assessment, transcript);
         this.playResultSound(assessment.pronunciation_score >= 70);
+        
+        // Reset recording state after assessment is complete
+        this.recordingState.set('idle');
+        console.log('[PracticeView] Recording state set to idle, current:', this.recordingState());
+        
+        // Use setTimeout to ensure change detection happens after signal updates
+        setTimeout(() => {
+          this.cdr.detectChanges();
+          console.log('[PracticeView] Change detection triggered after timeout');
+        }, 0);
       } catch (e: any) {
         console.error('Error assessing pronunciation', e);
         this.error.set(e.message || 'Failed to get feedback from the AI.');
         this.store.addSentenceResult(sentence, null, transcript);
         this.playResultSound(false);
+        // Reset recording state even on error
+        this.recordingState.set('idle');
+        // Force immediate change detection to ensure UI updates
+        this.cdr.detectChanges();
       }
     } else {
       // AI is off, create a mock assessment based on string similarity.
@@ -265,24 +328,65 @@ export class PracticeViewComponent implements OnDestroy {
         suggestions: []
       };
 
-      this.currentAssessment.set(mockAssessment);
+        this.currentAssessment.set(mockAssessment);
       this.store.addSentenceResult(sentence, mockAssessment, transcript);
       this.playResultSound(similarity >= 70);
+      // Reset recording state after assessment is complete
+      this.recordingState.set('idle');
+      // Force immediate change detection to ensure UI updates
+      this.cdr.detectChanges();
     }
   }
 
   retry(): void {
+    console.log('[PracticeView] Retry button clicked');
+    console.log('[PracticeView] Before reset - practiceStep:', this.practiceStep(), 'recordingState:', this.recordingState());
+    
+    // Reset state
     this.resetForNewSentence();
+    
+    console.log('[PracticeView] After reset - practiceStep:', this.practiceStep(), 'recordingState:', this.recordingState());
+    
+    // Ensure change detection runs in Angular zone
+    this.zone.run(() => {
+      // Force change detection to ensure UI updates immediately
+      this.cdr.detectChanges();
+      
+      // Use setTimeout to ensure change detection happens after all signal updates
+      setTimeout(() => {
+        this.cdr.detectChanges();
+        console.log('[PracticeView] Change detection triggered after timeout');
+      }, 0);
+    });
   }
 
   private resetForNewSentence(): void {
-    this.practiceStep.set('initial');
+    // Clear any ongoing countdown
     if (this.countdownInterval) {
       clearInterval(this.countdownInterval);
       this.countdownInterval = null;
     }
+    
+    // Stop any active recognition
+    if (this.recognition) {
+      try {
+        this.recognition.stop();
+      } catch (e) {
+        // Ignore errors if already stopped
+        console.log('[PracticeView] Error stopping recognition (ignored):', e);
+      }
+      this.recognition = null;
+    }
+    
+    // Reset all state signals in correct order
+    this.recordingState.set('idle');
     this.countdownValue.set(null);
-    this.resetAttemptState();
+    this.userTranscript.set('');
+    this.currentAssessment.set(null);
+    this.error.set(null);
+    this.isPeeking.set(false);
+    // Set practiceStep last to ensure other states are reset first
+    this.practiceStep.set('initial');
   }
 
   private resetAttemptState(): void {

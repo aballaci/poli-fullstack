@@ -116,8 +116,8 @@
       @default {
       @if(recordingState() === 'countdown' && countdownValue() !== null) {
       <div
-        class="absolute inset-0 bg-[var(--c-bg-surface)]/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-b-xl">
-        <span class="text-9xl font-bold text-[var(--c-text-headings)] drop-shadow-lg animate-pulse-and-fade">{{
+        class="absolute inset-0 bg-[var(--c-bg-surface)]/30 z-10 flex items-center justify-end pr-8 rounded-b-xl pointer-events-none">
+        <span class="text-9xl font-bold text-[var(--c-text-headings)]/50 drop-shadow-lg animate-pulse-and-fade">{{
           countdownValue() }}</span>
       </div>
       }
@@ -215,7 +215,7 @@
             <div class="w-8 h-8 bg-red-500 rounded-lg group-hover:scale-110 transition-transform"></div>
           </button>
           } @else {
-          <button (click)="startPracticeAttempt()" [disabled]="recordingState() !== 'idle'"
+          <button (click)="startPracticeAttempt()" [disabled]="!canStartPractice()"
             class="w-20 h-20 rounded-full text-white flex items-center justify-center transition-all duration-300 disabled:opacity-75 disabled:cursor-wait shadow-lg bg-red-500 border-4 border-white dark:border-slate-800">
             @if (recordingState() === 'processing' || recordingState() === 'countdown') {
             <svg class="animate-spin h-10 w-10 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
