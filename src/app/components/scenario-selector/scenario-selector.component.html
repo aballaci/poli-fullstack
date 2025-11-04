@@ -1,34 +1,48 @@
 <div class="max-w-5xl mx-auto">
   <!-- Tabs -->
-  <div class="mb-6 flex border-b border-[var(--c-border-subtle)]">
-    <button (click)="activeTab.set('topics')" class="px-4 py-3 font-semibold transition-colors"
-      [class.text-[var(--color-primary)]]="activeTab() === 'topics'" [class.border-b-2]="activeTab() === 'topics'"
-      [class.border-[var(--color-primary)]]="activeTab() === 'topics'"
-      [class.text-[var(--c-text-muted)]]="activeTab() !== 'topics'"
-      [class.hover:text-[var(--c-text-body)]]="activeTab() !== 'topics'">
-      <i class="fa-solid fa-layer-group mr-2"></i> From Topics
-    </button>
-    <button (click)="activeTab.set('custom')" class="px-4 py-3 font-semibold transition-colors"
-      [class.text-[var(--color-primary)]]="activeTab() === 'custom'" [class.border-b-2]="activeTab() === 'custom'"
-      [class.border-[var(--color-primary)]]="activeTab() === 'custom'"
-      [class.text-[var(--c-text-muted)]]="activeTab() !== 'custom'"
-      [class.hover:text-[var(--c-text-body)]]="activeTab() !== 'custom'">
-      <i class="fa-solid fa-paste mr-2"></i> Use Custom Text
-    </button>
-    <button (click)="activeTab.set('catalog')" class="px-4 py-3 font-semibold transition-colors"
-      [class.text-[var(--color-primary)]]="activeTab() === 'catalog'" [class.border-b-2]="activeTab() === 'catalog'"
-      [class.border-[var(--color-primary)]]="activeTab() === 'catalog'"
-      [class.text-[var(--c-text-muted)]]="activeTab() !== 'catalog'"
-      [class.hover:text-[var(--c-text-body)]]="activeTab() !== 'catalog'">
-      <i class="fa-solid fa-book mr-2"></i> Catalog
-    </button>
-    <button (click)="activeTab.set('history')" class="px-4 py-3 font-semibold transition-colors"
-      [class.text-[var(--color-primary)]]="activeTab() === 'history'" [class.border-b-2]="activeTab() === 'history'"
-      [class.border-[var(--color-primary)]]="activeTab() === 'history'"
-      [class.text-[var(--c-text-muted)]]="activeTab() !== 'history'"
-      [class.hover:text-[var(--c-text-body)]]="activeTab() !== 'history'">
-      <i class="fa-solid fa-clock-rotate-left mr-2"></i> History
-    </button>
+  <div class="mb-6 flex items-center justify-center">
+    <div class="inline-flex bg-[#363942] dark:bg-slate-700 rounded-full p-1.5 shadow-lg">
+      <button (click)="activeTab.set('topics')" 
+        class="px-5 py-2.5 font-semibold text-sm transition-all duration-200 rounded-full flex items-center gap-2 relative"
+        [class.bg-[#00BFFF]]="activeTab() === 'topics'"
+        [class.text-white]="activeTab() === 'topics'"
+        [class.text-[#00BFFF]]="activeTab() !== 'topics'"
+        [class.shadow-[0_0_15px_rgba(0,191,255,0.4)]]="activeTab() === 'topics'"
+        [class.hover:text-cyan-300]="activeTab() !== 'topics'">
+        <i class="fa-solid fa-layer-group"></i>
+        <span>From Topics</span>
+      </button>
+      <button (click)="activeTab.set('custom')" 
+        class="px-5 py-2.5 font-semibold text-sm transition-all duration-200 rounded-full flex items-center gap-2 relative"
+        [class.bg-[#00BFFF]]="activeTab() === 'custom'"
+        [class.text-white]="activeTab() === 'custom'"
+        [class.text-[#00BFFF]]="activeTab() !== 'custom'"
+        [class.shadow-[0_0_15px_rgba(0,191,255,0.4)]]="activeTab() === 'custom'"
+        [class.hover:text-cyan-300]="activeTab() !== 'custom'">
+        <i class="fa-solid fa-paste"></i>
+        <span>Use Custom Text</span>
+      </button>
+      <button (click)="activeTab.set('catalog')" 
+        class="px-5 py-2.5 font-semibold text-sm transition-all duration-200 rounded-full flex items-center gap-2 relative"
+        [class.bg-[#00BFFF]]="activeTab() === 'catalog'"
+        [class.text-white]="activeTab() === 'catalog'"
+        [class.text-[#00BFFF]]="activeTab() !== 'catalog'"
+        [class.shadow-[0_0_15px_rgba(0,191,255,0.4)]]="activeTab() === 'catalog'"
+        [class.hover:text-cyan-300]="activeTab() !== 'catalog'">
+        <i class="fa-solid fa-book"></i>
+        <span>Catalog</span>
+      </button>
+      <button (click)="activeTab.set('history')" 
+        class="px-5 py-2.5 font-semibold text-sm transition-all duration-200 rounded-full flex items-center gap-2 relative"
+        [class.bg-[#00BFFF]]="activeTab() === 'history'"
+        [class.text-white]="activeTab() === 'history'"
+        [class.text-[#00BFFF]]="activeTab() !== 'history'"
+        [class.shadow-[0_0_15px_rgba(0,191,255,0.4)]]="activeTab() === 'history'"
+        [class.hover:text-cyan-300]="activeTab() !== 'history'">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <span>History</span>
+      </button>
+    </div>
   </div>
 
   <!-- Content -->
@@ -82,8 +96,8 @@
 
       <!-- Matching Existing Scenarios (single selected topic) -->
       @if (matchingScenarios() !== null) {
-      <div class="mt-8">
-        <h3 class="text-lg font-semibold text-[var(--c-text-headings)] mb-2">Matching Scenarios</h3>
+      <div class="mt-8 ml-12">
+        <h3 class="text-lg font-semibold text-[var(--c-text-headings)] mb-4">Matching Scenarios</h3>
         @if (isFetchingMatches()) {
         <div class="text-sm text-[var(--c-text-muted)] flex items-center gap-2">
           <i class="fa-solid fa-spinner fa-spin"></i>
@@ -92,15 +106,14 @@
         } @else if (matchingScenarios()!.length === 0) {
         <p class="text-sm text-[var(--c-text-muted)]">No scenarios found for this topic and level.</p>
         } @else {
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           @for (scenario of matchingScenarios()!; track scenario.id) {
           <button (click)="loadFromHistory(scenario.id)"
-            class="text-left p-3 bg-[var(--c-bg-muted)] rounded-lg hover:bg-[var(--c-border-subtle)] transition-colors">
-            <p class="font-semibold text-sm text-[var(--c-text-headings)] truncate">{{ scenario.name }}</p>
-            <div class="mt-1 flex items-center gap-2 text-xs text-[var(--c-text-muted)]">
-              <span class="font-mono bg-[var(--c-bg-surface)] px-2 py-0.5 rounded">{{ scenario.difficulty_level
-                }}</span>
-              @if (scenario.topic) { <span class="truncate">{{ scenario.topic }}</span> }
+            class="p-4 rounded-2xl flex flex-col items-center justify-center space-y-2 h-36 text-center transition-all duration-200 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border-2 border-indigo-200 dark:border-indigo-700 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-indigo-400 dark:hover:border-indigo-500">
+            <i class="fa-solid fa-book-open text-3xl text-indigo-600 dark:text-indigo-400"></i>
+            <p class="font-semibold text-sm text-[var(--c-text-headings)] line-clamp-2">{{ scenario.name }}</p>
+            <div class="flex items-center gap-1.5 text-xs text-[var(--c-text-muted)]">
+              <span class="font-mono bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 px-1.5 py-0.5 rounded text-[10px]">{{ scenario.difficulty_level }}</span>
             </div>
           </button>
           }
