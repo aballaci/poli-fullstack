@@ -1,15 +1,15 @@
 <div class="max-w-3xl mx-auto animate-fade-in">
-  <div class="bg-[var(--c-bg-card)] p-6 sm:p-8 rounded-lg shadow-sm border border-[var(--c-border-card)] text-left">
+  <div class="bg-white dark:bg-white p-6 sm:p-8 rounded-lg shadow-sm border border-[var(--c-border-card)] text-left">
     <!-- Card Header -->
     <div class="text-center border-b border-[var(--c-border-subtle)] pb-6 mb-6">
-      <h2 class="text-3xl font-bold text-[var(--c-text-headings)]">{{ scenario().name }}</h2>
-      <p class="text-lg text-[var(--c-text-muted)] mt-2">{{ scenario().description }}</p>
+      <h2 class="text-3xl font-bold text-slate-900">{{ scenario().name }}</h2>
+      <p class="text-lg text-slate-600 mt-2">{{ scenario().description }}</p>
     </div>
 
     <!-- Controls: Instructions -->
     <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
       <!-- Instructions -->
-      <p class="text-[var(--c-text-muted)] text-sm text-center sm:text-left">
+      <p class="text-slate-600 text-sm text-center sm:text-left">
         <i class="fa-solid fa-lightbulb text-yellow-400"></i>
         Hover over <span class="font-semibold">highlighted words</span> for translations. Click <i class="fa-solid fa-volume-high"></i> to listen.
       </p>
@@ -22,7 +22,7 @@
           <button (click)="speak(sentence.target.text, targetLang()!.code)" title="Listen" class="text-slate-400 dark:text-slate-500 hover:text-sky-600 dark:hover:text-sky-400 transition-colors flex-shrink-0">
               <i class="fa-solid fa-volume-high text-xl"></i>
           </button>
-          <p class="text-slate-800 dark:text-white leading-loose" 
+          <p class="text-slate-900 leading-loose" 
              [style.font-size.px]="fontSize()"
              [innerHTML]="getSentenceHtml(sentence, 'target')"></p>
         </div>
