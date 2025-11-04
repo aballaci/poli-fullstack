@@ -1,5 +1,4 @@
 import { Injectable, inject } from '@angular/core';
-import { GoogleGenAI, Type } from "@google/genai";
 import { ConversationScenario, Language, ScenarioSummary, SpeechAssessment } from '../models';
 import { generateClient } from 'aws-amplify/api';
 import { LanguageService } from './language.service';
@@ -8,27 +7,9 @@ import { MOCK_ASSESSMENT, MOCK_SCENARIOS } from './mock-scenarios.data';
 
 @Injectable({ providedIn: 'root' })
 export class GeminiService {
-  private ai: GoogleGenAI | null;
   private client = generateClient();
   private store = inject(SessionStore);
   private languageService = inject(LanguageService);
-
-  constructor() {
-    // This key has been hardcoded to resolve persistent API authentication issues.
-    // In a production environment, this should be handled via secure environment variables.
-    const apiKey = "1234567890abcdef1234567890abcdef"; // Replace with your actual API key
-
-    if (apiKey) {
-      console.log(`[GeminiService] Using hardcoded API Key, starting with: ${apiKey.substring(0, 8)}...`);
-      this.ai = new GoogleGenAI({ apiKey });
-    } else {
-      // This block should not be reached with a hardcoded key, but is kept as a fallback.
-      console.warn(
-        "Gemini API key is not configured. AI-powered features will fall back to mock data. "
-      );
-      this.ai = null;
-    }
-  }
 
   private getRandomScenario(): ConversationScenario {
     const randomIndex = Math.floor(Math.random() * MOCK_SCENARIOS.length);
@@ -36,71 +17,7 @@ export class GeminiService {
     return JSON.parse(JSON.stringify(MOCK_SCENARIOS[randomIndex]));
   }
 
-  private readonly scenarioSchema = {
-    type: Type.OBJECT,
-    properties: {
-      id: { type: Type.STRING },
-      name: { type: Type.STRING },
-      description: { type: Type.STRING },
-      difficulty_level: { type: Type.STRING },
-      sentences: {
-        type: Type.ARRAY,
-        items: {
-          type: Type.OBJECT,
-          properties: {
-            id: { type: Type.STRING },
-            source: {
-              type: Type.OBJECT,
-              properties: {
-                text: { type: Type.STRING },
-                highlighted_words: {
-                  type: Type.ARRAY,
-                  items: {
-                    type: Type.OBJECT,
-                    properties: {
-                      word: { type: Type.STRING },
-                      translation: { type: Type.STRING },
-                      examples: { type: Type.ARRAY, items: { type: Type.STRING } }
-                    }
-                  }
-                }
-              }
-            },
-            target: {
-              type: Type.OBJECT,
-              properties: {
-                text: { type: Type.STRING },
-                highlighted_words: {
-                  type: Type.ARRAY,
-                  items: {
-                    type: Type.OBJECT,
-                    properties: {
-                      word: { type: Type.STRING },
-                      translation: { type: Type.STRING },
-                      examples: { type: Type.ARRAY, items: { type: Type.STRING } }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  };
 
-  private readonly assessmentSchema = {
-    type: Type.OBJECT,
-    properties: {
-      overall_feedback: { type: Type.STRING },
-      pronunciation_score: { type: Type.INTEGER },
-      fluency_score: { type: Type.INTEGER },
-      suggestions: {
-        type: Type.ARRAY,
-        items: { type: Type.STRING }
-      }
-    }
-  };
 
   private handleError(error: unknown, context: object, functionName: string): never {
     let friendlyMessage = 'An AI service error occurred. Please try again later.';
@@ -209,9 +126,8 @@ export class GeminiService {
   }
 
   async processCustomText(text: string, textLanguage: 'source' | 'target', difficulty: string, sourceLang: Language, targetLang: Language): Promise<ConversationScenario> {
-    if ((this.languageService.isDevMode && this.store.mockApiMode()) || !this.ai) {
-      const logReason = !this.ai ? 'API key missing' : 'mock API mode enabled';
-      console.warn(`--- FALLBACK MODE (${logReason}): Returning mock scenario for "processCustomText". ---`);
+    if (this.languageService.isDevMode && this.store.mockApiMode()) {
+      console.warn('--- MOCK API MODE: Returning mock scenario for "processCustomText". ---');
       await new Promise(resolve => setTimeout(resolve, 750));
       const mockScenario = this.getRandomScenario();
       mockScenario.name = 'Mock: Custom Text';
@@ -220,39 +136,72 @@ export class GeminiService {
       return mockScenario;
     }
 
-    const fromLang = textLanguage === 'source' ? sourceLang.display_name : targetLang.display_name;
-    const toLang = textLanguage === 'source' ? targetLang.display_name : sourceLang.display_name;
-
-    const prompt = `Process a user-provided text for language learning.
-    The user's native language is ${sourceLang.display_name}.
-    They are learning ${targetLang.display_name} at a ${difficulty} CEFR level.
-
-    The user has provided the following text in ${fromLang}:
-    ---
-    ${text}
-    ---
-
-    Your task is to:
-    1.  Translate the entire text accurately into ${toLang}.
-    2.  Break down the original text and its translation into logical sentence pairs (3-7 pairs).
-    3.  For each sentence in BOTH the original and translated text, identify 1 or 2 important vocabulary words appropriate for the ${difficulty} learning level.
-    4.  For each highlighted word, provide a translation into the other language and two example sentences in the language of the highlighted word.
-    5.  Format the final output as a valid JSON object matching the provided schema.
-    6.  Use "Custom Text Practice" for the 'name' field and "Practice based on your provided text." for the 'description' field.
-    7.  Ensure all IDs are unique strings (e.g., using UUID format).
-    8.  The 'source' object in the JSON must contain the text in ${sourceLang.display_name}, and the 'target' object must contain the text in ${targetLang.display_name}.`;
+    const processCustomTextQuery = /* GraphQL */ `
+      query ProcessCustomText(
+        $text: String!
+        $textLanguage: String!
+        $difficulty: String!
+        $sourceLang: String!
+        $targetLang: String!
+      ) {
+        processCustomText(
+          text: $text
+          textLanguage: $textLanguage
+          difficulty: $difficulty
+          sourceLang: $sourceLang
+          targetLang: $targetLang
+        )
+      }
+    `;
 
     try {
-      const response = await this.ai.models.generateContent({
-        model: "gemini-2.5-flash",
-        contents: prompt,
-        config: {
-          responseMimeType: "application/json",
-          responseSchema: this.scenarioSchema,
-        },
+      const response = await this.client.graphql({
+        query: processCustomTextQuery,
+        variables: {
+          text,
+          textLanguage,
+          difficulty,
+          sourceLang: sourceLang.display_name,
+          targetLang: targetLang.display_name,
+        }
       });
-      const jsonStr = response.text?.trim() || '';
-      const scenario = JSON.parse(jsonStr) as ConversationScenario;
+
+      if ('subscribe' in response) {
+        throw new Error('Unexpected subscription result for a GraphQL query.');
+      }
+
+      if (response.errors) {
+        throw { errors: response.errors };
+      }
+
+      if (!response.data?.processCustomText) {
+        console.error("Invalid response from backend:", response.data);
+        throw new Error("The backend returned an invalid or empty scenario. Please try again.");
+      }
+
+      // Handle JSON response - it might be a string or already parsed
+      let scenario: ConversationScenario;
+      const rawScenario = response.data.processCustomText;
+
+      console.log('[GeminiService:processCustomText] Raw response type:', typeof rawScenario);
+      console.log('[GeminiService:processCustomText] Raw response:', rawScenario);
+
+      if (typeof rawScenario === 'string') {
+        // Parse if it's a JSON string
+        try {
+          scenario = JSON.parse(rawScenario) as ConversationScenario;
+        } catch (parseError) {
+          console.error('[GeminiService:processCustomText] JSON parse error:', parseError);
+          throw new Error("Failed to parse scenario response from backend.");
+        }
+      } else if (typeof rawScenario === 'object' && rawScenario !== null) {
+        // Already an object
+        scenario = rawScenario as ConversationScenario;
+      } else {
+        throw new Error(`Unexpected response type: ${typeof rawScenario}`);
+      }
+
+      console.log('[GeminiService:processCustomText] Parsed scenario:', scenario);
       return scenario;
 
     } catch (error) {
