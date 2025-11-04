@@ -92,8 +92,14 @@ async function callGemini(input: ScenarioInput): Promise<ConversationScenario> {
         console.error("JSON Parsing Error:", (err as Error).message, "Raw excerpt:", rawText.substring(0, 200) + '...');
         throw new Error("Failed to parse Gemini response as JSON.");
     }
-    // return the parsed scenario object
-    console.log("✅ Parsed Scenario:", JSON.stringify(scenario, null, 2));
+    // Assign new UUIDs to scenario and sentences after Gemini generation
+    scenario.id = uuidv4();
+    scenario.sentences = scenario.sentences.map(sentence => ({
+      ...sentence,
+      id: uuidv4()
+    }));
+
+    console.log("✅ Parsed Scenario with new UUIDs:", JSON.stringify(scenario, null, 2));
 
     // Combine input with generated data for the DB model
     return scenario;

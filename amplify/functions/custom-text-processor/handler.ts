@@ -1,6 +1,7 @@
 import { Handler } from "aws-lambda";
 import { GoogleGenAI } from "@google/genai/node";
 import { scenarioSchema } from "./schema.js";
+import { v4 as uuidv4 } from 'uuid';
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
 
@@ -68,7 +69,14 @@ export const handler: Handler = async (event) => {
 
         const scenario = JSON.parse(cleanedText);
 
-        console.log("✅ Custom text processed successfully:", JSON.stringify(scenario, null, 2));
+        // Assign new UUIDs to scenario and sentences after Gemini generation
+        scenario.id = uuidv4();
+        scenario.sentences = scenario.sentences.map((sentence: any) => ({
+          ...sentence,
+          id: uuidv4()
+        }));
+
+        console.log("✅ Custom text processed successfully with new UUIDs:", JSON.stringify(scenario, null, 2));
 
         return scenario;
     } catch (error) {
