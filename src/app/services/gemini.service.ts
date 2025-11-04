@@ -1,9 +1,10 @@
 import { Injectable, inject } from '@angular/core';
-import { ConversationScenario, Language, ScenarioSummary, SpeechAssessment } from '../models';
+import { ConversationScenario, HistoryItem, Language, ScenarioSummary, SpeechAssessment } from '../models';
 import { generateClient } from 'aws-amplify/api';
 import { LanguageService } from './language.service';
 import { SessionStore } from '../state/session.store';
 import { MOCK_ASSESSMENT, MOCK_SCENARIOS } from './mock-scenarios.data';
+import { getCurrentUser } from 'aws-amplify/auth';
 
 @Injectable({ providedIn: 'root' })
 export class GeminiService {
@@ -78,6 +79,7 @@ export class GeminiService {
     const generateScenarioQuery = /* GraphQL */ `
       query GenerateScenario($topic: String!, $difficulty: String!, $sourceLang: String!, $targetLang: String!) {
         generateScenario(topic: $topic, difficulty: $difficulty, sourceLang: $sourceLang, targetLang: $targetLang) {
+          id
           scenario
         }
       }
@@ -109,6 +111,11 @@ export class GeminiService {
 
       const scenarioString = response.data.generateScenario.scenario;
       const scenario = JSON.parse(scenarioString) as ConversationScenario;
+      // Update the scenario's ID to match the database record ID
+      const dbId = response.data.generateScenario.id;
+      if (dbId) {
+        scenario.id = dbId;
+      }
       return scenario;
 
     } catch (error) {
@@ -577,10 +584,151 @@ export class GeminiService {
 
       const scenarioString = response.data.getScenario.scenario;
       const scenario = JSON.parse(scenarioString) as ConversationScenario;
+      // Update the scenario's ID to match the database record ID
+      const dbId = response.data.getScenario.id;
+      if (dbId) {
+        scenario.id = dbId;
+      }
       return scenario;
 
     } catch (error) {
       this.handleError(error, { id }, 'getScenarioById');
+    }
+  }
+
+  /**
+   * Save a scenario to the user's history
+   */
+  async saveToHistory(scenario: ConversationScenario, category?: string, topic?: string): Promise<void> {
+    if (this.languageService.isDevMode && this.store.mockApiMode()) {
+      console.warn('--- MOCK API MODE: Skipping saveToHistory. ---');
+      return Promise.resolve();
+    }
+
+    try {
+      const user = await getCurrentUser();
+      const userId = user.userId;
+
+      // Check if scenario already exists in history for this user
+      const existingHistory = await this.loadHistory();
+      const alreadyExists = existingHistory.some(h => h.scenarioId === scenario.id);
+
+      if (alreadyExists) {
+        console.log('[GeminiService] Scenario already in history, skipping save');
+        return;
+      }
+
+      const createHistoryMutation = /* GraphQL */ `
+        mutation CreateHistory(
+          $input: CreateHistoryInput!
+        ) {
+          createHistory(input: $input) {
+            id
+            userId
+            scenarioId
+            name
+            createdAt
+          }
+        }
+      `;
+
+      const now = new Date().toISOString();
+
+      const response = await this.client.graphql({
+        query: createHistoryMutation,
+        variables: {
+          input: {
+            userId,
+            scenarioId: scenario.id,
+            name: scenario.name,
+            category: category || undefined,
+            topic: topic || undefined,
+            description: scenario.description,
+            difficulty: scenario.difficulty_level,
+            createdAt: now,
+          }
+        }
+      });
+
+      if ('subscribe' in response) {
+        throw new Error('Unexpected subscription result for a GraphQL mutation.');
+      }
+
+      if (response.errors) {
+        throw { errors: response.errors };
+      }
+
+      console.log('[GeminiService] Scenario saved to history successfully');
+    } catch (error) {
+      console.error('[GeminiService:saveToHistory] Error saving to history:', error);
+      // Don't throw - history saving is non-critical
+    }
+  }
+
+  /**
+   * Load the user's scenario history, filtered to remove duplicates
+   */
+  async loadHistory(): Promise<HistoryItem[]> {
+    if (this.languageService.isDevMode && this.store.mockApiMode()) {
+      console.warn('--- MOCK API MODE: Returning empty history. ---');
+      return Promise.resolve([]);
+    }
+
+    try {
+      const user = await getCurrentUser();
+      const userId = user.userId;
+
+      const listHistoryQuery = /* GraphQL */ `
+        query ListHistories($userId: String!) {
+          listHistories(filter: { userId: { eq: $userId } }, limit: 1000) {
+            items {
+              id
+              userId
+              scenarioId
+              name
+              category
+              topic
+              description
+              difficulty
+              createdAt
+            }
+          }
+        }
+      `;
+
+      const response = await this.client.graphql({
+        query: listHistoryQuery,
+        variables: { userId }
+      });
+
+      if ('subscribe' in response) {
+        throw new Error('Unexpected subscription result for a GraphQL query.');
+      }
+
+      if (response.errors) {
+        throw { errors: response.errors };
+      }
+
+      const items = (response as any).data?.listHistories?.items || [];
+      const all: HistoryItem[] = (items as HistoryItem[]).filter(Boolean);
+
+      // Filter duplicates by scenarioId, keeping the most recent entry
+      const seen = new Map<string, HistoryItem>();
+      for (const item of all) {
+        const existing = seen.get(item.scenarioId);
+        if (!existing || new Date(item.createdAt) > new Date(existing.createdAt)) {
+          seen.set(item.scenarioId, item);
+        }
+      }
+
+      // Sort by createdAt descending (most recent first)
+      const unique = Array.from(seen.values()).sort((a, b) => {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      });
+
+      return unique;
+    } catch (error) {
+      this.handleError(error, { userId: 'current' }, 'loadHistory');
     }
   }
 }

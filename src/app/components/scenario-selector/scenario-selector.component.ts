@@ -8,13 +8,14 @@ import { SessionStore } from '../../state/session.store';
 import { ConversationScenario, ScenarioSummary } from '../../models';
 import { TOPICS_DATA, Category, Subtopic } from '../../topics.data';
 import { ScenarioCatalogComponent } from '../scenario-catalog/scenario-catalog.component';
+import { ScenarioHistoryComponent } from '../scenario-history/scenario-history.component';
 
 type SelectorState = 'idle' | 'loading' | 'error';
 
 @Component({
   selector: 'app-scenario-selector',
   standalone: true,
-  imports: [CommonModule, FormsModule, ScenarioCatalogComponent],
+  imports: [CommonModule, FormsModule, ScenarioCatalogComponent, ScenarioHistoryComponent],
   templateUrl: './scenario-selector.component.html',
   styles: [`
     .animate-fade-in {
@@ -35,7 +36,7 @@ export class ScenarioSelectorComponent implements OnInit {
 
   state = signal<SelectorState>('idle');
   error = signal<string | null>(null);
-  activeTab = signal<'topics' | 'custom' | 'catalog'>('topics');
+  activeTab = signal<'topics' | 'custom' | 'catalog' | 'history'>('topics');
 
   // Topics tab state
   topics = signal<Category[]>(TOPICS_DATA);
@@ -218,6 +219,19 @@ export class ScenarioSelectorComponent implements OnInit {
     try {
       const scenario = await this.geminiService.generateScenario(topics, difficulty, sourceLang, targetLang);
       this.store.startConversation(scenario);
+      // Save to history with topic information
+      const selectedTopicsArray = Array.from(this.selectedTopics());
+      // Find the category for the first selected topic
+      let category: string | undefined = undefined;
+      if (selectedTopicsArray.length > 0) {
+        const firstTopic = selectedTopicsArray[0];
+        const foundCategory = this.topics().find(cat =>
+          cat.children.some(sub => sub.id === firstTopic.id)
+        );
+        category = foundCategory?.label;
+      }
+      const topic = topics;
+      await this.geminiService.saveToHistory(scenario, category, topic);
       this.router.navigate(['/conversation']);
     } catch (e: any) {
       console.error('[ScenarioSelector] Error generating scenario from topics', e);
@@ -252,6 +266,8 @@ export class ScenarioSelectorComponent implements OnInit {
       // Assuming user inputs text in their target language for simplicity, can be improved with a toggle
       const scenario = await this.geminiService.processCustomText(text, 'target', difficulty, sourceLang, targetLang);
       this.store.startConversation(scenario);
+      // Save to history (custom text doesn't have category/topic)
+      await this.geminiService.saveToHistory(scenario);
       this.router.navigate(['/conversation']);
     } catch (e: any) {
       console.error('[ScenarioSelector] Error generating scenario from custom text', e);
@@ -272,6 +288,8 @@ export class ScenarioSelectorComponent implements OnInit {
     try {
       const scenario = await this.geminiService.getScenarioById(id);
       this.store.startConversation(scenario);
+      // Save to history when loading from matching scenarios
+      await this.geminiService.saveToHistory(scenario);
       this.router.navigate(['/conversation']);
     } catch (e: any) {
       console.error(`[ScenarioSelector] Error loading scenario ${id}`, e);

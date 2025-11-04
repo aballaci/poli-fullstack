@@ -23,6 +23,23 @@ const schema = a.schema({
     ])
     .authorization((allow) => [allow.authenticated()]),
 
+  History: a.model({
+    id: a.id().required(),
+    userId: a.string().required(),
+    scenarioId: a.string().required(), // Reference to the Scenario id
+    name: a.string().required(),
+    category: a.string(),
+    topic: a.string(),
+    description: a.string().required(),
+    difficulty: a.string().required(),
+    createdAt: a.datetime().required(),
+  })
+    .identifier(["id"])
+    .secondaryIndexes((index) => [
+      index("userId").name("byUserId"),
+    ])
+    .authorization((allow) => [allow.authenticated()]),
+
 
   generateScenario: a
     .query()

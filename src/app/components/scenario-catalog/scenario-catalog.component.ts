@@ -134,6 +134,8 @@ export class ScenarioCatalogComponent implements OnInit, OnDestroy {
         try {
             const scenario = await this.geminiService.getScenarioById(id);
             this.store.startConversation(scenario);
+            // Save to history when loading from catalog
+            await this.geminiService.saveToHistory(scenario);
             this.router.navigate(['/conversation']);
         } catch (e: any) {
             console.error(`[ScenarioCatalog] Error loading scenario ${id}`, e);

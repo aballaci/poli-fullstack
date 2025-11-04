@@ -22,6 +22,13 @@
       [class.hover:text-[var(--c-text-body)]]="activeTab() !== 'catalog'">
       <i class="fa-solid fa-book mr-2"></i> Catalog
     </button>
+    <button (click)="activeTab.set('history')" class="px-4 py-3 font-semibold transition-colors"
+      [class.text-[var(--color-primary)]]="activeTab() === 'history'" [class.border-b-2]="activeTab() === 'history'"
+      [class.border-[var(--color-primary)]]="activeTab() === 'history'"
+      [class.text-[var(--c-text-muted)]]="activeTab() !== 'history'"
+      [class.hover:text-[var(--c-text-body)]]="activeTab() !== 'history'">
+      <i class="fa-solid fa-clock-rotate-left mr-2"></i> History
+    </button>
   </div>
 
   <!-- Content -->
@@ -153,6 +160,9 @@
     }
     @case ('catalog') {
     <app-scenario-catalog></app-scenario-catalog>
+    }
+    @case ('history') {
+    <app-scenario-history></app-scenario-history>
     }
     }
 

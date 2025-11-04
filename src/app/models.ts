@@ -44,3 +44,15 @@ export interface SpeechAssessment {
   fluency_score: number;
   suggestions: string[];
 }
+
+export interface HistoryItem {
+  id: string;
+  userId: string;
+  scenarioId: string;
+  name: string;
+  category?: string;
+  topic?: string;
+  description: string;
+  difficulty: string;
+  createdAt: string;
+}
