@@ -2,6 +2,7 @@ import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 import { scenarioGenerator } from '../functions/scenario-generator/resource';
 import { pronunciationAssessor } from '../functions/pronunciation-assessor/resource';
 import { customTextProcessor } from '../functions/custom-text-processor/resource';
+import { usageSummary } from '../functions/usage-summary/resource';
 
 const schema = a.schema({
 
@@ -35,6 +36,39 @@ const schema = a.schema({
     createdAt: a.datetime().required(),
   })
     .identifier(["id"])
+    .secondaryIndexes((index) => [
+      index("userId").name("byUserId"),
+    ])
+    .authorization((allow) => [allow.authenticated()]),
+
+  GeminiUsageLog: a.model({
+    logId: a.id().required(),
+    userId: a.string().required(),
+    feature: a.string().required(),
+    timestamp: a.datetime().required(),
+    promptTokenCount: a.integer().required(),
+    candidatesTokenCount: a.integer().required(),
+    totalTokenCount: a.integer().required(),
+    rawUsageMetadata: a.json().required(),
+    apiResponseStatus: a.string().required(),
+  })
+    .identifier(["logId"])
+    .secondaryIndexes((index) => [
+      index("userId").name("byUserId"),
+      index("userId").sortKeys(["feature"]).name("byUserIdAndFeature"),
+    ])
+    .authorization((allow) => [allow.authenticated()]),
+
+  GeminiUsageErrorLog: a.model({
+    errorLogId: a.id().required(),
+    userId: a.string(),
+    feature: a.string(),
+    timestamp: a.datetime().required(),
+    errorMessage: a.string().required(),
+    errorContext: a.json().required(),
+    retryAttempts: a.integer().required(),
+  })
+    .identifier(["errorLogId"])
     .secondaryIndexes((index) => [
       index("userId").name("byUserId"),
     ])
@@ -76,6 +110,15 @@ const schema = a.schema({
     .returns(a.ref('Scenario'))
     .authorization((allow) => [allow.authenticated()])
     .handler(a.handler.function(customTextProcessor)),
+
+  getGeminiUsageSummary: a
+    .query()
+    .arguments({
+      userId: a.string(),
+    })
+    .returns(a.json())
+    .authorization((allow) => [allow.authenticated()])
+    .handler(a.handler.function(usageSummary)),
 
 });
 

@@ -11,6 +11,7 @@ import { GoogleGenAI } from "@google/genai/node";
 import { Schema } from "../../data/resource.js";
 import { unmarshall } from '@aws-sdk/util-dynamodb';
 import { v4 as uuidv4 } from 'uuid';
+import { logGeminiUsage } from "../shared/gemini-usage-logger.js";
 
 
 
@@ -23,6 +24,7 @@ type ScenarioInput = {
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
 const tableName = process.env.DDB_TABLE_NAME; // Get table name from environment
+const usageLogTableName = process.env.GEMINI_USAGE_LOG_TABLE_NAME || ""; // Usage log table name
 const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
 console.log("##### tableName:", tableName);
@@ -32,6 +34,12 @@ const ddbDocClient = DynamoDBDocumentClient.from(ddbClient);
 
 // The function you provided for Gemini generation
 async function callGemini(input: ScenarioInput): Promise<ConversationScenario> {
+    const result = await callGeminiWithResponse(input);
+    return result.scenario;
+}
+
+// Enhanced function that returns both scenario and response for logging
+async function callGeminiWithResponse(input: ScenarioInput): Promise<{ scenario: ConversationScenario; response: any }> {
     const { topic, difficulty, sourceLang, targetLang } = input;
 
     const modelName = "gemini-2.5-flash";
@@ -102,7 +110,7 @@ async function callGemini(input: ScenarioInput): Promise<ConversationScenario> {
     console.log("✅ Parsed Scenario with new UUIDs:", JSON.stringify(scenario, null, 2));
 
     // Combine input with generated data for the DB model
-    return scenario;
+    return { scenario, response };
 }
 
 // Function to save the generated scenario to DynamoDB
@@ -200,9 +208,23 @@ export const handler: Handler = async (event) => {
     // 3. GENERATE AND SAVE (Gemini Call)
     console.log("Generating new scenario via Gemini...");
     try {
-        const newScenario = await callGemini(input);
+        const geminiResponse = await callGeminiWithResponse(input);
+        const newScenario = geminiResponse.scenario;
+        const response = geminiResponse.response;
+        
         await saveScenario(input, newScenario);
         console.log("New scenario saved to DynamoDB.");
+        
+        // Log Gemini API usage
+        if (usageLogTableName) {
+            try {
+                await logGeminiUsage(usageLogTableName, event, response, "scenario_generation", "success");
+            } catch (logError) {
+                // Don't fail the request if logging fails
+                console.error("Failed to log Gemini usage:", logError);
+            }
+        }
+        
         return toScenarioDBModel(input, newScenario);
     } catch (error) {
         console.error("Critical: Failed to generate or save scenario.", error);

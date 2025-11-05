@@ -5,9 +5,11 @@ import { GoogleGenAI } from "@google/genai/node";
 import { scenarioSchema } from "./schema.js";
 import { ConversationScenario } from "../scenario-generator/models.js";
 import { v4 as uuidv4 } from 'uuid';
+import { logGeminiUsage } from "../shared/gemini-usage-logger.js";
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
 const tableName = process.env.DDB_TABLE_NAME;
+const usageLogTableName = process.env.GEMINI_USAGE_LOG_TABLE_NAME || ""; // Usage log table name
 
 if (!GEMINI_API_KEY) {
     throw new Error("GEMINI_API_KEY environment variable is not set");
@@ -89,6 +91,16 @@ export const handler: Handler = async (event) => {
         const dbModel = toScenarioDBModel({ text, textLanguage, difficulty, sourceLang, targetLang }, scenario);
         await saveScenario(dbModel);
         console.log("✅ Custom text scenario saved to database with ID:", dbModel.id);
+
+        // Log Gemini API usage
+        if (usageLogTableName) {
+            try {
+                await logGeminiUsage(usageLogTableName, event, response, "custom_text_generation", "success");
+            } catch (logError) {
+                // Don't fail the request if logging fails
+                console.error("Failed to log Gemini usage:", logError);
+            }
+        }
 
         return dbModel;
     } catch (error) {

@@ -2,8 +2,10 @@ import { Handler } from "aws-lambda";
 import { GoogleGenAI } from "@google/genai/node";
 import { assessmentSchema } from "./schema.js";
 import { SpeechAssessment } from "./models.js";
+import { logGeminiUsage } from "../shared/gemini-usage-logger.js";
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
+const usageLogTableName = process.env.GEMINI_USAGE_LOG_TABLE_NAME || ""; // Usage log table name
 
 if (!GEMINI_API_KEY) {
     throw new Error("GEMINI_API_KEY environment variable is not set");
@@ -64,6 +66,16 @@ export const handler: Handler = async (event) => {
         const assessment: SpeechAssessment = JSON.parse(cleanedText);
 
         console.log("✅ Assessment generated successfully:", JSON.stringify(assessment, null, 2));
+
+        // Log Gemini API usage
+        if (usageLogTableName) {
+            try {
+                await logGeminiUsage(usageLogTableName, event, response, "pronunciation_evaluation", "success");
+            } catch (logError) {
+                // Don't fail the request if logging fails
+                console.error("Failed to log Gemini usage:", logError);
+            }
+        }
 
         return assessment;
     } catch (error) {
