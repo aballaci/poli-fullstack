@@ -1,206 +1,165 @@
 import { defineBackend } from '@aws-amplify/backend';
 import { data } from './data/resource.js';
-import { scenarioGenerator } from './functions/scenario-generator/resource';
-import { pronunciationAssessor } from './functions/pronunciation-assessor/resource';
-import { customTextProcessor } from './functions/custom-text-processor/resource';
-import { usageSummary } from './functions/usage-summary/resource';
-import { Effect, Policy, PolicyStatement } from "aws-cdk-lib/aws-iam";
-
-import { aws_s3 as s3 } from 'aws-cdk-lib';
-import { auth } from "./auth/resource";
-
-import * as iam from "aws-cdk-lib/aws-iam"
+import { auth } from './auth/resource.js';
 import { poliAssets } from './storage/resource.js';
+import { scenarioGenerator } from './functions/scenario-generator/resource.js';
+import { pronunciationAssessor } from './functions/pronunciation-assessor/resource.js';
+import { customTextProcessor } from './functions/custom-text-processor/resource.js';
+import { usageSummary } from './functions/usage-summary/resource.js';
 
+import { Effect, PolicyStatement, AnyPrincipal } from 'aws-cdk-lib/aws-iam';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import { CfnBucket } from 'aws-cdk-lib/aws-s3';
+
+// 1. DEFINE THE BACKEND
+// =============================================
 const backend = defineBackend({
   auth,
   data,
+  poliAssets,
   scenarioGenerator,
   pronunciationAssessor,
   customTextProcessor,
   usageSummary,
-  poliAssets
 });
 
+// 2. GET RESOURCE HANDLES
+// =============================================
+// Get L3 Function constructs (for adding env vars)
+const {
+  scenarioGenerator: scenarioGenFunc,
+  customTextProcessor: customTextFunc,
+  pronunciationAssessor: pronunciationFunc,
+  usageSummary: usageSummaryFunc,
+} = backend;
 
-const scenarioLambda = backend.scenarioGenerator.resources.lambda
-const pronunciationAssessorLambda = backend.pronunciationAssessor.resources.lambda
-const customTextProcessorLambda = backend.customTextProcessor.resources.lambda
-const usageSummaryLambda = backend.usageSummary.resources.lambda
-const scenarioTable = backend.data.resources.tables.Scenario;
-const geminiUsageLogTable = backend.data.resources.tables.GeminiUsageLog;
-const geminiUsageErrorLogTable = backend.data.resources.tables.GeminiUsageErrorLog;
+// Get L2 Lambda functions (for attaching policies)
+const scenarioLambda = scenarioGenFunc.resources.lambda;
+const customTextProcessorLambda = customTextFunc.resources.lambda;
+const pronunciationAssessorLambda = pronunciationFunc.resources.lambda;
+const usageSummaryLambda = usageSummaryFunc.resources.lambda;
 
-// Get the DynamoDB table created by Amplify Data (your Scenario model)
+// Get L2 Table constructs
+const {
+  Scenario: scenarioTable,
+  GeminiUsageLog: geminiUsageLogTable,
+  GeminiUsageErrorLog: geminiUsageErrorLogTable,
+} = backend.data.resources.tables;
 
-backend.scenarioGenerator.addEnvironment(
-  'DDB_TABLE_NAME',  // Env var name (use in Lambda code)
-  scenarioTable.tableName  // References the auto-generated table
-);
+// 3. CONFIGURE ENVIRONMENT VARIABLES
+// =============================================
 
-backend.customTextProcessor.addEnvironment(
-  'DDB_TABLE_NAME',  // Env var name (use in Lambda code)
-  scenarioTable.tableName  // References the auto-generated table
-);
+// Add Scenario table name to functions that need it
+scenarioGenFunc.addEnvironment('DDB_TABLE_NAME', scenarioTable.tableName);
+customTextFunc.addEnvironment('DDB_TABLE_NAME', scenarioTable.tableName);
 
-// Add usage log table names to all Lambda functions that use Gemini
-backend.scenarioGenerator.addEnvironment(
-  'GEMINI_USAGE_LOG_TABLE_NAME',
-  geminiUsageLogTable.tableName
-);
+// Add Gemini log table names to all relevant functions in a loop
+const geminiLoggingFunctions = [
+  scenarioGenFunc,
+  customTextFunc,
+  pronunciationFunc,
+];
 
-backend.scenarioGenerator.addEnvironment(
-  'GEMINI_USAGE_ERROR_TABLE_NAME',
-  geminiUsageErrorLogTable.tableName
-);
-
-backend.customTextProcessor.addEnvironment(
-  'GEMINI_USAGE_LOG_TABLE_NAME',
-  geminiUsageLogTable.tableName
-);
-
-backend.customTextProcessor.addEnvironment(
-  'GEMINI_USAGE_ERROR_TABLE_NAME',
-  geminiUsageErrorLogTable.tableName
-);
-
-// Add usage log table names to pronunciation-assessor
-backend.pronunciationAssessor.addEnvironment(
-  'GEMINI_USAGE_LOG_TABLE_NAME',
-  geminiUsageLogTable.tableName
-);
-
-backend.pronunciationAssessor.addEnvironment(
-  'GEMINI_USAGE_ERROR_TABLE_NAME',
-  geminiUsageErrorLogTable.tableName
-);
+for (const func of geminiLoggingFunctions) {
+  func.addEnvironment(
+    'GEMINI_USAGE_LOG_TABLE_NAME',
+    geminiUsageLogTable.tableName
+  );
+  func.addEnvironment(
+    'GEMINI_USAGE_ERROR_TABLE_NAME',
+    geminiUsageErrorLogTable.tableName
+  );
+}
 
 // Add usage log table name to usage-summary Lambda
-backend.usageSummary.addEnvironment(
+usageSummaryFunc.addEnvironment(
   'GEMINI_USAGE_LOG_TABLE_NAME',
   geminiUsageLogTable.tableName
 );
 
-// Grant CRUD + query permissions automatically
-scenarioTable.grantReadWriteData(scenarioLambda)
+// 4. CONFIGURE IAM PERMISSIONS
+// =============================================
 
-scenarioLambda.addToRolePolicy(new iam.PolicyStatement({
-  sid: "AllowQueryScanOnScenarioGSIs",
-  actions: ["dynamodb:Query", "dynamodb:Scan"],
-  resources: [`${scenarioTable.tableArn}/index/*`], // <- GSI ARNs
-}));
+// --- Reusable IAM Policies ---
 
-
-
-scenarioLambda.addToRolePolicy(new iam.PolicyStatement({
-  sid: "AllowRWOnScenarioTable",
-  actions: [
-    "dynamodb:GetItem",
-    "dynamodb:PutItem",
-    "dynamodb:UpdateItem",
-    "dynamodb:DeleteItem",
-    "dynamodb:BatchGetItem",
-    "dynamodb:BatchWriteItem",
-    "dynamodb:DescribeTable",
-  ],
-  resources: [scenarioTable.tableArn], // <- table ARN only
-}));
-
-customTextProcessorLambda.addToRolePolicy(new iam.PolicyStatement({
-  sid: "AllowQueryScanOnScenarioGSIs",
-  actions: ["dynamodb:Query", "dynamodb:Scan"],
-  resources: [`${scenarioTable.tableArn}/index/*`], // <- GSI ARNs
-}));
-
-customTextProcessorLambda.addToRolePolicy(new iam.PolicyStatement({
-  sid: "AllowRWOnScenarioTable",
-  actions: [
-    "dynamodb:GetItem",
-    "dynamodb:PutItem",
-    "dynamodb:UpdateItem",
-    "dynamodb:DeleteItem",
-    "dynamodb:BatchGetItem",
-    "dynamodb:BatchWriteItem",
-    "dynamodb:DescribeTable",
-  ],
-  resources: [scenarioTable.tableArn], // <- table ARN only
-}));
-
-// Grant write permissions for Gemini usage logging to all Lambda functions that use Gemini
-scenarioLambda.addToRolePolicy(new iam.PolicyStatement({
-  sid: "AllowWriteGeminiUsageLogs",
-  actions: [
-    "dynamodb:PutItem",
-    "dynamodb:DescribeTable",
-  ],
+// Policy to allow writing to Gemini log tables
+const writeGeminiLogsPolicy = new PolicyStatement({
+  sid: 'AllowWriteGeminiUsageLogs',
+  effect: Effect.ALLOW,
+  actions: ['dynamodb:PutItem', 'dynamodb:DescribeTable'],
   resources: [
     geminiUsageLogTable.tableArn,
     geminiUsageErrorLogTable.tableArn,
   ],
-}));
+});
 
-customTextProcessorLambda.addToRolePolicy(new iam.PolicyStatement({
-  sid: "AllowWriteGeminiUsageLogs",
-  actions: [
-    "dynamodb:PutItem",
-    "dynamodb:DescribeTable",
-  ],
-  resources: [
-    geminiUsageLogTable.tableArn,
-    geminiUsageErrorLogTable.tableArn,
-  ],
-}));
+// Policy to allow reading from Scenario table's Global Secondary Indexes
+const readScenarioGSIPolicy = new PolicyStatement({
+  sid: 'AllowQueryScanOnScenarioGSIs',
+  effect: Effect.ALLOW,
+  actions: ['dynamodb:Query', 'dynamodb:Scan'],
+  resources: [`${scenarioTable.tableArn}/index/*`],
+});
 
-pronunciationAssessorLambda.addToRolePolicy(new iam.PolicyStatement({
-  sid: "AllowWriteGeminiUsageLogs",
-  actions: [
-    "dynamodb:PutItem",
-    "dynamodb:DescribeTable",
-  ],
-  resources: [
-    geminiUsageLogTable.tableArn,
-    geminiUsageErrorLogTable.tableArn,
-  ],
-}));
+// --- Attach Policies to Functions ---
 
-// Grant read permissions to usage-summary Lambda for querying usage logs
-usageSummaryLambda.addToRolePolicy(new iam.PolicyStatement({
-  sid: "AllowReadGeminiUsageLogs",
-  actions: [
-    "dynamodb:Query",
-    "dynamodb:Scan",
-    "dynamodb:GetItem",
-    "dynamodb:DescribeTable",
-  ],
-  resources: [
-    geminiUsageLogTable.tableArn,
-    `${geminiUsageLogTable.tableArn}/index/*`,
-  ],
-}));
+// Grant base table + GSI permissions to Scenario and CustomText processors
+scenarioTable.grantReadWriteData(scenarioLambda);
+scenarioLambda.addToRolePolicy(readScenarioGSIPolicy);
 
-// --- Modify the underlying bucket (remove BlockPublicAccess + add policy) ---
+scenarioTable.grantReadWriteData(customTextProcessorLambda);
+customTextProcessorLambda.addToRolePolicy(readScenarioGSIPolicy);
+
+// Grant write access to Gemini log tables in a loop
+const geminiLoggingLambdas = [
+  scenarioLambda,
+  customTextProcessorLambda,
+  pronunciationAssessorLambda,
+];
+
+for (const lambda of geminiLoggingLambdas) {
+  lambda.addToRolePolicy(writeGeminiLogsPolicy);
+}
+
+// Grant read permissions to usage-summary Lambda
+usageSummaryLambda.addToRolePolicy(
+  new PolicyStatement({
+    sid: 'AllowReadGeminiUsageLogs',
+    effect: Effect.ALLOW,
+    actions: ['dynamodb:Query', 'dynamodb:Scan', 'dynamodb:GetItem'],
+    resources: [
+      geminiUsageLogTable.tableArn,
+      `${geminiUsageLogTable.tableArn}/index/*`,
+    ],
+  })
+);
+
+// 5. CONFIGURE PUBLIC S3 BUCKET (Storage Escape Hatch)
+// =============================================
 const bucket = backend.poliAssets.resources.bucket;
 
-// Escape hatch: Access low-level CfnBucket to disable Block Public Access
-const cfnBucket = bucket.node.defaultChild as s3.CfnBucket;
+// Use L2 CfnBucket construct to modify public access
+const cfnBucket = bucket.node.defaultChild as CfnBucket;
 cfnBucket.publicAccessBlockConfiguration = {
   blockPublicAcls: false,
-  blockPublicPolicy: false,  // Key: Allows public policies like yours
+  blockPublicPolicy: false,
   ignorePublicAcls: false,
   restrictPublicBuckets: false,
 };
 
-// Add public read policy (no sid; use AnyPrincipal and arnForObjects)
+// Add a public read-only policy to the bucket
 bucket.addToResourcePolicy(
   new PolicyStatement({
+    sid: 'AllowPublicRead',
     effect: Effect.ALLOW,
     actions: ['s3:GetObject'],
-    principals: [new iam.AnyPrincipal()],
+    principals: [new AnyPrincipal()],
     resources: [bucket.arnForObjects('*')],
   })
 );
 
-// 3️⃣ Add an output so that the table name is exported to amplify_outputs.json
+// 6. DEFINE BACKEND OUTPUTS
+// =============================================
 backend.addOutput({
   custom: {
     tables: {
@@ -208,6 +167,6 @@ backend.addOutput({
         tableName: scenarioTable.tableName,
         tableArn: scenarioTable.tableArn,
       },
-    }
+    },
   },
 });

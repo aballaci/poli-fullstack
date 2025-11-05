@@ -9,7 +9,6 @@ import { Type } from "@google/genai";
 // 2. Import the client from the node-specific path to avoid the 'Window is undefined' error.
 import { GoogleGenAI } from "@google/genai/node";
 import { Schema } from "../../data/resource.js";
-import { unmarshall } from '@aws-sdk/util-dynamodb';
 import { v4 as uuidv4 } from 'uuid';
 import { logGeminiUsage } from "../shared/gemini-usage-logger.js";
 
