@@ -73,7 +73,7 @@ const schema = a.schema({
       sourceLang: a.string().required(),
       targetLang: a.string().required(),
     })
-    .returns(a.json())
+    .returns(a.ref('Scenario'))
     .authorization((allow) => [allow.authenticated()])
     .handler(a.handler.function(customTextProcessor)),
 

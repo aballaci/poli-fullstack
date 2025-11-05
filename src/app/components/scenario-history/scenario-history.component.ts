@@ -37,30 +37,30 @@ export class ScenarioHistoryComponent implements OnInit, OnDestroy {
     const level = difficulty.toUpperCase();
     if (level === 'A1' || level === 'A2') {
       // Soft mint/emerald for beginner
-      return { 
-        text: 'Beginner', 
-        bgColor: 'bg-emerald-50 dark:bg-emerald-900/30', 
-        textColor: 'text-emerald-600 dark:text-emerald-300' 
+      return {
+        text: 'Beginner',
+        bgColor: 'bg-emerald-50 dark:bg-emerald-900/30',
+        textColor: 'text-emerald-600 dark:text-emerald-300'
       };
     } else if (level === 'B1' || level === 'B2') {
       // Soft peach/amber for intermediate
-      return { 
-        text: 'Intermediate', 
-        bgColor: 'bg-amber-50 dark:bg-amber-900/30', 
-        textColor: 'text-amber-600 dark:text-amber-300' 
+      return {
+        text: 'Intermediate',
+        bgColor: 'bg-amber-50 dark:bg-amber-900/30',
+        textColor: 'text-amber-600 dark:text-amber-300'
       };
     } else if (level === 'C1' || level === 'C2') {
       // Soft rose/pink for advanced
-      return { 
-        text: 'Advanced', 
-        bgColor: 'bg-rose-50 dark:bg-rose-900/30', 
-        textColor: 'text-rose-600 dark:text-rose-300' 
+      return {
+        text: 'Advanced',
+        bgColor: 'bg-rose-50 dark:bg-rose-900/30',
+        textColor: 'text-rose-600 dark:text-rose-300'
       };
     }
-    return { 
-      text: difficulty, 
-      bgColor: 'bg-slate-100 dark:bg-slate-700', 
-      textColor: 'text-slate-600 dark:text-slate-300' 
+    return {
+      text: difficulty,
+      bgColor: 'bg-slate-100 dark:bg-slate-700',
+      textColor: 'text-slate-600 dark:text-slate-300'
     };
   }
 
@@ -77,7 +77,7 @@ export class ScenarioHistoryComponent implements OnInit, OnDestroy {
 
   // Helper to get category/topic tag with sweet colors
   getCategoryTag(topic?: string, category?: string): string {
-    return topic || category || 'General';
+    return topic || category || 'Custom';
   }
 
   // Helper to get category tag classes

@@ -157,7 +157,10 @@ export class GeminiService {
           difficulty: $difficulty
           sourceLang: $sourceLang
           targetLang: $targetLang
-        )
+        ) {
+          id
+          scenario
+        }
       }
     `;
 
@@ -181,34 +184,20 @@ export class GeminiService {
         throw { errors: response.errors };
       }
 
-      if (!response.data?.processCustomText) {
+      if (!response.data?.processCustomText?.scenario) {
         console.error("Invalid response from backend:", response.data);
         throw new Error("The backend returned an invalid or empty scenario. Please try again.");
       }
 
-      // Handle JSON response - it might be a string or already parsed
-      let scenario: ConversationScenario;
-      const rawScenario = response.data.processCustomText;
-
-      console.log('[GeminiService:processCustomText] Raw response type:', typeof rawScenario);
-      console.log('[GeminiService:processCustomText] Raw response:', rawScenario);
-
-      if (typeof rawScenario === 'string') {
-        // Parse if it's a JSON string
-        try {
-          scenario = JSON.parse(rawScenario) as ConversationScenario;
-        } catch (parseError) {
-          console.error('[GeminiService:processCustomText] JSON parse error:', parseError);
-          throw new Error("Failed to parse scenario response from backend.");
-        }
-      } else if (typeof rawScenario === 'object' && rawScenario !== null) {
-        // Already an object
-        scenario = rawScenario as ConversationScenario;
-      } else {
-        throw new Error(`Unexpected response type: ${typeof rawScenario}`);
+      const scenarioString = response.data.processCustomText.scenario;
+      const scenario = JSON.parse(scenarioString) as ConversationScenario;
+      // Update the scenario's ID to match the database record ID
+      const dbId = response.data.processCustomText.id;
+      if (dbId) {
+        scenario.id = dbId;
       }
 
-      console.log('[GeminiService:processCustomText] Parsed scenario:', scenario);
+      console.log('[GeminiService:processCustomText] Parsed scenario with DB ID:', scenario.id);
       return scenario;
 
     } catch (error) {
