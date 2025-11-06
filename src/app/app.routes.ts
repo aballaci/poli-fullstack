@@ -5,9 +5,11 @@ import { ConversationViewComponent } from './components/conversation-view/conver
 import { SettingsComponent } from './components/settings/settings.component';
 import { IntroComponent } from './components/intro/intro.component';
 import { HomeComponent } from './components/home/home.component';
+import { CostSummaryComponent } from './components/cost-summary/cost-summary.component';
 import { conversationGuard } from './guards/conversation.guard';
 import { languageSetupGuard } from './guards/language-setup.guard';
 import { introGuard } from './guards/intro.guard';
+import { adminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
   { path: 'home', component: HomeComponent },
@@ -27,6 +29,11 @@ export const routes: Routes = [
     path: 'settings',
     component: SettingsComponent,
     canActivate: [languageSetupGuard]
+  },
+  {
+    path: 'cost-summary',
+    component: CostSummaryComponent,
+    canActivate: [adminGuard]
   },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: '**', redirectTo: '/home' }

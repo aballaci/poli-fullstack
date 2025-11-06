@@ -4,7 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { SessionStore } from '../../state/session.store';
 import { ThemeService } from '../../services/theme.service';
 import { LanguageService } from '../../services/language.service';
-import { getCurrentUser, fetchUserAttributes } from 'aws-amplify/auth';
+import { getCurrentUser, fetchUserAttributes, fetchAuthSession, signOut } from 'aws-amplify/auth';
 
 interface UserInfo {
   username: string;
@@ -32,7 +32,7 @@ interface UserInfo {
     @if (userInfo()) {
       <div class="bg-[var(--c-bg-surface)] p-6 rounded-lg shadow-sm border border-[var(--c-border-subtle)]">
         <h2 class="text-xl font-semibold mb-4 text-[var(--c-text-headings)]">Account</h2>
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-4 mb-4">
           <!-- Avatar -->
           @if (userInfo()!.picture) {
             <img [src]="userInfo()!.picture" [alt]="userInfo()!.name || 'User avatar'" class="w-16 h-16 rounded-full border-2 border-[var(--c-border-subtle)]">
@@ -53,6 +53,14 @@ interface UserInfo {
               <p class="text-sm text-[var(--c-text-muted)]">{{ userInfo()!.username }}</p>
             }
           </div>
+        </div>
+        <div class="pt-4 border-t border-[var(--c-border-subtle)]">
+          <button 
+            (click)="handleSignOut()" 
+            class="w-full sm:w-auto px-4 py-2 text-sm font-medium rounded-md bg-red-600 text-white hover:bg-red-700 transition-colors flex items-center gap-2">
+            <i class="fa-solid fa-sign-out-alt"></i>
+            <span>Sign Out</span>
+          </button>
         </div>
       </div>
     }
@@ -163,6 +171,21 @@ interface UserInfo {
         }
       </div>
     </div>
+
+    <!-- Admin Section -->
+    @if (isAdmin()) {
+      <div class="bg-[var(--c-bg-surface)] p-6 rounded-lg shadow-sm border border-[var(--c-border-subtle)]">
+        <h2 class="text-xl font-semibold mb-4 text-[var(--c-text-headings)]">Administration</h2>
+        <div class="space-y-4">
+          <a 
+            routerLink="/cost-summary" 
+            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md bg-purple-600 text-white hover:bg-purple-700 transition-colors">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>View Cost Summary</span>
+          </a>
+        </div>
+      </div>
+    }
   </div>
 </div>
   `,
@@ -184,9 +207,30 @@ export class SettingsComponent implements OnInit {
   readonly isDevMode = this.languageService.isDevMode;
 
   userInfo = signal<UserInfo | null>(null);
+  isAdmin = signal(false);
 
   async ngOnInit(): Promise<void> {
     await this.loadUserInfo();
+  }
+
+  /**
+   * Decode JWT token payload
+   */
+  private decodeJWT(token: string): any {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      return JSON.parse(jsonPayload);
+    } catch (error) {
+      console.error('Failed to decode JWT:', error);
+      return null;
+    }
   }
 
   private async loadUserInfo(): Promise<void> {
@@ -200,6 +244,53 @@ export class SettingsComponent implements OnInit {
         name: attributes.name || attributes.given_name || (attributes as any)['custom:name'],
         picture: attributes.picture || (attributes as any)['custom:picture']
       };
+
+      // Check if user is admin via Cognito groups
+      try {
+        console.log('[Settings] Checking admin status...');
+        const session = await fetchAuthSession();
+        console.log('[Settings] Session:', session);
+        console.log('[Settings] Session tokens:', session.tokens);
+        
+        const idToken = session.tokens?.idToken;
+        console.log('[Settings] ID Token:', idToken);
+        console.log('[Settings] ID Token type:', typeof idToken);
+        
+        if (idToken) {
+          const tokenString = typeof idToken === 'string' ? idToken : idToken.toString();
+          console.log('[Settings] Token string length:', tokenString.length);
+          
+          const payload = this.decodeJWT(tokenString);
+          console.log('[Settings] Decoded payload:', payload);
+          console.log('[Settings] Payload keys:', payload ? Object.keys(payload) : 'null');
+          
+          const groups = payload?.['cognito:groups'] || [];
+          console.log('[Settings] Cognito groups:', groups);
+          console.log('[Settings] Groups type:', typeof groups, 'Is array:', Array.isArray(groups));
+          console.log('[Settings] Checking if groups includes "admins":', groups.includes('admins'));
+          
+          // Also check other possible group field names
+          if (payload) {
+            console.log('[Settings] All payload fields with "group" or "admin":', 
+              Object.keys(payload).filter(key => 
+                key.toLowerCase().includes('group') || 
+                key.toLowerCase().includes('admin')
+              )
+            );
+          }
+          
+          if (Array.isArray(groups) && groups.includes('admins')) {
+            console.log('[Settings] User is admin, setting isAdmin to true');
+            this.isAdmin.set(true);
+          } else {
+            console.log('[Settings] User is not admin');
+          }
+        } else {
+          console.log('[Settings] No ID token found');
+        }
+      } catch (adminCheckError) {
+        console.error('[Settings] Failed to check admin status:', adminCheckError);
+      }
 
       this.userInfo.set(info);
       this.cdr.markForCheck();
@@ -242,5 +333,15 @@ export class SettingsComponent implements OnInit {
   onFontSizeChange(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
     this.store.setReadingFontSize(Number(value));
+  }
+
+  async handleSignOut(): Promise<void> {
+    try {
+      await signOut();
+      // Redirect to home page after sign out
+      this.router.navigate(['/home']);
+    } catch (error) {
+      console.error('Failed to sign out:', error);
+    }
   }
 }
