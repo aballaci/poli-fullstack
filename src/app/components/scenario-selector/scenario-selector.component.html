@@ -1,44 +1,48 @@
 <div class="max-w-5xl mx-auto">
   <!-- Tabs -->
   <div class="mb-6 flex items-center justify-center">
-    <div class="inline-flex bg-[#363942] dark:bg-slate-700 rounded-full p-1.5 shadow-lg">
+    <div class="inline-flex bg-white dark:bg-slate-800 rounded-full p-1.5 shadow-lg border border-gray-200 dark:border-gray-700">
       <button (click)="activeTab.set('topics')" 
-        class="px-5 py-2.5 font-semibold text-sm transition-all duration-200 rounded-full flex items-center gap-2 relative"
-        [class.bg-[#00BFFF]]="activeTab() === 'topics'"
+        class="px-5 py-2.5 font-semibold text-sm transition-all duration-200 rounded-full flex items-center gap-2 relative hover:text-purple-600 dark:hover:text-purple-400"
+        [class.bg-purple-600]="activeTab() === 'topics'"
         [class.text-white]="activeTab() === 'topics'"
-        [class.text-[#00BFFF]]="activeTab() !== 'topics'"
-        [class.shadow-[0_0_15px_rgba(0,191,255,0.4)]]="activeTab() === 'topics'"
-        [class.hover:text-cyan-300]="activeTab() !== 'topics'">
+        [class.text-gray-700]="activeTab() !== 'topics'"
+        [class.dark:text-gray-300]="activeTab() !== 'topics'"
+        [class.shadow-lg]="activeTab() === 'topics'"
+        [ngClass]="{'shadow-[0_0_15px_rgba(139,92,246,0.5)]': activeTab() === 'topics'}">
         <i class="fa-solid fa-layer-group"></i>
         <span>From Topics</span>
       </button>
       <button (click)="activeTab.set('custom')" 
-        class="px-5 py-2.5 font-semibold text-sm transition-all duration-200 rounded-full flex items-center gap-2 relative"
-        [class.bg-[#00BFFF]]="activeTab() === 'custom'"
+        class="px-5 py-2.5 font-semibold text-sm transition-all duration-200 rounded-full flex items-center gap-2 relative hover:text-purple-600 dark:hover:text-purple-400"
+        [class.bg-purple-600]="activeTab() === 'custom'"
         [class.text-white]="activeTab() === 'custom'"
-        [class.text-[#00BFFF]]="activeTab() !== 'custom'"
-        [class.shadow-[0_0_15px_rgba(0,191,255,0.4)]]="activeTab() === 'custom'"
-        [class.hover:text-cyan-300]="activeTab() !== 'custom'">
+        [class.text-gray-700]="activeTab() !== 'custom'"
+        [class.dark:text-gray-300]="activeTab() !== 'custom'"
+        [class.shadow-lg]="activeTab() === 'custom'"
+        [ngClass]="{'shadow-[0_0_15px_rgba(139,92,246,0.5)]': activeTab() === 'custom'}">
         <i class="fa-solid fa-paste"></i>
         <span>Use Custom Text</span>
       </button>
       <button (click)="activeTab.set('catalog')" 
-        class="px-5 py-2.5 font-semibold text-sm transition-all duration-200 rounded-full flex items-center gap-2 relative"
-        [class.bg-[#00BFFF]]="activeTab() === 'catalog'"
+        class="px-5 py-2.5 font-semibold text-sm transition-all duration-200 rounded-full flex items-center gap-2 relative hover:text-purple-600 dark:hover:text-purple-400"
+        [class.bg-purple-600]="activeTab() === 'catalog'"
         [class.text-white]="activeTab() === 'catalog'"
-        [class.text-[#00BFFF]]="activeTab() !== 'catalog'"
-        [class.shadow-[0_0_15px_rgba(0,191,255,0.4)]]="activeTab() === 'catalog'"
-        [class.hover:text-cyan-300]="activeTab() !== 'catalog'">
+        [class.text-gray-700]="activeTab() !== 'catalog'"
+        [class.dark:text-gray-300]="activeTab() !== 'catalog'"
+        [class.shadow-lg]="activeTab() === 'catalog'"
+        [ngClass]="{'shadow-[0_0_15px_rgba(139,92,246,0.5)]': activeTab() === 'catalog'}">
         <i class="fa-solid fa-book"></i>
         <span>Catalog</span>
       </button>
       <button (click)="activeTab.set('history')" 
-        class="px-5 py-2.5 font-semibold text-sm transition-all duration-200 rounded-full flex items-center gap-2 relative"
-        [class.bg-[#00BFFF]]="activeTab() === 'history'"
+        class="px-5 py-2.5 font-semibold text-sm transition-all duration-200 rounded-full flex items-center gap-2 relative hover:text-purple-600 dark:hover:text-purple-400"
+        [class.bg-purple-600]="activeTab() === 'history'"
         [class.text-white]="activeTab() === 'history'"
-        [class.text-[#00BFFF]]="activeTab() !== 'history'"
-        [class.shadow-[0_0_15px_rgba(0,191,255,0.4)]]="activeTab() === 'history'"
-        [class.hover:text-cyan-300]="activeTab() !== 'history'">
+        [class.text-gray-700]="activeTab() !== 'history'"
+        [class.dark:text-gray-300]="activeTab() !== 'history'"
+        [class.shadow-lg]="activeTab() === 'history'"
+        [ngClass]="{'shadow-[0_0_15px_rgba(139,92,246,0.5)]': activeTab() === 'history'}">
         <i class="fa-solid fa-clock-rotate-left"></i>
         <span>History</span>
       </button>
@@ -123,7 +127,7 @@
       }
       <div class="mt-8 pt-6 border-t border-[var(--c-border-subtle)] flex justify-end">
         <button (click)="generateFromTopics()" [disabled]="selectedTopics().size === 0 || state() === 'loading'"
-          class="bg-sky-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-sky-600 transition-colors disabled:bg-slate-400 disabled:cursor-not-allowed flex items-center justify-center min-w-[200px]">
+          class="bg-purple-600 text-white font-bold py-3 px-6 rounded-full hover:bg-purple-700 transition-all shadow-lg hover:shadow-xl disabled:bg-slate-400 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center min-w-[200px]">
           @if (state() === 'loading') {
           <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
             viewBox="0 0 24 24">
@@ -150,11 +154,11 @@
 
       <textarea [value]="customText()" (input)="onCustomTextInput($event)" rows="8"
         placeholder="e.g., paste a paragraph from a news article, a song lyric, or an email..."
-        class="w-full p-3 rounded-lg bg-[var(--c-bg-muted)] border border-[var(--c-border-subtle)] focus:ring-2 focus:ring-[var(--color-primary)] focus:outline-none transition-shadow"></textarea>
+        class="w-full p-3 rounded-lg bg-[var(--c-bg-muted)] border border-[var(--c-border-subtle)] focus:ring-2 focus:ring-purple-500 focus:outline-none transition-shadow"></textarea>
 
       <div class="mt-6 pt-6 border-t border-[var(--c-border-subtle)] flex justify-end">
         <button (click)="generateFromCustomText()" [disabled]="!customText().trim() || state() === 'loading'"
-          class="bg-sky-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-sky-600 transition-colors disabled:bg-slate-400 disabled:cursor-not-allowed flex items-center justify-center min-w-[200px]">
+          class="bg-purple-600 text-white font-bold py-3 px-6 rounded-full hover:bg-purple-700 transition-all shadow-lg hover:shadow-xl disabled:bg-slate-400 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center min-w-[200px]">
           @if (state() === 'loading') {
           <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
             viewBox="0 0 24 24">
