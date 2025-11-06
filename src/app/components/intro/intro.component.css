@@ -1,0 +1,45 @@
+/* Scoped styles for intro/about page - matches homepage styling */
+.about-page {
+  font-family: 'Poppins', sans-serif;
+}
+
+.about-page .gradient-hero-bg {
+  background: linear-gradient(135deg, #f3e8ff 0%, #e0f2fe 100%);
+}
+
+.about-page .text-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.about-page .card-shadow {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.about-page .hover-lift {
+  transition: all 0.3s ease;
+}
+
+.about-page .hover-lift:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+}
+
+.about-page .animate-fade-in {
+  animation: fadeIn 1.2s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
