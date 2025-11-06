@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, effect, inject, input, NgZone, OnDestroy, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { SessionStore } from '../../state/session.store';
 import { GeminiService } from '../../services/gemini.service';
 import { Language, Sentence, SentencePart, SpeechAssessment } from '../../models';
@@ -17,7 +18,7 @@ declare global {
 @Component({
   selector: 'app-practice-view',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './practice-view.component.html',
   styles: [`
     .animate-fade-in {
