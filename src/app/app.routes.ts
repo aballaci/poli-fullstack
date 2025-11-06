@@ -4,11 +4,13 @@ import { ScenarioSelectorComponent } from './components/scenario-selector/scenar
 import { ConversationViewComponent } from './components/conversation-view/conversation-view.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { IntroComponent } from './components/intro/intro.component';
+import { HomeComponent } from './components/home/home.component';
 import { conversationGuard } from './guards/conversation.guard';
 import { languageSetupGuard } from './guards/language-setup.guard';
 import { introGuard } from './guards/intro.guard';
 
 export const routes: Routes = [
+  { path: 'home', component: HomeComponent },
   { path: 'wizard', component: LanguageWizardComponent },
   { path: 'intro', component: IntroComponent },
   {
@@ -26,6 +28,6 @@ export const routes: Routes = [
     component: SettingsComponent,
     canActivate: [languageSetupGuard]
   },
-  { path: '', redirectTo: '/selector', pathMatch: 'full' },
-  { path: '**', redirectTo: '/selector' }
+  { path: '', redirectTo: '/home', pathMatch: 'full' },
+  { path: '**', redirectTo: '/home' }
 ];

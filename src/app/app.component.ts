@@ -1,12 +1,16 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject, computed } from '@angular/core';
+import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { Amplify } from 'aws-amplify';
 import outputs from '../../amplify_outputs.json';
 import { CommonModule } from '@angular/common';
 import { AmplifyAuthenticatorModule, AuthenticatorService } from '@aws-amplify/ui-angular';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { SessionStore } from './state/session.store';
 import { ThemeService } from './services/theme.service';
+import { filter } from 'rxjs/operators';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { HeaderComponent } from './components/header/header.component';
+import { FooterComponent } from './components/footer/footer.component';
 
 Amplify.configure(outputs);
 
@@ -15,13 +19,33 @@ Amplify.configure(outputs);
   standalone: true,
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
-  imports: [RouterOutlet, RouterLink, CommonModule, AmplifyAuthenticatorModule],
+  imports: [RouterOutlet, RouterLink, CommonModule, AmplifyAuthenticatorModule, HeaderComponent, FooterComponent],
 })
 export class AppComponent {
   title = 'amplify-angular-template';
   store = inject(SessionStore);
   themeService = inject(ThemeService); // to initialize it
   router = inject(Router);
+
+  // Track current route to determine if authentication is needed
+  private navigationEnd$ = this.router.events.pipe(
+    filter((event): event is NavigationEnd => event instanceof NavigationEnd)
+  );
+  currentUrl = toSignal(
+    this.navigationEnd$,
+    { 
+      initialValue: { url: this.router.url, urlAfterRedirects: this.router.url } as NavigationEnd 
+    }
+  );
+
+  // Routes that don't require authentication
+  private publicRoutes = ['/home', '/intro'];
+  
+  needsAuth = computed(() => {
+    const navEnd = this.currentUrl();
+    const url = navEnd?.urlAfterRedirects || navEnd?.url || this.router.url;
+    return !this.publicRoutes.some(route => url.startsWith(route));
+  });
 
   constructor(public authenticator: AuthenticatorService) {
     Amplify.configure(outputs);
