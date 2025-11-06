@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { SessionStore } from '../../state/session.store';
 import { ThemeService } from '../../services/theme.service';
+import { getCurrentUser } from 'aws-amplify/auth';
 
 @Component({
   selector: 'app-header',
@@ -15,5 +16,15 @@ import { ThemeService } from '../../services/theme.service';
 export class HeaderComponent {
   store = inject(SessionStore);
   themeService = inject(ThemeService);
+  router = inject(Router);
+
+  async navigateToApp(): Promise<void> {
+    try {
+      await getCurrentUser();
+      this.router.navigate(['/selector']);
+    } catch {
+      this.router.navigate(['/wizard']);
+    }
+  }
 }
 

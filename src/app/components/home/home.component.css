@@ -1,15 +1,57 @@
-@keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Scoped styles for home page - won't interfere with rest of app */
+.home-page {
+  font-family: 'Poppins', sans-serif;
 }
 
-.animate-fade-in {
-  animation: fade-in 0.6s ease-out;
+.home-page .gradient-bg {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
+.home-page .gradient-hero-bg {
+  background: linear-gradient(135deg, #f3e8ff 0%, #e0f2fe 100%);
+}
+
+.home-page .text-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.home-page .card-shadow {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.home-page .hover-lift {
+  transition: all 0.3s ease;
+}
+
+.home-page .hover-lift:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+}
+
+.home-page .language-card {
+  transition: all 0.3s ease;
+}
+
+.home-page .language-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.home-page .animate-fade-in {
+  animation: fadeIn 1.2s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}

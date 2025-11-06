@@ -1,7 +1,61 @@
-<footer
-  class="bg-[var(--c-bg-muted)] text-center p-4 text-sm text-[var(--c-text-muted)] border-t border-[var(--c-border-subtle)]">
-  <div class="flex justify-center items-center gap-2">
-    <p>Poli &copy; 2024. Powered by AI.</p>
+<footer class="bg-gray-900 text-white py-16">
+  <div class="container mx-auto px-4">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <!-- Logo and Description -->
+      <div class="col-span-1 md:col-span-2">
+        <div class="flex items-center space-x-2 mb-4">
+          <svg width="40" height="40" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="footerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+              </linearGradient>
+            </defs>
+            <line x1="50" y1="32" x2="50" y2="15" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round"/>
+            <line x1="50" y1="32" x2="50" y2="15" stroke="url(#footerGradient)" stroke-width="4" stroke-linecap="round"/>
+            <rect x="20" y="30" width="60" height="55" rx="15" fill="url(#footerGradient)" stroke="#FFFFFF" stroke-width="3"/>
+            <circle cx="50" cy="12" r="7" fill="url(#footerGradient)" stroke="#FFFFFF" stroke-width="3"/>
+            <circle cx="38" cy="50" r="7" fill="#FFFFFF"/>
+            <circle cx="62" cy="50" r="7" fill="#FFFFFF"/>
+            <path d="M 35 68 Q 50 80 65 68" stroke="#FFFFFF" stroke-width="4" fill="none" stroke-linecap="round"/>
+          </svg>
+          <span class="text-xl font-bold">Poli</span>
+        </div>
+        <p class="text-gray-400 mb-4 max-w-md">Our mission is to make language learning accessible, engaging, and effective for everyone.</p>
+        <div class="flex space-x-4">
+          <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+      </div>
+      
+      <!-- Quick Links -->
+      <div>
+        <h3 class="font-semibold text-lg mb-4">Quick Links</h3>
+        <ul class="space-y-2">
+          <li><a routerLink="/intro" class="text-gray-400 hover:text-white transition">About Us</a></li>
+          <li><a routerLink="/intro" class="text-gray-400 hover:text-white transition">How It Works</a></li>
+          <li><a [routerLink]="['/home']" fragment="pricing" class="text-gray-400 hover:text-white transition">Pricing</a></li>
+          <li><a routerLink="/home" class="text-gray-400 hover:text-white transition">Home</a></li>
+        </ul>
+      </div>
+      
+      <!-- Support -->
+      <div>
+        <h3 class="font-semibold text-lg mb-4">Support</h3>
+        <ul class="space-y-2">
+          <li><a routerLink="/intro" class="text-gray-400 hover:text-white transition">Help Center</a></li>
+          <li><a routerLink="/settings" class="text-gray-400 hover:text-white transition">Contact Us</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-white transition">Privacy Policy</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-white transition">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+      <p>&copy; 2025 Poli. All rights reserved.</p>
+    </div>
   </div>
 </footer>
 
