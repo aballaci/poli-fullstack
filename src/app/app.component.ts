@@ -33,14 +33,14 @@ export class AppComponent {
   );
   currentUrl = toSignal(
     this.navigationEnd$,
-    { 
-      initialValue: { url: this.router.url, urlAfterRedirects: this.router.url } as NavigationEnd 
+    {
+      initialValue: { url: this.router.url, urlAfterRedirects: this.router.url } as NavigationEnd
     }
   );
 
   // Routes that don't require authentication
-  private publicRoutes = ['/home', '/intro'];
-  
+  private publicRoutes = ['/home', '/intro', '/help-center', '/contact-us', '/privacy-policy', '/terms-of-service'];
+
   needsAuth = computed(() => {
     const navEnd = this.currentUrl();
     const url = navEnd?.urlAfterRedirects || navEnd?.url || this.router.url;

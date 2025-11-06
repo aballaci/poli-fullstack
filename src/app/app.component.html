@@ -14,6 +14,15 @@
   </ng-template>
 </amplify-authenticator>
 } @else {
-<!-- Public routes (home, intro) don't require authentication -->
-<router-outlet></router-outlet>
+<!-- Public routes (home, intro, help-center, contact-us, privacy-policy, terms-of-service) don't require authentication -->
+<div class="bg-[var(--c-bg-body)] text-[var(--c-text-body)] min-h-screen font-sans flex flex-col">
+  <app-header></app-header>
+
+  <!-- Main Content -->
+  <main class="flex-grow overflow-y-auto">
+    <router-outlet></router-outlet>
+  </main>
+
+  <app-footer></app-footer>
+</div>
 }
