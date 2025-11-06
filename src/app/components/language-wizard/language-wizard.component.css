@@ -2,11 +2,14 @@
 .wizard-page {
     font-family: 'Poppins', sans-serif;
     min-height: 100vh;
-    background: linear-gradient(to bottom right, #f0f9ff, #ffffff, #f0f9ff);
+    /* Light mode: no gradient, just use the body background */
+    background: var(--c-bg-body);
 }
 
-.wizard-page .gradient-hero-bg {
-    background: linear-gradient(135deg, #f3e8ff 0%, #e0f2fe 100%);
+
+
+.dark .wizard-page .gradient-hero-bg {
+    background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
 }
 
 .wizard-page .text-gradient {
@@ -18,6 +21,10 @@
 
 .wizard-page .card-shadow {
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.dark .wizard-page .card-shadow {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
 
 .wizard-page .hover-lift {
