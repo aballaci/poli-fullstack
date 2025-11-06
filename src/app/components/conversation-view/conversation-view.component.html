@@ -1,192 +1,221 @@
- @if (scenario(); as currentScenario) {
-      <div class="p-4 sm:p-6 md:p-8 mx-auto animate-fade-in flex flex-col" [class.max-w-4xl]="mode() !== 'flashcards'" [class.max-w-7xl]="mode() === 'flashcards'">
-        <!-- Header -->
-        <div class="flex-shrink-0 text-center relative">
-          <h2 class="text-2xl sm:text-3xl font-bold text-[var(--c-text-headings)]">{{ currentScenario.name }}</h2>
-          <p class="text-[var(--c-text-muted)] mt-1">{{ currentScenario.description }}</p>
+@if (scenario(); as currentScenario) {
+<div class="p-4 sm:p-6 md:p-8 mx-auto animate-fade-in flex flex-col max-w-5xl">
+  <!-- Header -->
+  <div class="flex-shrink-0 text-center relative">
+    <h2 class="text-2xl sm:text-3xl font-bold text-[var(--c-text-headings)]">{{ currentScenario.name }}</h2>
+    <p class="text-[var(--c-text-muted)] mt-1">{{ currentScenario.description }}</p>
 
-          <!-- Back Button -->
-          @if(mode() !== 'summary' && mode() !== 'completed') {
-            <button (click)="startNewSession()" title="Back to Scenarios" class="absolute top-0 left-0 text-sm text-[var(--c-text-muted)] hover:text-[var(--color-primary)] transition-colors p-2 rounded-full hover:bg-[var(--c-bg-muted)]">
-                <i class="fa-solid fa-arrow-left text-xl"></i>
-                <span class="sr-only">Back to Scenarios</span>
-            </button>
-          }
-        </div>
-
-        <!-- Mode Switcher -->
-        <div class="mt-6 mb-8 w-full flex justify-center">
-          <button (click)="setMode('reading')" class="px-4 py-2 font-semibold transition-colors" [class.text-sky-500]="mode() === 'reading'" [class.border-b-2]="mode() === 'reading'" [class.border-sky-500]="mode() === 'reading'" [class.text-slate-500]="mode() !== 'reading'" [class.hover:text-sky-600]="mode() !== 'reading'">
-            <i class="fa-solid fa-book-open-reader mr-2"></i>Reading
-          </button>
-          <button (click)="setPracticeMode('practice')" class="px-4 py-2 font-semibold transition-colors" [class.text-emerald-500]="mode() === 'practice' && practiceMode() === 'practice'" [class.border-b-2]="mode() === 'practice' && practiceMode() === 'practice'" [class.border-emerald-500]="mode() === 'practice' && practiceMode() === 'practice'" [class.text-slate-500]="mode() !== 'practice' || practiceMode() !== 'practice'" [class.hover:text-emerald-600]="mode() !== 'practice' || practiceMode() !== 'practice'">
-            <i class="fa-solid fa-eye mr-2"></i>Practice
-          </button>
-          <button (click)="setPracticeMode('challenge')" class="px-4 py-2 font-semibold transition-colors" [class.text-red-500]="mode() === 'practice' && practiceMode() === 'challenge'" [class.border-b-2]="mode() === 'practice' && practiceMode() === 'challenge'" [class.border-red-500]="mode() === 'practice' && practiceMode() === 'challenge'" [class.text-slate-500]="mode() !== 'practice' || practiceMode() !== 'challenge'" [class.hover:text-red-600]="mode() !== 'practice' || practiceMode() !== 'challenge'">
-            <i class="fa-solid fa-brain mr-2"></i>Challenge
-          </button>
-          <button (click)="setMode('flashcards')" [disabled]="flashcards().length === 0" class="px-4 py-2 font-semibold transition-colors disabled:opacity-50" [class.text-amber-500]="mode() === 'flashcards'" [class.border-b-2]="mode() === 'flashcards'" [class.border-amber-500]="mode() === 'flashcards'" [class.text-slate-500]="mode() !== 'flashcards'" [class.hover:text-amber-600]="mode() !== 'flashcards'">
-            <i class="fa-solid fa-clone mr-2"></i>Flashcards
-          </button>
-          @if (store.conversationHistory().length > 0) {
-            <button (click)="setMode('summary')" class="px-4 py-2 font-semibold transition-colors" [class.text-indigo-500]="mode() === 'summary'" [class.border-b-2]="mode() === 'summary'" [class.border-indigo-500]="mode() === 'summary'" [class.text-slate-500]="mode() !== 'summary'" [class.hover:text-indigo-600]="mode() !== 'summary'">
-              <i class="fa-solid fa-chart-pie mr-2"></i>Summary
-            </button>
-          }
-        </div>
-
-        <!-- Main content based on mode -->
-        @switch (mode()) {
-          @case ('reading') {
-            <app-reading-mode 
-              [scenario]="currentScenario" 
-              [targetLang]="targetLang()">
-            </app-reading-mode>
-          }
-          @case ('practice') {
-             <div class="flex flex-col">
-                
-                <!-- New Practice View Component -->
-                @if(currentSentence(); as sentence) {
-                   <app-practice-view 
-                      [sentence]="sentence"
-                      [sourceLang]="sourceLang()!"
-                      [targetLang]="targetLang()!"
-                      [currentSentenceIndex]="currentSentenceIndex()"
-                      [totalSentences]="currentScenario.sentences.length"
-                      (nextSentence)="nextSentence()">
-                   </app-practice-view>
-                }
-                
-                <!-- Practice Navigation -->
-                <div class="flex justify-between items-center mt-8">
-                  @if (practiceMode() === 'practice') {
-                    <button (click)="previousSentence()" [disabled]="isFirstSentence()" class="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md bg-slate-200 text-slate-800 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                      <i class="fa-solid fa-chevron-left"></i>
-                      <span>Back</span>
-                    </button>
-                  } @else {
-                    <div class="w-24"></div> <!-- Placeholder for spacing -->
-                  }
-
-                  <p class="text-sm text-center font-semibold text-[var(--c-text-muted)]">
-                    Sentence {{ currentSentenceIndex() + 1 }} of {{ currentScenario.sentences.length }}
-                  </p>
-
-                  @if (practiceMode() === 'practice') {
-                    <button (click)="nextSentence()" class="w-24 justify-center flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md bg-sky-500 text-white hover:bg-sky-600 transition-colors">
-                      @if(isLastSentence()) {
-                        <span>Finish</span>
-                        <i class="fa-solid fa-flag-checkered"></i>
-                      } @else {
-                        <span>Next</span>
-                        <i class="fa-solid fa-chevron-right"></i>
-                      }
-                    </button>
-                  } @else {
-                    <button (click)="nextSentence()" class="w-24 justify-center flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md bg-slate-200 text-slate-800 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 transition-colors">
-                      @if(isLastSentence()) {
-                        <span>Finish</span>
-                        <i class="fa-solid fa-flag-checkered"></i>
-                      } @else {
-                        <span>Skip</span>
-                        <i class="fa-solid fa-forward"></i>
-                      }
-                    </button>
-                  }
-                </div>
-
-                <!-- Practice Settings Toggles -->
-                <div class="mt-6 pt-6 border-t border-[var(--c-border-subtle)] flex flex-col sm:flex-row items-center justify-center gap-x-8 gap-y-4">
-                  <!-- Practice Direction Toggle -->
-                  <button (click)="toggleFlowDirection()" title="Switch practice direction" class="px-4 py-2 text-sm rounded-lg bg-[var(--c-bg-muted)] hover:bg-[var(--c-border-subtle)] transition-colors text-[var(--c-text-body)] font-medium flex items-center shadow-sm">
-  
-  @if (flowDirection() === 'source-to-target') {
-    @if (sourceLang(); as sLang) {
-      <span class="fi fi-{{ sLang.flag }} mr-2"></span>
-      <span class="font-semibold">{{ sLang.display_name }}</span>
+    <!-- Back Button -->
+    @if(mode() !== 'summary' && mode() !== 'completed') {
+    <button (click)="startNewSession()" title="Back to Scenarios"
+      class="absolute top-0 left-0 text-sm text-[var(--c-text-muted)] hover:text-[var(--color-primary)] transition-colors p-2 rounded-full hover:bg-[var(--c-bg-muted)]">
+      <i class="fa-solid fa-arrow-left text-xl"></i>
+      <span class="sr-only">Back to Scenarios</span>
+    </button>
     }
-    <i class="fa-solid fa-arrow-right-long mx-3"></i>
-    @if (targetLang(); as tLang) {
-      <span class="fi fi-{{ tLang.flag }} mr-2"></span>
-      <span class="font-semibold">{{ tLang.display_name }}</span>
+  </div>
+
+  <!-- Mode Switcher -->
+  <div class="mt-6 mb-8 w-full flex justify-center">
+    <button (click)="setMode('reading')" class="px-4 py-2 font-semibold transition-colors"
+      [class.text-sky-500]="mode() === 'reading'" [class.border-b-2]="mode() === 'reading'"
+      [class.border-sky-500]="mode() === 'reading'" [class.text-slate-500]="mode() !== 'reading'"
+      [class.hover:text-sky-600]="mode() !== 'reading'">
+      <i class="fa-solid fa-book-open-reader mr-2"></i>Reading
+    </button>
+    <button (click)="setPracticeMode('practice')" class="px-4 py-2 font-semibold transition-colors"
+      [class.text-emerald-500]="mode() === 'practice' && practiceMode() === 'practice'"
+      [class.border-b-2]="mode() === 'practice' && practiceMode() === 'practice'"
+      [class.border-emerald-500]="mode() === 'practice' && practiceMode() === 'practice'"
+      [class.text-slate-500]="mode() !== 'practice' || practiceMode() !== 'practice'"
+      [class.hover:text-emerald-600]="mode() !== 'practice' || practiceMode() !== 'practice'">
+      <i class="fa-solid fa-eye mr-2"></i>Practice
+    </button>
+    <button (click)="setPracticeMode('challenge')" class="px-4 py-2 font-semibold transition-colors"
+      [class.text-red-500]="mode() === 'practice' && practiceMode() === 'challenge'"
+      [class.border-b-2]="mode() === 'practice' && practiceMode() === 'challenge'"
+      [class.border-red-500]="mode() === 'practice' && practiceMode() === 'challenge'"
+      [class.text-slate-500]="mode() !== 'practice' || practiceMode() !== 'challenge'"
+      [class.hover:text-red-600]="mode() !== 'practice' || practiceMode() !== 'challenge'">
+      <i class="fa-solid fa-brain mr-2"></i>Challenge
+    </button>
+    <button (click)="setMode('flashcards')" [disabled]="flashcards().length === 0"
+      class="px-4 py-2 font-semibold transition-colors disabled:opacity-50"
+      [class.text-amber-500]="mode() === 'flashcards'" [class.border-b-2]="mode() === 'flashcards'"
+      [class.border-amber-500]="mode() === 'flashcards'" [class.text-slate-500]="mode() !== 'flashcards'"
+      [class.hover:text-amber-600]="mode() !== 'flashcards'">
+      <i class="fa-solid fa-clone mr-2"></i>Flashcards
+    </button>
+    @if (store.conversationHistory().length > 0) {
+    <button (click)="setMode('summary')" class="px-4 py-2 font-semibold transition-colors"
+      [class.text-indigo-500]="mode() === 'summary'" [class.border-b-2]="mode() === 'summary'"
+      [class.border-indigo-500]="mode() === 'summary'" [class.text-slate-500]="mode() !== 'summary'"
+      [class.hover:text-indigo-600]="mode() !== 'summary'">
+      <i class="fa-solid fa-chart-pie mr-2"></i>Summary
+    </button>
     }
-  } @else {
-    @if (targetLang(); as tLang) {
-      <span class="fi fi-{{ tLang.flag }} mr-2"></span>
-      <span class="font-semibold">{{ tLang.display_name }}</span>
-    }
-    <i class="fa-solid fa-arrow-right-long mx-3"></i>
-    @if (sourceLang(); as sLang) {
-      <span class="fi fi-{{ sLang.flag }} mr-2"></span>
-      <span class="font-semibold">{{ sLang.display_name }}</span>
-    }
+  </div>
+
+  <!-- Main content based on mode -->
+  @switch (mode()) {
+  @case ('reading') {
+  <div class="w-full">
+    <app-reading-mode [scenario]="currentScenario" [targetLang]="targetLang()">
+    </app-reading-mode>
+  </div>
   }
-</button>
-                  <!-- AI Evaluation Toggle -->
-                  <div class="flex items-center gap-2">
-                    <label for="ai-toggle-convo" class="text-sm font-semibold text-[var(--c-text-muted)] cursor-pointer">AI Evaluation</label>
-                    <button
-                      id="ai-toggle-convo"
-                      (click)="toggleAiEvaluation()"
-                      type="button"
-                      class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
-                      [class.bg-sky-500]="useAI()" [class.bg-slate-300]="!useAI()"
-                      role="switch" [attr.aria-checked]="useAI()">
-                      <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out" [class.translate-x-5]="useAI()" [class.translate-x-0]="!useAI()"></span>
-                    </button>
-                  </div>
-                </div>
+  @case ('practice') {
+  <div class="flex flex-col w-full">
 
-            </div>
-          }
-          @case ('summary') {
-            <app-summary-view (startNewSession)="startNewSession()">
-            </app-summary-view>
-          }
-          @case ('flashcards') {
-            <div class="flex flex-col items-center">
-              <app-flash-cards [flashcards]="flashcards()"></app-flash-cards>
-            </div>
-          }
-          @case('completed') {
-            <div class="animate-fade-in text-center flex flex-col items-center justify-center py-12">
-              <i class="fa-solid fa-flag-checkered text-6xl text-emerald-500 mb-4"></i>
-              <h2 class="text-3xl font-bold text-[var(--c-text-headings)]">Practice Complete!</h2>
-              <p class="text-[var(--c-text-muted)] mt-2 max-w-md">
-                Great job finishing the session. Repetition is key to mastery. What would you like to do next?
-              </p>
-          
-              <div class="mt-8 flex flex-col sm:flex-row gap-4">
-                <button (click)="repeatSession()" class="bg-sky-500 text-white font-semibold py-3 px-6 rounded-lg hover:bg-sky-600 transition-colors flex items-center gap-2 justify-center">
-                  <i class="fa-solid fa-rotate-right"></i>
-                  Repeat Practice
-                </button>
-                <button (click)="startChallengeMode()" class="bg-red-500 text-white font-semibold py-3 px-6 rounded-lg hover:bg-red-600 transition-colors flex items-center gap-2 justify-center">
-                  <i class="fa-solid fa-brain"></i>
-                  Try Challenge Mode
-                </button>
-              </div>
-          
-              <div class="mt-6 pt-6 border-t border-[var(--c-border-subtle)] w-full max-w-md flex justify-center gap-8 text-sm">
-                  @if (store.conversationHistory().length > 0) {
-                      <button (click)="viewSummary()" class="font-semibold text-[var(--c-text-muted)] hover:text-[var(--color-primary)] transition-colors">
-                          View Session Summary
-                      </button>
-                  }
-                  <button (click)="startNewSession()" class="font-semibold text-[var(--c-text-muted)] hover:text-[var(--color-primary)] transition-colors">
-                      Choose New Scenario
-                  </button>
-              </div>
-            </div>
-          }
-        }
-      </div>
-    } @else {
-      <div class="flex justify-center items-center h-full">
-        <div class="text-center text-[var(--c-text-muted)]">
-          <i class="fa-solid fa-spinner fa-spin text-4xl"></i>
-          <p class="mt-4">Loading scenario...</p>
-        </div>
-      </div>
+    <!-- New Practice View Component -->
+    @if(currentSentence(); as sentence) {
+    <div class="w-full">
+      <app-practice-view [sentence]="sentence" [sourceLang]="sourceLang()!" [targetLang]="targetLang()!"
+        [currentSentenceIndex]="currentSentenceIndex()" [totalSentences]="currentScenario.sentences.length"
+        (nextSentence)="nextSentence()">
+      </app-practice-view>
+    </div>
     }
+
+    <!-- Practice Navigation -->
+    <div class="flex justify-between items-center mt-8">
+      @if (practiceMode() === 'practice') {
+      <button (click)="previousSentence()" [disabled]="isFirstSentence()"
+        class="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md bg-slate-200 text-slate-800 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+        <i class="fa-solid fa-chevron-left"></i>
+        <span>Back</span>
+      </button>
+      } @else {
+      <div class="w-24"></div> <!-- Placeholder for spacing -->
+      }
+
+      <p class="text-sm text-center font-semibold text-[var(--c-text-muted)]">
+        Sentence {{ currentSentenceIndex() + 1 }} of {{ currentScenario.sentences.length }}
+      </p>
+
+      @if (practiceMode() === 'practice') {
+      <button (click)="nextSentence()"
+        class="w-24 justify-center flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md bg-sky-500 text-white hover:bg-sky-600 transition-colors">
+        @if(isLastSentence()) {
+        <span>Finish</span>
+        <i class="fa-solid fa-flag-checkered"></i>
+        } @else {
+        <span>Next</span>
+        <i class="fa-solid fa-chevron-right"></i>
+        }
+      </button>
+      } @else {
+      <button (click)="nextSentence()"
+        class="w-24 justify-center flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md bg-slate-200 text-slate-800 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 transition-colors">
+        @if(isLastSentence()) {
+        <span>Finish</span>
+        <i class="fa-solid fa-flag-checkered"></i>
+        } @else {
+        <span>Skip</span>
+        <i class="fa-solid fa-forward"></i>
+        }
+      </button>
+      }
+    </div>
+
+    <!-- Practice Settings Toggles -->
+    <div
+      class="mt-6 pt-6 border-t border-[var(--c-border-subtle)] flex flex-col sm:flex-row items-center justify-center gap-x-8 gap-y-4">
+      <!-- Practice Direction Toggle -->
+      <button (click)="toggleFlowDirection()" title="Switch practice direction"
+        class="px-4 py-2 text-sm rounded-lg bg-[var(--c-bg-muted)] hover:bg-[var(--c-border-subtle)] transition-colors text-[var(--c-text-body)] font-medium flex items-center shadow-sm">
+
+        @if (flowDirection() === 'source-to-target') {
+        @if (sourceLang(); as sLang) {
+        <span class="fi fi-{{ sLang.flag }} mr-2"></span>
+        <span class="font-semibold">{{ sLang.display_name }}</span>
+        }
+        <i class="fa-solid fa-arrow-right-long mx-3"></i>
+        @if (targetLang(); as tLang) {
+        <span class="fi fi-{{ tLang.flag }} mr-2"></span>
+        <span class="font-semibold">{{ tLang.display_name }}</span>
+        }
+        } @else {
+        @if (targetLang(); as tLang) {
+        <span class="fi fi-{{ tLang.flag }} mr-2"></span>
+        <span class="font-semibold">{{ tLang.display_name }}</span>
+        }
+        <i class="fa-solid fa-arrow-right-long mx-3"></i>
+        @if (sourceLang(); as sLang) {
+        <span class="fi fi-{{ sLang.flag }} mr-2"></span>
+        <span class="font-semibold">{{ sLang.display_name }}</span>
+        }
+        }
+      </button>
+      <!-- AI Evaluation Toggle -->
+      <div class="flex items-center gap-2">
+        <label for="ai-toggle-convo" class="text-sm font-semibold text-[var(--c-text-muted)] cursor-pointer">AI
+          Evaluation</label>
+        <button id="ai-toggle-convo" (click)="toggleAiEvaluation()" type="button"
+          class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
+          [class.bg-sky-500]="useAI()" [class.bg-slate-300]="!useAI()" role="switch" [attr.aria-checked]="useAI()">
+          <span aria-hidden="true"
+            class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+            [class.translate-x-5]="useAI()" [class.translate-x-0]="!useAI()"></span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+  }
+  @case ('summary') {
+  <div class="w-full">
+    <app-summary-view (startNewSession)="startNewSession()">
+    </app-summary-view>
+  </div>
+  }
+  @case ('flashcards') {
+  <div class="flex flex-col items-center w-full">
+    <app-flash-cards [flashcards]="flashcards()" class="w-full"></app-flash-cards>
+  </div>
+  }
+  @case('completed') {
+  <div class="animate-fade-in text-center flex flex-col items-center justify-center py-12">
+    <i class="fa-solid fa-flag-checkered text-6xl text-emerald-500 mb-4"></i>
+    <h2 class="text-3xl font-bold text-[var(--c-text-headings)]">Practice Complete!</h2>
+    <p class="text-[var(--c-text-muted)] mt-2 max-w-md">
+      Great job finishing the session. Repetition is key to mastery. What would you like to do next?
+    </p>
+
+    <div class="mt-8 flex flex-col sm:flex-row gap-4">
+      <button (click)="repeatSession()"
+        class="bg-sky-500 text-white font-semibold py-3 px-6 rounded-lg hover:bg-sky-600 transition-colors flex items-center gap-2 justify-center">
+        <i class="fa-solid fa-rotate-right"></i>
+        Repeat Practice
+      </button>
+      <button (click)="startChallengeMode()"
+        class="bg-red-500 text-white font-semibold py-3 px-6 rounded-lg hover:bg-red-600 transition-colors flex items-center gap-2 justify-center">
+        <i class="fa-solid fa-brain"></i>
+        Try Challenge Mode
+      </button>
+    </div>
+
+    <div class="mt-6 pt-6 border-t border-[var(--c-border-subtle)] w-full max-w-md flex justify-center gap-8 text-sm">
+      @if (store.conversationHistory().length > 0) {
+      <button (click)="viewSummary()"
+        class="font-semibold text-[var(--c-text-muted)] hover:text-[var(--color-primary)] transition-colors">
+        View Session Summary
+      </button>
+      }
+      <button (click)="startNewSession()"
+        class="font-semibold text-[var(--c-text-muted)] hover:text-[var(--color-primary)] transition-colors">
+        Choose New Scenario
+      </button>
+    </div>
+  </div>
+  }
+  }
+</div>
+} @else {
+<div class="flex justify-center items-center h-full">
+  <div class="text-center text-[var(--c-text-muted)]">
+    <i class="fa-solid fa-spinner fa-spin text-4xl"></i>
+    <p class="mt-4">Loading scenario...</p>
+  </div>
+</div>
+}
