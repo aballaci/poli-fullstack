@@ -305,4 +305,54 @@ export class ScenarioSelectorComponent implements OnInit {
     }
   }
 
+  // Helper to get difficulty level tag color and text
+  getDifficultyTag(difficulty: string): { text: string; bgColor: string; textColor: string } {
+    const level = difficulty.toUpperCase();
+    if (level === 'A1' || level === 'A2') {
+      return {
+        text: 'Beginner',
+        bgColor: 'bg-emerald-50 dark:bg-emerald-900/30',
+        textColor: 'text-emerald-600 dark:text-emerald-300'
+      };
+    } else if (level === 'B1' || level === 'B2') {
+      return {
+        text: 'Intermediate',
+        bgColor: 'bg-amber-50 dark:bg-amber-900/30',
+        textColor: 'text-amber-600 dark:text-amber-300'
+      };
+    } else if (level === 'C1' || level === 'C2') {
+      return {
+        text: 'Advanced',
+        bgColor: 'bg-rose-50 dark:bg-rose-900/30',
+        textColor: 'text-rose-600 dark:text-rose-300'
+      };
+    }
+    return {
+      text: difficulty,
+      bgColor: 'bg-slate-100 dark:bg-slate-700',
+      textColor: 'text-slate-600 dark:text-slate-300'
+    };
+  }
+
+  // Helper to get difficulty tag classes as a single string
+  getDifficultyTagClasses(difficulty: string): string {
+    const tag = this.getDifficultyTag(difficulty);
+    return `px-2.5 py-1 rounded-md text-xs font-medium ${tag.bgColor} ${tag.textColor}`;
+  }
+
+  // Helper to get difficulty tag text
+  getDifficultyTagText(difficulty: string): string {
+    return this.getDifficultyTag(difficulty).text;
+  }
+
+  // Helper to get category/topic tag
+  getCategoryTag(topic?: string): string {
+    return topic || 'Custom';
+  }
+
+  // Helper to get category tag classes
+  getCategoryTagClasses(): string {
+    return 'px-2.5 py-1 rounded-md text-xs font-medium bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300';
+  }
+
 }

@@ -42,25 +42,27 @@
     <div class="flex items-center space-x-4">
       <!-- Target Language Flag -->
       @if (targetLanguage(); as lang) {
-        <div class="flex items-center justify-center w-8 h-8 rounded-md bg-[var(--c-bg-muted)] border border-[var(--c-border-subtle)]">
-          <span class="fi fi-{{ lang.flag }} rounded-sm text-lg"></span>
-        </div>
+      <button (click)="navigateToLanguageWizard()" type="button"
+        class="flex items-center justify-center w-8 h-8 rounded-md bg-[var(--c-bg-muted)] border border-[var(--c-border-subtle)] hover:bg-[var(--c-bg-surface)] hover:border-[var(--color-primary)]/30 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+        [attr.aria-label]="'Change target language (currently ' + lang.display_name + ')'">
+        <span class="fi fi-{{ lang.flag }} rounded-sm text-lg"></span>
+      </button>
       }
       <!-- Theme Toggle Icon -->
-      <button
-        (click)="toggleTheme()"
-        type="button"
+      <button (click)="toggleTheme()" type="button"
         class="p-2 rounded-md text-[var(--c-text-body)] hover:bg-[var(--c-bg-muted)] transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
         [attr.aria-label]="theme() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'">
         @if (theme() === 'dark') {
-          <i class="fa-solid fa-moon text-xl"></i>
+        <i class="fa-solid fa-moon text-xl"></i>
         } @else {
-          <i class="fa-solid fa-sun text-xl text-yellow-500"></i>
+        <i class="fa-solid fa-sun text-xl text-yellow-500"></i>
         }
       </button>
       @if (store.isConfigured()) {
-      <a routerLink="/selector" class="text-[var(--c-text-body)] hover:text-purple-600 font-medium transition">Dashboard</a>
-      <a routerLink="/settings" class="text-[var(--c-text-body)] hover:text-purple-600 font-medium transition">Settings</a>
+      <a routerLink="/selector"
+        class="text-[var(--c-text-body)] hover:text-purple-600 font-medium transition">Dashboard</a>
+      <a routerLink="/settings"
+        class="text-[var(--c-text-body)] hover:text-purple-600 font-medium transition">Settings</a>
       } @else {
       <a routerLink="/wizard" class="text-[var(--c-text-body)] hover:text-purple-600 font-medium transition">Login</a>
       <button (click)="navigateToApp()"

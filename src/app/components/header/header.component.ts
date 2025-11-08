@@ -33,5 +33,9 @@ export class HeaderComponent {
   toggleTheme(): void {
     this.themeService.toggleTheme();
   }
+
+  navigateToLanguageWizard(): void {
+    this.router.navigate(['/wizard']);
+  }
 }
 
