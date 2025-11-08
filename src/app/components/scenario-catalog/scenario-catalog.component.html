@@ -2,74 +2,78 @@
   <div class="flex items-center justify-between mb-6">
     <h2 class="text-2xl font-bold text-[var(--c-text-headings)]">Scenario Catalog</h2>
     <label class="flex items-center gap-2 text-sm text-[var(--c-text-muted)] cursor-pointer">
-      <input 
-        type="checkbox" 
-        [checked]="filterByCurrentLevel()" 
+      <input type="checkbox" [checked]="filterByCurrentLevel()"
         (change)="filterByCurrentLevel.set($any($event.target).checked)"
         class="rounded text-[var(--color-primary)] focus:ring-[var(--color-primary)]">
       <span>Filter by current level ({{ store.difficultyLevel() || 'N/A' }})</span>
     </label>
   </div>
-  
+
   @if (selectedScenarioId()) {
-    <div class="text-center py-10">
-        <svg class="animate-spin mx-auto h-8 w-8 text-[var(--color-primary)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-        <p class="mt-4 font-semibold text-[var(--c-text-body)]">{{ loadingMessage() }}</p>
-    </div>
+  <div class="text-center py-10">
+    <svg class="animate-spin mx-auto h-8 w-8 text-[var(--color-primary)]" xmlns="http://www.w3.org/2000/svg" fill="none"
+      viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+      </path>
+    </svg>
+    <p class="mt-4 font-semibold text-[var(--c-text-body)]">{{ loadingMessage() }}</p>
+  </div>
   } @else if (catalogList().length === 0) {
-    <div class="text-center py-10 text-[var(--c-text-muted)]">
-      <i class="fa-solid fa-book text-4xl mb-4 opacity-50"></i>
-      <p>No scenarios available yet. Generate a scenario to get started!</p>
-    </div>
+  <div class="text-center py-10 text-[var(--c-text-muted)]">
+    <i class="fa-solid fa-book text-4xl mb-4 opacity-50"></i>
+    <p>No scenarios available yet. Generate a scenario to get started!</p>
+  </div>
   } @else {
-    <div class="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
-      @for (scenario of catalogList(); track scenario.id) {
-        <button 
-          (click)="loadScenario(scenario.id)"
-          class="w-full text-left bg-white dark:bg-[var(--c-bg-surface)] rounded-lg shadow-sm hover:shadow-md transition-all duration-200 p-4 border border-[var(--c-border-subtle)] hover:border-[var(--color-primary)]/30 group">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1 min-w-0">
-              <!-- Title -->
-              <h3 class="font-bold text-[var(--c-text-headings)] text-base mb-1.5 group-hover:text-[var(--color-primary)] transition-colors">
-                {{ scenario.name }}
-              </h3>
-              <!-- Description -->
-              <p class="text-sm text-[var(--c-text-muted)] mb-3 line-clamp-2">
-                {{ scenario.description }}
-              </p>
-              <!-- Tags -->
-              <div class="flex items-center gap-2 flex-wrap">
-                @if (scenario.difficulty_level) {
-                  <span [class]="getDifficultyTagClasses(scenario.difficulty_level)">
-                    {{ getDifficultyTagText(scenario.difficulty_level) }}
-                  </span>
-                }
-                <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300">
-                  {{ getCategoryTag(scenario.topic) }}
-                </span>
-              </div>
-            </div>
-            <!-- Date and Arrow -->
-            <div class="flex items-center gap-3 flex-shrink-0">
-              <span class="text-sm text-[var(--c-text-muted)] whitespace-nowrap">
-                {{ formatDate() }}
-              </span>
-              <i class="fa-solid fa-chevron-right text-[var(--c-text-muted)] group-hover:text-[var(--color-primary)] transition-colors"></i>
-            </div>
+  <div class="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
+    @for (scenario of catalogList(); track scenario.id) {
+    <button (click)="loadScenario(scenario.id)"
+      class="w-full text-left dark:bg-[var(--c-bg-surface)] rounded-lg shadow-sm hover:shadow-md transition-all duration-200 p-4 border border-[var(--c-border-subtle)] hover:border-[var(--color-primary)]/30 group">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex-1 min-w-0">
+          <!-- Title -->
+          <h3
+            class="font-bold text-[var(--c-text-headings)] text-base mb-1.5 group-hover:text-[var(--color-primary)] transition-colors">
+            {{ scenario.name }}
+          </h3>
+          <!-- Description -->
+          <p class="text-sm text-[var(--c-text-muted)] mb-3 line-clamp-2">
+            {{ scenario.description }}
+          </p>
+          <!-- Tags -->
+          <div class="flex items-center gap-2 flex-wrap">
+            @if (scenario.difficulty_level) {
+            <span [class]="getDifficultyTagClasses(scenario.difficulty_level)">
+              {{ getDifficultyTagText(scenario.difficulty_level) }}
+            </span>
+            }
+            <span
+              class="px-2.5 py-1 rounded-md text-xs font-medium bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300">
+              {{ getCategoryTag(scenario.topic) }}
+            </span>
           </div>
-        </button>
-      }
-    </div>
+        </div>
+        <!-- Date and Arrow -->
+        <div class="flex items-center gap-3 flex-shrink-0">
+          <span class="text-sm text-[var(--c-text-muted)] whitespace-nowrap">
+            {{ formatDate() }}
+          </span>
+          <i
+            class="fa-solid fa-chevron-right text-[var(--c-text-muted)] group-hover:text-[var(--color-primary)] transition-colors"></i>
+        </div>
+      </div>
+    </button>
+    }
+  </div>
   }
 
   @if (error()) {
-    <div class="mt-6 bg-red-100 dark:bg-red-900/20 border-l-4 border-red-500 text-red-700 dark:text-red-400 p-4 rounded-r-lg" role="alert">
-        <p class="font-bold">An Error Occurred</p>
-        <p>{{ error() }}</p>
-    </div>
+  <div
+    class="mt-6 bg-red-100 dark:bg-red-900/20 border-l-4 border-red-500 text-red-700 dark:text-red-400 p-4 rounded-r-lg"
+    role="alert">
+    <p class="font-bold">An Error Occurred</p>
+    <p>{{ error() }}</p>
+  </div>
   }
 </div>
-

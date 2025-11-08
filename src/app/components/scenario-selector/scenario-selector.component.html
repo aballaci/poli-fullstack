@@ -1,41 +1,59 @@
 <div class="max-w-5xl mx-auto">
+  <!-- Hidden reference to theme to trigger change detection on theme switch -->
+  <span class="hidden">{{ themeService.theme() }}</span>
   <!-- Tabs -->
   <div class="mb-6 flex items-center justify-center">
-    <div
-      class="inline-flex bg-[var(--c-bg-surface)] dark:bg-slate-800 rounded-full p-1.5 shadow-lg border border-[var(--c-border-subtle)] dark:border-gray-700">
+    <div class="inline-flex rounded-full p-1.5 shadow-lg border border-[var(--c-border-subtle)]"
+      [class.bg-white]="themeService.theme() === 'light'" [class.bg-slate-800]="themeService.theme() === 'dark'">
       <button (click)="activeTab.set('topics')"
-        class="px-5 py-2.5 font-semibold text-base transition-all duration-200 rounded-full flex items-center gap-2 relative hover:text-purple-600 dark:hover:text-purple-400"
+        class="px-5 py-2.5 font-semibold text-base transition-all duration-200 rounded-full flex items-center gap-2 relative"
         [class.bg-purple-600]="activeTab() === 'topics'" [class.text-white]="activeTab() === 'topics'"
-        [class.text-[var(--c-text-headings)]]="activeTab() !== 'topics'"
-        [class.dark:text-gray-300]="activeTab() !== 'topics'" [class.shadow-lg]="activeTab() === 'topics'"
-        [ngClass]="{'shadow-[0_0_15px_rgba(139,92,246,0.5)]': activeTab() === 'topics'}">
+        [class.text-gray-700]="activeTab() !== 'topics' && themeService.theme() === 'light'"
+        [class.text-gray-300]="activeTab() !== 'topics' && themeService.theme() === 'dark'"
+        [class.shadow-lg]="activeTab() === 'topics'" [ngClass]="{
+          'shadow-[0_0_15px_rgba(139,92,246,0.5)]': activeTab() === 'topics',
+          'hover:text-purple-600': activeTab() !== 'topics',
+          'hover:text-pink-200': activeTab() === 'topics'
+        }">
         <i class="fa-solid fa-layer-group"></i>
         <span>From Topics</span>
       </button>
       <button (click)="activeTab.set('custom')"
-        class="px-5 py-2.5 font-semibold text-base transition-all duration-200 rounded-full flex items-center gap-2 relative hover:text-purple-600 dark:hover:text-purple-400"
+        class="px-5 py-2.5 font-semibold text-base transition-all duration-200 rounded-full flex items-center gap-2 relative"
         [class.bg-purple-600]="activeTab() === 'custom'" [class.text-white]="activeTab() === 'custom'"
-        [class.text-[var(--c-text-headings)]]="activeTab() !== 'custom'"
-        [class.dark:text-gray-300]="activeTab() !== 'custom'" [class.shadow-lg]="activeTab() === 'custom'"
-        [ngClass]="{'shadow-[0_0_15px_rgba(139,92,246,0.5)]': activeTab() === 'custom'}">
+        [class.text-gray-700]="activeTab() !== 'custom' && themeService.theme() === 'light'"
+        [class.text-gray-300]="activeTab() !== 'custom' && themeService.theme() === 'dark'"
+        [class.shadow-lg]="activeTab() === 'custom'" [ngClass]="{
+          'shadow-[0_0_15px_rgba(139,92,246,0.5)]': activeTab() === 'custom',
+          'hover:text-purple-600': activeTab() !== 'custom',
+          'hover:text-pink-200': activeTab() === 'custom'
+        }">
         <i class="fa-solid fa-paste"></i>
         <span>Use Custom Text</span>
       </button>
       <button (click)="activeTab.set('catalog')"
-        class="px-5 py-2.5 font-semibold text-base transition-all duration-200 rounded-full flex items-center gap-2 relative hover:text-purple-600 dark:hover:text-purple-400"
+        class="px-5 py-2.5 font-semibold text-base transition-all duration-200 rounded-full flex items-center gap-2 relative"
         [class.bg-purple-600]="activeTab() === 'catalog'" [class.text-white]="activeTab() === 'catalog'"
-        [class.text-[var(--c-text-headings)]]="activeTab() !== 'catalog'"
-        [class.dark:text-gray-300]="activeTab() !== 'catalog'" [class.shadow-lg]="activeTab() === 'catalog'"
-        [ngClass]="{'shadow-[0_0_15px_rgba(139,92,246,0.5)]': activeTab() === 'catalog'}">
+        [class.text-gray-700]="activeTab() !== 'catalog' && themeService.theme() === 'light'"
+        [class.text-gray-300]="activeTab() !== 'catalog' && themeService.theme() === 'dark'"
+        [class.shadow-lg]="activeTab() === 'catalog'" [ngClass]="{
+          'shadow-[0_0_15px_rgba(139,92,246,0.5)]': activeTab() === 'catalog',
+          'hover:text-purple-600': activeTab() !== 'catalog',
+          'hover:text-pink-200': activeTab() === 'catalog'
+        }">
         <i class="fa-solid fa-book"></i>
         <span>Catalog</span>
       </button>
       <button (click)="activeTab.set('history')"
-        class="px-5 py-2.5 font-semibold text-base transition-all duration-200 rounded-full flex items-center gap-2 relative hover:text-purple-600 dark:hover:text-purple-400"
+        class="px-5 py-2.5 font-semibold text-base transition-all duration-200 rounded-full flex items-center gap-2 relative"
         [class.bg-purple-600]="activeTab() === 'history'" [class.text-white]="activeTab() === 'history'"
-        [class.text-[var(--c-text-headings)]]="activeTab() !== 'history'"
-        [class.dark:text-gray-300]="activeTab() !== 'history'" [class.shadow-lg]="activeTab() === 'history'"
-        [ngClass]="{'shadow-[0_0_15px_rgba(139,92,246,0.5)]': activeTab() === 'history'}">
+        [class.text-gray-700]="activeTab() !== 'history' && themeService.theme() === 'light'"
+        [class.text-gray-300]="activeTab() !== 'history' && themeService.theme() === 'dark'"
+        [class.shadow-lg]="activeTab() === 'history'" [ngClass]="{
+          'shadow-[0_0_15px_rgba(139,92,246,0.5)]': activeTab() === 'history',
+          'hover:text-purple-600': activeTab() !== 'history',
+          'hover:text-pink-200': activeTab() === 'history'
+        }">
         <i class="fa-solid fa-clock-rotate-left"></i>
         <span>History</span>
       </button>
@@ -111,7 +129,7 @@
             <p class="font-semibold text-sm text-[var(--c-text-headings)] line-clamp-2">{{ scenario.name }}</p>
             <div class="flex items-center gap-1.5 text-xs text-[var(--c-text-muted)]">
               <span
-                class="font-mono bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 px-1.5 py-0.5 rounded text-[10px]">{{
+                class="font-mono font-medium bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 px-1.5 py-0.5 rounded text-[10px]">{{
                 scenario.difficulty_level }}</span>
             </div>
           </button>

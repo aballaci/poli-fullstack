@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { GeminiService } from '../../services/gemini.service';
 import { LanguageService } from '../../services/language.service';
 import { SessionStore } from '../../state/session.store';
+import { ThemeService } from '../../services/theme.service';
 import { ConversationScenario, ScenarioSummary } from '../../models';
 import { TOPICS_DATA, Category, Subtopic } from '../../topics.data';
 import { ScenarioCatalogComponent } from '../scenario-catalog/scenario-catalog.component';
@@ -33,6 +34,7 @@ export class ScenarioSelectorComponent implements OnInit {
   languageService = inject(LanguageService);
   store = inject(SessionStore);
   router = inject(Router);
+  themeService = inject(ThemeService);
 
   state = signal<SelectorState>('idle');
   error = signal<string | null>(null);

@@ -17,3 +17,10 @@ button {
 }
 
 /* Remove hardcoded list styles - let components style lists as needed */
+
+/* Improve font rendering for small text chips */
+span[class*="text-xs"] {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
