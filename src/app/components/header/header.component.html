@@ -1,4 +1,7 @@
-<nav class="bg-white shadow-sm sticky top-0 z-50">
+<nav class="bg-[var(--c-bg-surface)] border-b border-[var(--c-border-subtle)] shadow-sm sticky top-0 z-50">
+  <!-- Hidden references to signals to trigger change detection -->
+  <span class="hidden">{{ themeService.theme() }}</span>
+  <span class="hidden">{{ targetLanguage()?.code }}</span>
   <div class="container mx-auto px-4 py-3 flex justify-between items-center">
     <div class="flex items-center space-x-2">
       <!-- SVG Logo -->
@@ -27,21 +30,39 @@
     </div>
     <div class="hidden md:flex space-x-8">
       <a [routerLink]="['/home']" fragment="home"
-        class="text-gray-700 hover:text-purple-600 transition font-medium">Home</a>
+        class="text-[var(--c-text-body)] hover:text-purple-600 transition font-medium">Home</a>
       <a [routerLink]="['/home']" fragment="languages"
-        class="text-gray-700 hover:text-purple-600 transition font-medium">Languages</a>
+        class="text-[var(--c-text-body)] hover:text-purple-600 transition font-medium">Languages</a>
       <a [routerLink]="['/home']" fragment="features"
-        class="text-gray-700 hover:text-purple-600 transition font-medium">Features</a>
+        class="text-[var(--c-text-body)] hover:text-purple-600 transition font-medium">Features</a>
       <a [routerLink]="['/home']" fragment="pricing"
-        class="text-gray-700 hover:text-purple-600 transition font-medium">Pricing</a>
-      <a routerLink="/intro" class="text-gray-700 hover:text-purple-600 transition font-medium">About</a>
+        class="text-[var(--c-text-body)] hover:text-purple-600 transition font-medium">Pricing</a>
+      <a routerLink="/intro" class="text-[var(--c-text-body)] hover:text-purple-600 transition font-medium">About</a>
     </div>
     <div class="flex items-center space-x-4">
+      <!-- Target Language Flag -->
+      @if (targetLanguage(); as lang) {
+        <div class="flex items-center justify-center w-8 h-8 rounded-md bg-[var(--c-bg-muted)] border border-[var(--c-border-subtle)]">
+          <span class="fi fi-{{ lang.flag }} rounded-sm text-lg"></span>
+        </div>
+      }
+      <!-- Theme Toggle Icon -->
+      <button
+        (click)="toggleTheme()"
+        type="button"
+        class="p-2 rounded-md text-[var(--c-text-body)] hover:bg-[var(--c-bg-muted)] transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+        [attr.aria-label]="theme() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'">
+        @if (theme() === 'dark') {
+          <i class="fa-solid fa-moon text-xl"></i>
+        } @else {
+          <i class="fa-solid fa-sun text-xl text-yellow-500"></i>
+        }
+      </button>
       @if (store.isConfigured()) {
-      <a routerLink="/selector" class="text-gray-700 hover:text-purple-600 font-medium transition">Dashboard</a>
-      <a routerLink="/settings" class="text-gray-700 hover:text-purple-600 font-medium transition">Settings</a>
+      <a routerLink="/selector" class="text-[var(--c-text-body)] hover:text-purple-600 font-medium transition">Dashboard</a>
+      <a routerLink="/settings" class="text-[var(--c-text-body)] hover:text-purple-600 font-medium transition">Settings</a>
       } @else {
-      <a routerLink="/wizard" class="text-gray-700 hover:text-purple-600 font-medium transition">Login</a>
+      <a routerLink="/wizard" class="text-[var(--c-text-body)] hover:text-purple-600 font-medium transition">Login</a>
       <button (click)="navigateToApp()"
         class="bg-purple-600 text-white px-5 py-2.5 rounded-full font-medium hover:bg-purple-700 transition shadow-sm hover:shadow-md">Sign
         Up Free</button>

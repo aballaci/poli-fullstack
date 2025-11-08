@@ -18,6 +18,9 @@ export class HeaderComponent {
   themeService = inject(ThemeService);
   router = inject(Router);
 
+  targetLanguage = this.store.targetLanguage;
+  theme = this.themeService.theme;
+
   async navigateToApp(): Promise<void> {
     try {
       await getCurrentUser();
@@ -25,6 +28,10 @@ export class HeaderComponent {
     } catch {
       this.router.navigate(['/wizard']);
     }
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
   }
 }
 
