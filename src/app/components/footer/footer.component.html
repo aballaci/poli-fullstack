@@ -148,10 +148,10 @@
       <div>
         <h3 class="font-semibold text-lg mb-4">Support</h3>
         <ul class="space-y-2">
-          <li><a routerLink="/help-center" class="text-gray-400 hover:text-white transition">Help Center</a></li>
-          <li><a routerLink="/contact-us" class="text-gray-400 hover:text-white transition">Contact Us</a></li>
-          <li><a routerLink="/privacy-policy" class="text-gray-400 hover:text-white transition">Privacy Policy</a></li>
-          <li><a routerLink="/terms-of-service" class="text-gray-400 hover:text-white transition">Terms of Service</a>
+          <li><a href="/help-center" (click)="scrollToTop('/help-center', $event)" class="text-gray-400 hover:text-white transition cursor-pointer">Help Center</a></li>
+          <li><a href="/contact-us" (click)="scrollToTop('/contact-us', $event)" class="text-gray-400 hover:text-white transition cursor-pointer">Contact Us</a></li>
+          <li><a href="/privacy-policy" (click)="scrollToTop('/privacy-policy', $event)" class="text-gray-400 hover:text-white transition cursor-pointer">Privacy Policy</a></li>
+          <li><a href="/terms-of-service" (click)="scrollToTop('/terms-of-service', $event)" class="text-gray-400 hover:text-white transition cursor-pointer">Terms of Service</a>
           </li>
         </ul>
       </div>
