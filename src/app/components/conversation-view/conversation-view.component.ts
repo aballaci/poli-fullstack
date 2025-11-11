@@ -10,6 +10,12 @@ import { PracticeViewComponent } from '../practice-view/practice-view.component'
 
 type ConversationViewMode = 'reading' | 'practice' | 'summary' | 'flashcards' | 'completed';
 
+export interface Step {
+  label: string;
+  state: 'not_started' | 'started' | 'completed' | 'skipped';
+  icon: string;
+}
+
 @Component({
   selector: 'app-conversation-view',
   standalone: true,
@@ -24,6 +30,13 @@ export class ConversationViewComponent implements OnDestroy {
 
   // Component state
   mode = signal<ConversationViewMode>('reading');
+  steps = signal<Step[]>([
+    { label: 'Reading', state: 'started', icon: 'fa-solid fa-book-open-reader' },
+    { label: 'Practice', state: 'not_started', icon: 'fa-solid fa-eye' },
+    { label: 'Challenge', state: 'not_started', icon: 'fa-solid fa-brain' },
+    { label: 'Flashcards', state: 'not_started', icon: 'fa-solid fa-clone' },
+    { label: 'Summary', state: 'not_started', icon: 'fa-solid fa-chart-pie' }
+  ]);
   
   // Practice Mode state
   readonly practiceMode = this.store.practiceMode;
