@@ -7,7 +7,6 @@ import { ReadingModeComponent } from '../reading-mode/reading-mode.component';
 import { SummaryViewComponent } from '../summary-view/summary-view.component';
 import { FlashCardsComponent } from '../flash-cards/flash-cards.component';
 import { PracticeViewComponent } from '../practice-view/practice-view.component';
-import { ProgressBarComponent } from '../progress-bar/progress-bar.component';
 
 type ConversationViewMode = 'reading' | 'practice' | 'summary' | 'flashcards' | 'completed';
 
@@ -20,7 +19,7 @@ export interface Step {
 @Component({
   selector: 'app-conversation-view',
   standalone: true,
-  imports: [CommonModule, ReadingModeComponent, SummaryViewComponent, FlashCardsComponent, PracticeViewComponent, ProgressBarComponent],
+  imports: [CommonModule, ReadingModeComponent, SummaryViewComponent, FlashCardsComponent, PracticeViewComponent],
   templateUrl: './conversation-view.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -104,13 +103,6 @@ export class ConversationViewComponent implements OnDestroy {
 
   startNewSession(): void {
     this.store.resetConversation();
-    this.steps.set([
-      { label: 'Reading', state: 'started', icon: 'fa-solid fa-book-open-reader' },
-      { label: 'Practice', state: 'not_started', icon: 'fa-solid fa-eye' },
-      { label: 'Challenge', state: 'not_started', icon: 'fa-solid fa-brain' },
-      { label: 'Flashcards', state: 'not_started', icon: 'fa-solid fa-clone' },
-      { label: 'Summary', state: 'not_started', icon: 'fa-solid fa-chart-pie' }
-    ]);
     this.router.navigate(['/selector']);
   }
 
@@ -120,42 +112,13 @@ export class ConversationViewComponent implements OnDestroy {
     }
   }
 
-  updateStepState(label: string, newState: 'not_started' | 'started' | 'completed' | 'skipped'): void {
-    this.steps.update(steps =>
-      steps.map(step =>
-        step.label === label ? { ...step, state: newState } : step
-      )
-    );
-  }
-
   setMode(newMode: ConversationViewMode): void {
     this.clearSummaryIfLeaving();
-
-    const currentMode = this.mode();
-    if (currentMode === newMode) return;
-
-    this.steps.update(steps => {
-      return steps.map(step => {
-        const stepLabelLower = step.label.toLowerCase();
-
-        // Mark the old step as completed if it was started
-        if (stepLabelLower === currentMode && step.state === 'started') {
-          return { ...step, state: 'completed' };
-        }
-
-        // Mark the new step as started
-        if (stepLabelLower === newMode) {
-          return { ...step, state: 'started' };
-        }
-
-        return step;
-      });
-    });
-
     this.mode.set(newMode);
   }
 
   setPracticeMode(newPracticeMode: 'practice' | 'challenge'): void {
+    // If switching between 'practice' and 'challenge', reset the session progress.
     if (this.practiceMode() !== newPracticeMode) {
       this.store.resetConversationHistory();
       this.currentSentenceIndex.set(0);
@@ -163,23 +126,6 @@ export class ConversationViewComponent implements OnDestroy {
 
     this.clearSummaryIfLeaving();
     this.store.setPracticeMode(newPracticeMode);
-
-    const practiceStepLabel = newPracticeMode === 'practice' ? 'Practice' : 'Challenge';
-
-    this.steps.update(steps => {
-      return steps.map(step => {
-        // Mark any currently started step as completed
-        if (step.state === 'started') {
-          return { ...step, state: 'completed' };
-        }
-        // Mark the selected practice mode as started
-        if (step.label === practiceStepLabel) {
-          return { ...step, state: 'started' };
-        }
-        return step;
-      });
-    });
-
     this.mode.set('practice');
   }
 
@@ -208,26 +154,5 @@ export class ConversationViewComponent implements OnDestroy {
 
   viewSummary(): void {
     this.setMode('summary');
-  }
-
-  skipStep(): void {
-    const currentStep = this.steps().find(step => step.state === 'started');
-    if (currentStep) {
-      this.steps.update(steps => {
-        return steps.map(step => {
-          if (step.label === currentStep.label) {
-            return { ...step, state: 'skipped', icon: 'fa-solid fa-forward' };
-          }
-          return step;
-        });
-      });
-
-      const currentIndex = this.steps().findIndex(step => step.label === currentStep.label);
-      const nextStep = this.steps()[currentIndex + 1];
-
-      if (nextStep) {
-        this.setMode(nextStep.label.toLowerCase() as ConversationViewMode);
-      }
-    }
   }
 }

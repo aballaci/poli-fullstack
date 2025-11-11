@@ -15,8 +15,46 @@
     }
   </div>
 
-  <!-- Progress Bar -->
-  <app-progress-bar [steps]="steps()"></app-progress-bar>
+  <!-- Mode Switcher -->
+  <div class="mt-6 mb-8 w-full flex justify-center">
+    <button (click)="setMode('reading')" class="px-4 py-2 font-semibold transition-colors"
+      [class.text-sky-500]="mode() === 'reading'" [class.border-b-2]="mode() === 'reading'"
+      [class.border-sky-500]="mode() === 'reading'" [class.text-slate-500]="mode() !== 'reading'"
+      [class.hover:text-sky-600]="mode() !== 'reading'">
+      <i class="fa-solid fa-book-open-reader mr-2"></i>Reading
+    </button>
+    <button (click)="setPracticeMode('practice')" class="px-4 py-2 font-semibold transition-colors"
+      [class.text-emerald-500]="mode() === 'practice' && practiceMode() === 'practice'"
+      [class.border-b-2]="mode() === 'practice' && practiceMode() === 'practice'"
+      [class.border-emerald-500]="mode() === 'practice' && practiceMode() === 'practice'"
+      [class.text-slate-500]="mode() !== 'practice' || practiceMode() !== 'practice'"
+      [class.hover:text-emerald-600]="mode() !== 'practice' || practiceMode() !== 'practice'">
+      <i class="fa-solid fa-eye mr-2"></i>Practice
+    </button>
+    <button (click)="setPracticeMode('challenge')" class="px-4 py-2 font-semibold transition-colors"
+      [class.text-red-500]="mode() === 'practice' && practiceMode() === 'challenge'"
+      [class.border-b-2]="mode() === 'practice' && practiceMode() === 'challenge'"
+      [class.border-red-500]="mode() === 'practice' && practiceMode() === 'challenge'"
+      [class.text-slate-500]="mode() !== 'practice' || practiceMode() !== 'challenge'"
+      [class.hover:text-red-600]="mode() !== 'practice' || practiceMode() !== 'challenge'">
+      <i class="fa-solid fa-brain mr-2"></i>Challenge
+    </button>
+    <button (click)="setMode('flashcards')" [disabled]="flashcards().length === 0"
+      class="px-4 py-2 font-semibold transition-colors disabled:opacity-50"
+      [class.text-amber-500]="mode() === 'flashcards'" [class.border-b-2]="mode() === 'flashcards'"
+      [class.border-amber-500]="mode() === 'flashcards'" [class.text-slate-500]="mode() !== 'flashcards'"
+      [class.hover:text-amber-600]="mode() !== 'flashcards'">
+      <i class="fa-solid fa-clone mr-2"></i>Flashcards
+    </button>
+    @if (store.conversationHistory().length > 0) {
+    <button (click)="setMode('summary')" class="px-4 py-2 font-semibold transition-colors"
+      [class.text-indigo-500]="mode() === 'summary'" [class.border-b-2]="mode() === 'summary'"
+      [class.border-indigo-500]="mode() === 'summary'" [class.text-slate-500]="mode() !== 'summary'"
+      [class.hover:text-indigo-600]="mode() !== 'summary'">
+      <i class="fa-solid fa-chart-pie mr-2"></i>Summary
+    </button>
+    }
+  </div>
 
   <!-- Main content based on mode -->
   @switch (mode()) {
@@ -55,36 +93,29 @@
         Sentence {{ currentSentenceIndex() + 1 }} of {{ currentScenario.sentences.length }}
       </p>
 
-      <div class="flex items-center gap-2">
-        <button (click)="skipStep()" class="px-4 py-2 text-sm font-medium rounded-md bg-slate-200 text-slate-800 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 transition-colors">
-          Skip
-          <i class="fa-solid fa-forward"></i>
-        </button>
-
-        @if (practiceMode() === 'practice') {
-        <button (click)="nextSentence()"
-          class="w-24 justify-center flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md bg-sky-500 text-white hover:bg-sky-600 transition-colors">
-          @if(isLastSentence()) {
-          <span>Finish</span>
-          <i class="fa-solid fa-flag-checkered"></i>
-          } @else {
-          <span>Next</span>
-          <i class="fa-solid fa-chevron-right"></i>
-          }
-        </button>
+      @if (practiceMode() === 'practice') {
+      <button (click)="nextSentence()"
+        class="w-24 justify-center flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md bg-sky-500 text-white hover:bg-sky-600 transition-colors">
+        @if(isLastSentence()) {
+        <span>Finish</span>
+        <i class="fa-solid fa-flag-checkered"></i>
         } @else {
-        <button (click)="nextSentence()"
-          class="w-24 justify-center flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md bg-slate-200 text-slate-800 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 transition-colors">
-          @if(isLastSentence()) {
-          <span>Finish</span>
-          <i class="fa-solid fa-flag-checkered"></i>
-          } @else {
-          <span>Skip</span>
-          <i class="fa-solid fa-forward"></i>
-          }
-        </button>
+        <span>Next</span>
+        <i class="fa-solid fa-chevron-right"></i>
         }
-      </div>
+      </button>
+      } @else {
+      <button (click)="nextSentence()"
+        class="w-24 justify-center flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md bg-slate-200 text-slate-800 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 transition-colors">
+        @if(isLastSentence()) {
+        <span>Finish</span>
+        <i class="fa-solid fa-flag-checkered"></i>
+        } @else {
+        <span>Skip</span>
+        <i class="fa-solid fa-forward"></i>
+        }
+      </button>
+      }
     </div>
 
     <!-- Practice Settings Toggles -->
