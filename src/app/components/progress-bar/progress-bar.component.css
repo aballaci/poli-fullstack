@@ -58,16 +58,4 @@
 .step-skipped .step-circle {
   background-color: var(--slate-400);
   border-color: var(--slate-500);
-  position: relative;
-}
-
-.step-skipped .step-circle::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 15%;
-  right: 15%;
-  border-top: 2px solid white;
-  transform: rotate(45deg);
-  transform-origin: center;
 }
