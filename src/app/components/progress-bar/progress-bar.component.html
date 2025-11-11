@@ -1,0 +1,10 @@
+<div class="progress-bar-container">
+  <div class="progress-bar">
+    <div *ngFor="let step of steps; let i = index" class="step" [ngClass]="'step-' + step.state">
+      <div class="step-circle">
+        <i [class]="step.icon"></i>
+      </div>
+      <div class="step-label">{{ step.label }}</div>
+    </div>
+  </div>
+</div>
