@@ -1,0 +1,39 @@
+<div class="flex items-center justify-center w-full px-4 sm:px-6 lg:px-8 py-4" role="navigation" aria-label="Conversation Steps">
+  <div class="flex items-center w-full max-w-3xl">
+    @for (step of steps; track step; let i = $index) {
+    <div class="flex items-center" [attr.aria-current]="isActive(i) ? 'step' : null">
+      <!-- Icon and Label -->
+      <div class="flex flex-col items-center text-center">
+        <div
+          class="flex items-center justify-center rounded-full w-10 h-10 sm:w-12 sm:h-12 transition-all duration-300 ease-in-out"
+          [ngClass]="{
+            'bg-primary-500 shadow-lg scale-110': isActive(i),
+            'bg-emerald-500': isCompleted(i),
+            'bg-slate-200 dark:bg-slate-700': isUpcoming(i)
+          }">
+          <i [ngClass]="[getIcon(step), isActive(i) || isCompleted(i) ? 'text-white' : getColor(step)]"></i>
+        </div>
+        <p
+          class="mt-2 text-xs sm:text-sm font-semibold transition-colors duration-300"
+          [ngClass]="{
+            'text-primary-600 dark:text-primary-400': isActive(i),
+            'text-slate-700 dark:text-slate-300': isCompleted(i),
+            'text-slate-400 dark:text-slate-500': isUpcoming(i)
+          }">
+          {{ step }}
+        </p>
+      </div>
+
+      <!-- Connector Line -->
+      @if (i < steps.length - 1) {
+      <div class="flex-auto h-1 mx-2 sm:mx-4 transition-colors duration-500 ease-in-out"
+        [ngClass]="{
+          'bg-emerald-500': isCompleted(i) || isActive(i),
+          'bg-slate-200 dark:bg-slate-700': isUpcoming(i)
+        }">
+      </div>
+      }
+    </div>
+    }
+  </div>
+</div>
