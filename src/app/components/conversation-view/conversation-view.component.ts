@@ -2,25 +2,38 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestro
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { SessionStore } from '../../state/session.store';
-import { GeminiService } from '../../services/gemini.service';
 import { ReadingModeComponent } from '../reading-mode/reading-mode.component';
 import { SummaryViewComponent } from '../summary-view/summary-view.component';
 import { FlashCardsComponent } from '../flash-cards/flash-cards.component';
 import { PracticeViewComponent } from '../practice-view/practice-view.component';
+import { VocabularyComponent } from '../vocabulary/vocabulary.component';
+import { ExercisesComponent } from '../exercises/exercises.component';
 import { ProgressBarComponent } from '../progress-bar/progress-bar.component';
 
-type ConversationViewMode = 'reading' | 'practice' | 'summary' | 'flashcards' | 'completed';
-
-export interface Step {
-  label: string;
-  state: 'not_started' | 'started' | 'completed' | 'skipped';
-  icon: string;
-}
+export const conversationSteps = [
+  'Reading',
+  'Vocabulary',
+  'Exercises',
+  'Flashcards',
+  'Practice',
+  'Challenge',
+  'Summary',
+] as const;
+export type ConversationStep = (typeof conversationSteps)[number];
 
 @Component({
   selector: 'app-conversation-view',
   standalone: true,
-  imports: [CommonModule, ReadingModeComponent, SummaryViewComponent, FlashCardsComponent, PracticeViewComponent, ProgressBarComponent],
+  imports: [
+    CommonModule,
+    ReadingModeComponent,
+    SummaryViewComponent,
+    FlashCardsComponent,
+    PracticeViewComponent,
+    VocabularyComponent,
+    ExercisesComponent,
+    ProgressBarComponent,
+  ],
   templateUrl: './conversation-view.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -30,17 +43,17 @@ export class ConversationViewComponent implements OnDestroy {
   cdr = inject(ChangeDetectorRef);
 
   // Component state
-  mode = signal<ConversationViewMode>('reading');
-  steps = signal<Step[]>([
-    { label: 'Reading', state: 'started', icon: 'fa-solid fa-book-open-reader' },
-    { label: 'Practice', state: 'not_started', icon: 'fa-solid fa-eye' },
-    { label: 'Challenge', state: 'not_started', icon: 'fa-solid fa-brain' },
-    { label: 'Flashcards', state: 'not_started', icon: 'fa-solid fa-clone' },
-    { label: 'Summary', state: 'not_started', icon: 'fa-solid fa-chart-pie' }
-  ]);
-  
-  // Practice Mode state
-  readonly practiceMode = this.store.practiceMode;
+  steps = conversationSteps;
+  currentStep = signal<ConversationStep>('Reading');
+
+  // Keep practiceMode in sync for now, might refactor later
+  readonly practiceMode = computed(() => {
+    const step = this.currentStep();
+    if (step === 'Practice' || step === 'Challenge') {
+      return step.toLowerCase() as 'practice' | 'challenge';
+    }
+    return 'practice'; // Default
+  });
 
   // Conversation state
   scenario = this.store.activeScenario;
@@ -84,21 +97,12 @@ export class ConversationViewComponent implements OnDestroy {
     console.log('[ConversationView] Practice mode:', this.practiceMode());
     
     if (!this.isLastSentence()) {
-        console.log('[ConversationView] Moving to next sentence');
         this.currentSentenceIndex.update(i => i + 1);
-        // Force change detection to ensure UI updates
         this.cdr.detectChanges();
     } else {
-        console.log('[ConversationView] Last sentence reached');
-        // In challenge mode, go directly to the summary.
-        // In practice mode, show the completion screen.
-        if (this.practiceMode() === 'challenge') {
-            console.log('[ConversationView] Setting mode to summary');
-            this.setMode('summary');
-        } else {
-            console.log('[ConversationView] Setting mode to completed');
-            this.setMode('completed');
-        }
+        // Both 'Practice' and 'Challenge' modes advance to the next step.
+        // The specific next step is determined by the `steps` array.
+        this.goToNextStep();
     }
   }
 
@@ -114,73 +118,11 @@ export class ConversationViewComponent implements OnDestroy {
     this.router.navigate(['/selector']);
   }
 
-  private clearSummaryIfLeaving(): void {
-    if (this.mode() === 'summary') {
-      this.store.resetConversationHistory();
+  goToNextStep(): void {
+    const currentIdx = this.steps.indexOf(this.currentStep());
+    if (currentIdx < this.steps.length - 1) {
+      this.currentStep.set(this.steps[currentIdx + 1]);
     }
-  }
-
-  updateStepState(label: string, newState: 'not_started' | 'started' | 'completed' | 'skipped'): void {
-    this.steps.update(steps =>
-      steps.map(step =>
-        step.label === label ? { ...step, state: newState } : step
-      )
-    );
-  }
-
-  setMode(newMode: ConversationViewMode): void {
-    this.clearSummaryIfLeaving();
-
-    const currentMode = this.mode();
-    if (currentMode === newMode) return;
-
-    this.steps.update(steps => {
-      return steps.map(step => {
-        const stepLabelLower = step.label.toLowerCase();
-
-        // Mark the old step as completed if it was started
-        if (stepLabelLower === currentMode && step.state === 'started') {
-          return { ...step, state: 'completed' };
-        }
-
-        // Mark the new step as started
-        if (stepLabelLower === newMode) {
-          return { ...step, state: 'started' };
-        }
-
-        return step;
-      });
-    });
-
-    this.mode.set(newMode);
-  }
-
-  setPracticeMode(newPracticeMode: 'practice' | 'challenge'): void {
-    if (this.practiceMode() !== newPracticeMode) {
-      this.store.resetConversationHistory();
-      this.currentSentenceIndex.set(0);
-    }
-
-    this.clearSummaryIfLeaving();
-    this.store.setPracticeMode(newPracticeMode);
-
-    const practiceStepLabel = newPracticeMode === 'practice' ? 'Practice' : 'Challenge';
-
-    this.steps.update(steps => {
-      return steps.map(step => {
-        // Mark any currently started step as completed
-        if (step.state === 'started') {
-          return { ...step, state: 'completed' };
-        }
-        // Mark the selected practice mode as started
-        if (step.label === practiceStepLabel) {
-          return { ...step, state: 'started' };
-        }
-        return step;
-      });
-    });
-
-    this.mode.set('practice');
   }
 
   toggleAiEvaluation(): void {
@@ -196,38 +138,16 @@ export class ConversationViewComponent implements OnDestroy {
   repeatSession(): void {
     this.store.resetConversationHistory();
     this.currentSentenceIndex.set(0);
-    this.setMode('practice'); // Stays in the current practice/challenge mode
+    this.currentStep.set('Practice');
   }
 
   startChallengeMode(): void {
-    this.store.setPracticeMode('challenge');
     this.store.resetConversationHistory();
     this.currentSentenceIndex.set(0);
-    this.setMode('practice');
+    this.currentStep.set('Challenge');
   }
 
   viewSummary(): void {
-    this.setMode('summary');
-  }
-
-  skipStep(): void {
-    const currentStep = this.steps().find(step => step.state === 'started');
-    if (currentStep) {
-      this.steps.update(steps => {
-        return steps.map(step => {
-          if (step.label === currentStep.label) {
-            return { ...step, state: 'skipped', icon: 'fa-solid fa-forward' };
-          }
-          return step;
-        });
-      });
-
-      const currentIndex = this.steps().findIndex(step => step.label === currentStep.label);
-      const nextStep = this.steps()[currentIndex + 1];
-
-      if (nextStep) {
-        this.setMode(nextStep.label.toLowerCase() as ConversationViewMode);
-      }
-    }
+    this.currentStep.set('Summary');
   }
 }
