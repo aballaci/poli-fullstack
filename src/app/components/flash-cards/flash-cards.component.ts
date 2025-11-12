@@ -16,9 +16,6 @@ import { HighlightedWord } from '../../models';
       transform-style: preserve-3d;
       transition: transform 0.6s;
       cursor: pointer;
-      /* Prevent occasional vertical scrollbars from 3D transforms/padding */
-      overflow: hidden;
-      will-change: transform;
     }
 
     /* Different flip animations triggered by parent class */
@@ -43,8 +40,6 @@ import { HighlightedWord } from '../../models';
     .flip-y .flashcard-back { transform: rotateY(180deg); }
     .flip-x .flashcard-back { transform: rotateX(180deg); }
     .flip-diag .flashcard-back { transform: rotate3d(1, 1, 0, 180deg); }
-    /* Keep layout stable when inner content starts scrolling */
-    .flashcard-back { scrollbar-gutter: stable both-edges; }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
