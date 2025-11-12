@@ -15,13 +15,15 @@ export class ProgressBarComponent {
   // --color-primary: #2F80ED; (used for active)
   // --color-emerald: #10B981; (used for completed)
   stepColors: Record<ConversationStep, string> = {
-    Reading: 'text-cyan-500', // --color-cyan: #22D3EE;
-    Vocabulary: 'text-amber-500', // --color-amber: #F59E0B;
-    Exercises: 'text-coral-500', // --color-coral: #FF6B6B;
-    Flashcards: 'text-lilac-500', // --color-lilac: #A78BFA;
-    Practice: 'text-emerald-500', // --color-emerald: #10B981;
-    Challenge: 'text-indigo-500', // --color-indigo: #6C5CE7;
-    Summary: 'text-primary-500', // --color-primary: #2F80ED;
+    // Use slightly stronger shades on light and lighter on dark for contrast
+    Reading: 'text-cyan-600 dark:text-cyan-300',
+    Vocabulary: 'text-amber-600 dark:text-amber-300',
+    // Tailwind doesn't include custom coral/lilac scales; approximate with rose/violet in dark mode
+    Exercises: 'text-coral-500 dark:text-rose-300',
+    Flashcards: 'text-lilac-500 dark:text-violet-300',
+    Practice: 'text-emerald-600 dark:text-emerald-300',
+    Challenge: 'text-indigo-600 dark:text-indigo-300',
+    Summary: 'text-primary-500',
   };
 
   isActive(index: number): boolean {
