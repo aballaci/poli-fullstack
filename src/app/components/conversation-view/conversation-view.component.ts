@@ -108,13 +108,6 @@ export class ConversationViewComponent implements OnDestroy {
 
   startNewSession(): void {
     this.store.resetConversation();
-    this.steps.set([
-      { label: 'Reading', state: 'started', icon: 'fa-solid fa-book-open-reader' },
-      { label: 'Practice', state: 'not_started', icon: 'fa-solid fa-eye' },
-      { label: 'Challenge', state: 'not_started', icon: 'fa-solid fa-brain' },
-      { label: 'Flashcards', state: 'not_started', icon: 'fa-solid fa-clone' },
-      { label: 'Summary', state: 'not_started', icon: 'fa-solid fa-chart-pie' }
-    ]);
     this.router.navigate(['/selector']);
   }
 
