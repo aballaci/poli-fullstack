@@ -1,6 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { ConversationStep, conversationSteps } from '../conversation-view/conversation-view.component';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-progress-bar',
@@ -11,6 +12,7 @@ import { ConversationStep, conversationSteps } from '../conversation-view/conver
 export class ProgressBarComponent {
   @Input() currentStep: ConversationStep = 'Reading';
   steps = conversationSteps;
+  themeService = inject(ThemeService);
 
   // --color-primary: #2F80ED; (used for active)
   // --color-emerald: #10B981; (used for completed)
@@ -53,5 +55,14 @@ export class ProgressBarComponent {
       case 'Summary': return 'fa-solid fa-chart-pie';
       default: return '';
     }
+  }
+
+  // Percent of base line to fill based on current step (0..100)
+  progressPercent(): number {
+    const idx = this.steps.indexOf(this.currentStep);
+    if (idx <= 0) return 0;
+    const max = this.steps.length - 1;
+    if (max <= 0) return 0;
+    return Math.min(100, Math.max(0, (idx / max) * 100));
   }
 }
