@@ -6,7 +6,7 @@
     <p class="text-[var(--c-text-muted)] mt-1">{{ currentScenario.description }}</p>
 
     <!-- Back Button -->
-    @if(mode() !== 'summary' && mode() !== 'completed') {
+    @if(currentStep() !== 'Summary') {
     <button (click)="startNewSession()" title="Back to Scenarios"
       class="absolute top-0 left-0 text-sm text-[var(--c-text-muted)] hover:text-[var(--color-primary)] transition-colors p-2 rounded-full hover:bg-[var(--c-bg-muted)]">
       <i class="fa-solid fa-arrow-left text-xl"></i>
