@@ -58,7 +58,7 @@ async function processScenarioRecord(record: DynamoDBRecord): Promise<void> {
     }
 
     // Extract scenario data from the stream record
-    const scenarioData = unmarshall(record.dynamodb.NewImage) as ScenarioRecord;
+    const scenarioData = unmarshall(record.dynamodb.NewImage as any) as ScenarioRecord;
     console.log("Processing scenario:", scenarioData.id);
 
     // Parse the scenario JSON
@@ -141,16 +141,22 @@ async function generateExerciseWithLogging<T>(
     } catch (error) {
         console.error(`❌ Failed to generate ${exerciseType} exercise:`, error);
 
-        // Log error
+        // Log error - pass error info in the event context
         if (usageLogTableName) {
             try {
                 await logGeminiUsage(
                     usageLogTableName,
-                    { scenarioId, exerciseType },
+                    {
+                        scenarioId,
+                        exerciseType,
+                        error: {
+                            message: (error as Error).message,
+                            stack: (error as Error).stack
+                        }
+                    },
                     null,
                     "exercise_generation",
-                    "error",
-                    error as Error
+                    "error"
                 );
             } catch (logError) {
                 console.error(`Failed to log error for ${exerciseType}:`, logError);
