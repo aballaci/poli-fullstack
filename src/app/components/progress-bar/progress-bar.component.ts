@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { ConversationStep, conversationSteps } from '../conversation-view/conversation-view.component';
 import { ThemeService } from '../../services/theme.service';
@@ -11,6 +11,7 @@ import { ThemeService } from '../../services/theme.service';
 })
 export class ProgressBarComponent {
   @Input() currentStep: ConversationStep = 'Reading';
+  @Output() stepClick = new EventEmitter<ConversationStep>();
   steps = conversationSteps;
   themeService = inject(ThemeService);
 
@@ -64,5 +65,9 @@ export class ProgressBarComponent {
     const max = this.steps.length - 1;
     if (max <= 0) return 0;
     return Math.min(100, Math.max(0, (idx / max) * 100));
+  }
+
+  onStepClick(step: ConversationStep): void {
+    this.stepClick.emit(step);
   }
 }

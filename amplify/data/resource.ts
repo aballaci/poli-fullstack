@@ -3,6 +3,7 @@ import { scenarioGenerator } from '../functions/scenario-generator/resource';
 import { pronunciationAssessor } from '../functions/pronunciation-assessor/resource';
 import { customTextProcessor } from '../functions/custom-text-processor/resource';
 import { usageSummary } from '../functions/usage-summary/resource';
+import { exerciseRetriever } from '../functions/exercise-retriever/resource';
 
 const schema = a.schema({
 
@@ -17,6 +18,10 @@ const schema = a.schema({
     name: a.string().required(),
     description: a.string().required(),
     difficulty_level: a.string().required(),
+    fillInBlankExercises: a.json(),
+    matchingPairsExercise: a.json(),
+    sentenceScrambleExercises: a.json(),
+    swipeExercise: a.json(),
   })
     .identifier(["id"])
     .secondaryIndexes((index) => [
@@ -119,6 +124,16 @@ const schema = a.schema({
     .returns(a.json())
     .authorization((allow) => [allow.authenticated()])
     .handler(a.handler.function(usageSummary)),
+
+  getExerciseForScenario: a
+    .query()
+    .arguments({
+      scenarioId: a.string().required(),
+      exerciseType: a.string().required(),
+    })
+    .returns(a.json())
+    .authorization((allow) => [allow.authenticated()])
+    .handler(a.handler.function(exerciseRetriever)),
 
 });
 

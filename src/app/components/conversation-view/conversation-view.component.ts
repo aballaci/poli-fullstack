@@ -61,7 +61,7 @@ export class ConversationViewComponent implements OnDestroy {
   targetLang = this.store.targetLanguage;
   currentSentenceIndex = signal(0);
   currentSentence = computed(() => this.scenario()?.sentences[this.currentSentenceIndex()]);
-  
+
   // Derived state for template
   isFirstSentence = computed(() => this.currentSentenceIndex() === 0);
   isLastSentence = computed(() => this.currentSentenceIndex() === (this.scenario()?.sentences.length ?? 0) - 1);
@@ -80,13 +80,13 @@ export class ConversationViewComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     if (typeof window !== 'undefined' && window.speechSynthesis) {
-        window.speechSynthesis.cancel();
+      window.speechSynthesis.cancel();
     }
   }
-  
+
   previousSentence(): void {
     if (!this.isFirstSentence()) {
-        this.currentSentenceIndex.update(i => i - 1);
+      this.currentSentenceIndex.update(i => i - 1);
     }
   }
 
@@ -95,14 +95,14 @@ export class ConversationViewComponent implements OnDestroy {
     console.log('[ConversationView] Current index:', this.currentSentenceIndex());
     console.log('[ConversationView] Is last sentence:', this.isLastSentence());
     console.log('[ConversationView] Practice mode:', this.practiceMode());
-    
+
     if (!this.isLastSentence()) {
-        this.currentSentenceIndex.update(i => i + 1);
-        this.cdr.detectChanges();
+      this.currentSentenceIndex.update(i => i + 1);
+      this.cdr.detectChanges();
     } else {
-        // Both 'Practice' and 'Challenge' modes advance to the next step.
-        // The specific next step is determined by the `steps` array.
-        this.goToNextStep();
+      // Both 'Practice' and 'Challenge' modes advance to the next step.
+      // The specific next step is determined by the `steps` array.
+      this.goToNextStep();
     }
   }
 
@@ -142,5 +142,9 @@ export class ConversationViewComponent implements OnDestroy {
 
   viewSummary(): void {
     this.currentStep.set('Summary');
+  }
+
+  navigateToStep(step: ConversationStep): void {
+    this.currentStep.set(step);
   }
 }

@@ -6,10 +6,14 @@ import { scenarioGenerator } from './functions/scenario-generator/resource.js';
 import { pronunciationAssessor } from './functions/pronunciation-assessor/resource.js';
 import { customTextProcessor } from './functions/custom-text-processor/resource.js';
 import { usageSummary } from './functions/usage-summary/resource.js';
+import { exerciseGenerator } from './functions/exercise-generator/resource.js';
+import { exerciseRetriever } from './functions/exercise-retriever/resource.js';
 
 import { Effect, PolicyStatement, AnyPrincipal } from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { CfnBucket } from 'aws-cdk-lib/aws-s3';
+import { StartingPosition } from 'aws-cdk-lib/aws-lambda';
+import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 
 // 1. DEFINE THE BACKEND
 // =============================================
@@ -21,6 +25,8 @@ const backend = defineBackend({
   pronunciationAssessor,
   customTextProcessor,
   usageSummary,
+  exerciseGenerator,
+  exerciseRetriever,
 });
 
 // 2. GET RESOURCE HANDLES
@@ -31,6 +37,8 @@ const {
   customTextProcessor: customTextFunc,
   pronunciationAssessor: pronunciationFunc,
   usageSummary: usageSummaryFunc,
+  exerciseGenerator: exerciseGenFunc,
+  exerciseRetriever: exerciseRetFunc,
 } = backend;
 
 // Get L2 Lambda functions (for attaching policies)
@@ -38,6 +46,8 @@ const scenarioLambda = scenarioGenFunc.resources.lambda;
 const customTextProcessorLambda = customTextFunc.resources.lambda;
 const pronunciationAssessorLambda = pronunciationFunc.resources.lambda;
 const usageSummaryLambda = usageSummaryFunc.resources.lambda;
+const exerciseGeneratorLambda = exerciseGenFunc.resources.lambda;
+const exerciseRetrieverLambda = exerciseRetFunc.resources.lambda;
 
 // Get L2 Table constructs
 const {
@@ -52,12 +62,15 @@ const {
 // Add Scenario table name to functions that need it
 scenarioGenFunc.addEnvironment('DDB_TABLE_NAME', scenarioTable.tableName);
 customTextFunc.addEnvironment('DDB_TABLE_NAME', scenarioTable.tableName);
+exerciseGenFunc.addEnvironment('DDB_TABLE_NAME', scenarioTable.tableName);
+exerciseRetFunc.addEnvironment('DDB_TABLE_NAME', scenarioTable.tableName);
 
 // Add Gemini log table names to all relevant functions in a loop
 const geminiLoggingFunctions = [
   scenarioGenFunc,
   customTextFunc,
   pronunciationFunc,
+  exerciseGenFunc,
 ];
 
 for (const func of geminiLoggingFunctions) {
@@ -110,11 +123,16 @@ scenarioLambda.addToRolePolicy(readScenarioGSIPolicy);
 scenarioTable.grantReadWriteData(customTextProcessorLambda);
 customTextProcessorLambda.addToRolePolicy(readScenarioGSIPolicy);
 
+// Grant read/write access to exercise generator and read access to exercise retriever
+scenarioTable.grantReadWriteData(exerciseGeneratorLambda);
+scenarioTable.grantReadData(exerciseRetrieverLambda);
+
 // Grant write access to Gemini log tables in a loop
 const geminiLoggingLambdas = [
   scenarioLambda,
   customTextProcessorLambda,
   pronunciationAssessorLambda,
+  exerciseGeneratorLambda,
 ];
 
 for (const lambda of geminiLoggingLambdas) {
@@ -131,6 +149,15 @@ usageSummaryLambda.addToRolePolicy(
       geminiUsageLogTable.tableArn,
       `${geminiUsageLogTable.tableArn}/index/*`,
     ],
+  })
+);
+
+// Configure DynamoDB Stream trigger for exercise generator
+exerciseGeneratorLambda.addEventSource(
+  new DynamoEventSource(scenarioTable, {
+    startingPosition: StartingPosition.LATEST,
+    batchSize: 1,
+    retryAttempts: 2,
   })
 );
 

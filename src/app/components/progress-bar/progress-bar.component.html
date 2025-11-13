@@ -15,7 +15,9 @@
     <div class="flex justify-between items-center relative">
       @for (step of steps; track step; let i = $index) {
       <div class="flex flex-col items-center text-center group cursor-pointer"
-        [attr.aria-current]="isActive(i) ? 'step' : null">
+        [attr.aria-current]="isActive(i) ? 'step' : null" (click)="onStepClick(step)"
+        (keydown.enter)="onStepClick(step)" (keydown.space)="onStepClick(step)" role="button"
+        [attr.aria-label]="'Navigate to ' + step + ' step'">
 
         <!-- Active Step -->
         @if (isActive(i)) {
