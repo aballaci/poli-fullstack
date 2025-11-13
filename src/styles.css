@@ -1,3 +1,6 @@
+/* Import animations */
+@import './styles/animations.css';
+
 /* Reset body styles - let Angular app and Tailwind handle layout */
 body {
     margin: 0;
@@ -20,7 +23,7 @@ button {
 
 /* Improve font rendering for small text chips */
 span[class*="text-xs"] {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
 }

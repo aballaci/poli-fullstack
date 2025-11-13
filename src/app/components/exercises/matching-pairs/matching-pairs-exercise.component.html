@@ -1,0 +1,142 @@
+<div class="min-h-screen bg-[var(--c-bg-primary)] p-4 md:p-6 lg:p-8">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <header class="mb-8 flex items-center justify-between">
+            <h2 class="text-2xl md:text-3xl font-bold text-[var(--c-text-primary)]">
+                Match the Pairs
+            </h2>
+            <button (click)="goBack()"
+                class="px-4 py-2 font-semibold rounded-md bg-slate-200 text-slate-700 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 transition-colors">
+                Back to Exercises
+            </button>
+        </header>
+
+        <!-- Loading State -->
+        <div *ngIf="isLoading()" class="flex items-center justify-center py-20">
+            <div class="text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-500 mx-auto mb-4"></div>
+                <p class="text-[var(--c-text-secondary)]">Loading exercise...</p>
+            </div>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="errorMessage() && !isLoading()"
+            class="rounded-xl shadow-lg border border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)] p-8 text-center">
+            <div class="text-red-500 text-5xl mb-4">⚠️</div>
+            <h3 class="text-xl font-semibold text-[var(--c-text-primary)] mb-2">
+                Oops! Something went wrong
+            </h3>
+            <p class="text-[var(--c-text-secondary)] mb-6">
+                {{ errorMessage() }}
+            </p>
+            <button (click)="goBack()"
+                class="px-6 py-3 font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors">
+                Back to Exercises
+            </button>
+        </div>
+
+        <!-- Exercise Content -->
+        <div *ngIf="!isLoading() && !errorMessage()" class="space-y-6 fade-in">
+            <!-- Instructions -->
+            <div class="text-center mb-6">
+                <p class="text-[var(--c-text-secondary)]">
+                    Drag and drop to match the sentences in both languages
+                </p>
+            </div>
+
+            <!-- Matching Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Source Column -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-[var(--c-text-primary)] mb-4">Source Language</h3>
+                    <div *ngFor="let source of sourceSentences()"
+                        class="rounded-xl shadow-md border-2 p-4 transition-all duration-200 gpu-accelerated"
+                        [class.pulse]="showAnswer() && hasCorrectMatch(source.id)"
+                        [class.shake]="showAnswer() && isMatched(source.id) && !hasCorrectMatch(source.id)"
+                        [class.border-slate-300]="!isMatched(source.id) && !showAnswer()"
+                        [class.dark:border-slate-600]="!isMatched(source.id) && !showAnswer()"
+                        [class.bg-[var(--c-bg-surface)]="!showAnswer()"
+                        [class.border-sky-500]="isMatched(source.id) && !showAnswer()"
+                        [class.bg-sky-50]="isMatched(source.id) && !showAnswer()"
+                        [class.dark:bg-sky-950]="isMatched(source.id) && !showAnswer()"
+                        [class.border-emerald-500]="showAnswer() && hasCorrectMatch(source.id)"
+                        [class.bg-emerald-50]="showAnswer() && hasCorrectMatch(source.id)"
+                        [class.dark:bg-emerald-950]="showAnswer() && hasCorrectMatch(source.id)"
+                        [class.border-red-500]="showAnswer() && isMatched(source.id) && !hasCorrectMatch(source.id)"
+                        [class.bg-red-50]="showAnswer() && isMatched(source.id) && !hasCorrectMatch(source.id)"
+                        [class.dark:bg-red-950]="showAnswer() && isMatched(source.id) && !hasCorrectMatch(source.id)"
+                        draggable="true" (dragstart)="onDragStart($event, source.id, true)"
+                        (drop)="onDrop($event, source.id, true)" (dragover)="onDragOver($event)"
+                        (touchstart)="onTouchStart($event, source.id, true)"
+                        (touchend)="onTouchEnd($event, source.id, true)">
+                        <div class="flex items-center justify-between">
+                            <p class="text-[var(--c-text-primary)] flex-1">{{ source.text }}</p>
+                            <div class="flex items-center gap-2 ml-4">
+                                <span *ngIf="showAnswer() && hasCorrectMatch(source.id)"
+                                    class="text-emerald-500 text-2xl">✓</span>
+                                <span *ngIf="showAnswer() && isMatched(source.id) && !hasCorrectMatch(source.id)"
+                                    class="text-red-500 text-2xl">✗</span>
+                                <button *ngIf="isMatched(source.id) && !showAnswer()" (click)="removeMatch(source.id)"
+                                    class="text-slate-400 hover:text-red-500 transition-colors">
+                                    ✕
+                                </button>
+                            </div>
+                        </div>
+                        <div *ngIf="isMatched(source.id)"
+                            class="mt-2 pt-2 border-t border-slate-200 dark:border-slate-700">
+                            <p class="text-sm text-[var(--c-text-secondary)]">
+                                Matched with: {{ getMatchedTargetText(source.id) }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Target Column -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-[var(--c-text-primary)] mb-4">Target Language</h3>
+                    <div *ngFor="let target of targetSentences()"
+                        class="rounded-xl shadow-md border-2 p-4 transition-all duration-200 cursor-move gpu-accelerated interactive-hover"
+                        [class.border-slate-300]="!isMatched(target.id) && !showAnswer()"
+                        [class.dark:border-slate-600]="!isMatched(target.id) && !showAnswer()"
+                        [class.bg-[var(--c-bg-surface)]="!showAnswer()"
+                        [class.border-sky-500]="isMatched(target.id) && !showAnswer()"
+                        [class.bg-sky-50]="isMatched(target.id) && !showAnswer()"
+                        [class.dark:bg-sky-950]="isMatched(target.id) && !showAnswer()"
+                        [class.opacity-50]="isMatched(target.id)" draggable="true"
+                        (dragstart)="onDragStart($event, target.id, false)" (drop)="onDrop($event, target.id, false)"
+                        (dragover)="onDragOver($event)" (touchstart)="onTouchStart($event, target.id, false)"
+                        (touchend)="onTouchEnd($event, target.id, false)">
+                        <p class="text-[var(--c-text-primary)]">{{ target.text }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex justify-center gap-4 mt-8">
+                <button *ngIf="!showAnswer()" (click)="checkMatches()" [disabled]="!allMatched()"
+                    class="px-8 py-3 font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                    Check Matches
+                </button>
+
+                <button *ngIf="showAnswer()" (click)="finish()"
+                    class="px-8 py-3 font-semibold rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition-colors">
+                    Finish
+                </button>
+            </div>
+
+            <!-- Feedback Message -->
+            <div *ngIf="showAnswer()" class="mt-6 p-4 rounded-lg text-center" [class.bg-emerald-50]="allCorrect()"
+                [class.dark:bg-emerald-950]="allCorrect()" [class.bg-amber-50]="someIncorrect()"
+                [class.dark:bg-amber-950]="someIncorrect()">
+                <p class="font-medium" [class.text-emerald-600]="allCorrect()" [class.text-amber-600]="someIncorrect()">
+                    <span *ngIf="allCorrect()">
+                        🎉 Perfect! All matches are correct!
+                    </span>
+                    <span *ngIf="someIncorrect()">
+                        Some matches need correction. Review the highlighted pairs.
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

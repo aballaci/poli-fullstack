@@ -1,10 +1,96 @@
-<div class="p-4 sm:p-6 md:p-8 text-center">
-  <h2 class="text-2xl font-bold text-[var(--c-text-headings)]">Exercises</h2>
-  <p class="text-[var(--c-text-muted)] mt-2">
-    This is a placeholder for the exercises step.
-  </p>
-  <button (click)="next.emit()"
-    class="mt-6 px-6 py-3 font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors">
-    Next Step
-  </button>
+<div class="p-4 sm:p-6 md:p-8">
+  <div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h2 class="text-2xl sm:text-3xl font-bold text-[var(--c-text-headings)]">Choose an Exercise</h2>
+      <p class="text-[var(--c-text-muted)] mt-2">
+        Practice your language skills with interactive exercises
+      </p>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading()" class="text-center py-12">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-sky-500"></div>
+      <p class="text-[var(--c-text-muted)] mt-4">Loading exercises...</p>
+    </div>
+
+    <!-- Exercise Grid -->
+    <div *ngIf="!isLoading()" class="space-y-6">
+      <!-- Progress Indicator -->
+      <div class="bg-[var(--c-bg-surface)] rounded-lg border border-[var(--c-border-subtle)] p-4" role="status"
+        aria-label="Exercise completion progress">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm font-medium text-[var(--c-text-body)]">Progress</span>
+          <span class="text-sm font-semibold text-sky-500" aria-live="polite">{{ completedCount() }} / {{ totalCount()
+            }}</span>
+        </div>
+        <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2" role="progressbar"
+          [attr.aria-valuenow]="completedCount()" [attr.aria-valuemin]="0" [attr.aria-valuemax]="totalCount()">
+          <div class="bg-sky-500 h-2 rounded-full transition-all duration-300"
+            [style.width.%]="totalCount() > 0 ? (completedCount() / totalCount()) * 100 : 0">
+          </div>
+        </div>
+      </div>
+
+      <!-- Exercise Buttons Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 fade-in">
+        <button *ngFor="let exercise of exerciseTypes()" (click)="startExercise(exercise.type)"
+          [disabled]="!isExerciseAvailable(exercise.type)" [class.opacity-50]="!isExerciseAvailable(exercise.type)"
+          [class.cursor-not-allowed]="!isExerciseAvailable(exercise.type)"
+          [attr.aria-label]="exercise.displayName + (isExerciseCompleted(exercise.type) ? ' - Completed' : '') + (isExerciseAvailable(exercise.type) ? '' : ' - Not available')"
+          [attr.aria-describedby]="'desc-' + exercise.type" class="relative group flex flex-col items-center justify-center p-6 rounded-xl border-2 transition-all duration-200 gpu-accelerated button-press
+                 bg-[var(--c-bg-surface)] border-[var(--c-border-subtle)]
+                 hover:border-sky-500 hover:shadow-lg hover:scale-105
+                 disabled:hover:border-[var(--c-border-subtle)] disabled:hover:shadow-none disabled:hover:scale-100
+                 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2">
+
+          <!-- Completion Checkmark -->
+          <div *ngIf="isExerciseCompleted(exercise.type)"
+            class="absolute top-2 right-2 w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+
+          <!-- Icon -->
+          <div class="text-4xl mb-3">{{ exercise.icon }}</div>
+
+          <!-- Title -->
+          <h3 class="text-lg font-semibold text-[var(--c-text-headings)] text-center mb-2">
+            {{ exercise.displayName }}
+          </h3>
+
+          <!-- Description -->
+          <p class="text-sm text-[var(--c-text-muted)] text-center" [id]="'desc-' + exercise.type">
+            {{ exercise.description }}
+          </p>
+
+          <!-- Unavailable Badge -->
+          <div *ngIf="!isExerciseAvailable(exercise.type)"
+            class="absolute inset-0 flex items-center justify-center bg-[var(--c-bg-surface)] bg-opacity-90 rounded-xl">
+            <span class="text-sm font-medium text-[var(--c-text-muted)]">Not Available</span>
+          </div>
+        </button>
+      </div>
+
+      <!-- No Exercises Available Message -->
+      <div *ngIf="availableExercises().size === 0"
+        class="text-center py-8 bg-[var(--c-bg-surface)] rounded-lg border border-[var(--c-border-subtle)]">
+        <p class="text-[var(--c-text-muted)]">
+          No exercises are available for this scenario yet.
+        </p>
+        <p class="text-sm text-[var(--c-text-muted)] mt-2">
+          Please try again later or select a different scenario.
+        </p>
+      </div>
+
+      <!-- Next Step Button -->
+      <div class="text-center mt-8">
+        <button (click)="next.emit()" class="px-6 py-3 font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors
+                 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2">
+          Next Step
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

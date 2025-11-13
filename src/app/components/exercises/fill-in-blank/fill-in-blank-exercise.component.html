@@ -1,0 +1,136 @@
+<div class="min-h-screen bg-[var(--c-bg-primary)] p-4 md:p-6 lg:p-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <header class="mb-8 flex items-center justify-between">
+            <h2 class="text-2xl md:text-3xl font-bold text-[var(--c-text-primary)]">
+                Fill in the Blank
+            </h2>
+            <button (click)="goBack()"
+                class="px-4 py-2 font-semibold rounded-md bg-slate-200 text-slate-700 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 transition-colors">
+                Back to Exercises
+            </button>
+        </header>
+
+        <!-- Loading State -->
+        <div *ngIf="isLoading()" class="flex items-center justify-center py-20">
+            <div class="text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-500 mx-auto mb-4"></div>
+                <p class="text-[var(--c-text-secondary)]">Loading exercises...</p>
+            </div>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="errorMessage() && !isLoading()"
+            class="rounded-xl shadow-lg border border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)] p-8 text-center">
+            <div class="text-red-500 text-5xl mb-4">⚠️</div>
+            <h3 class="text-xl font-semibold text-[var(--c-text-primary)] mb-2">
+                Oops! Something went wrong
+            </h3>
+            <p class="text-[var(--c-text-secondary)] mb-6">
+                {{ errorMessage() }}
+            </p>
+            <button (click)="goBack()"
+                class="px-6 py-3 font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors">
+                Back to Exercises
+            </button>
+        </div>
+
+        <!-- Exercise Content -->
+        <div *ngIf="!isLoading() && !errorMessage() && currentExercise()" class="space-y-6 fade-in">
+            <!-- Progress Indicator -->
+            <div class="flex items-center justify-between text-sm text-[var(--c-text-secondary)] mb-4" role="status"
+                aria-label="Exercise progress">
+                <span>Question {{ currentIndex() + 1 }} of {{ exercises().length }}</span>
+                <div class="flex gap-2">
+                    <div *ngFor="let ex of exercises(); let i = index" class="w-2 h-2 rounded-full transition-colors"
+                        [class.bg-sky-500]="i === currentIndex()" [class.bg-slate-300]="i !== currentIndex()"
+                        [class.dark:bg-slate-600]="i !== currentIndex()"></div>
+                </div>
+            </div>
+
+            <!-- Exercise Card -->
+            <div
+                class="rounded-xl shadow-lg border border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)] p-6 md:p-8">
+                <!-- Sentence Display -->
+                <div class="mb-8">
+                    <p class="text-xl md:text-2xl text-[var(--c-text-primary)] leading-relaxed text-center">
+                        {{ currentExercise().sentenceWithBlank }}
+                    </p>
+                </div>
+
+                <!-- Options Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <button *ngFor="let option of currentExercise().options; let i = index"
+                        (click)="selectOption(option)" [disabled]="showAnswer()"
+                        [attr.aria-label]="'Option ' + (i + 1) + ': ' + option"
+                        [attr.aria-pressed]="selectedOption() === option"
+                        [attr.aria-describedby]="showAnswer() && isCorrectAnswer(option) ? 'correct-feedback' : (showAnswer() && isIncorrectAnswer(option) ? 'incorrect-feedback' : null)"
+                        class="px-6 py-4 text-lg font-medium rounded-lg border-2 transition-all duration-200 interactive-hover button-press"
+                        [class.pulse]="showAnswer() && isCorrectAnswer(option)"
+                        [class.shake]="showAnswer() && isIncorrectAnswer(option)"
+                        [class.border-slate-300]="!showAnswer() && selectedOption() !== option"
+                        [class.dark:border-slate-600]="!showAnswer() && selectedOption() !== option"
+                        [class.bg-[var(--c-bg-surface)]="!showAnswer() && selectedOption() !== option"
+                        [class.text-[var(--c-text-primary)]="!showAnswer() && selectedOption() !== option"
+                        [class.hover:border-sky-500]="!showAnswer() && selectedOption() !== option"
+                        [class.hover:bg-sky-50]="!showAnswer() && selectedOption() !== option"
+                        [class.dark:hover:bg-sky-950]="!showAnswer() && selectedOption() !== option"
+                        [class.border-sky-500]="!showAnswer() && selectedOption() === option"
+                        [class.bg-sky-50]="!showAnswer() && selectedOption() === option"
+                        [class.dark:bg-sky-950]="!showAnswer() && selectedOption() === option"
+                        [class.text-sky-600]="!showAnswer() && selectedOption() === option"
+                        [class.border-emerald-500]="showAnswer() && isCorrectAnswer(option)"
+                        [class.bg-emerald-50]="showAnswer() && isCorrectAnswer(option)"
+                        [class.dark:bg-emerald-950]="showAnswer() && isCorrectAnswer(option)"
+                        [class.text-emerald-600]="showAnswer() && isCorrectAnswer(option)"
+                        [class.border-red-500]="showAnswer() && isIncorrectAnswer(option)"
+                        [class.bg-red-50]="showAnswer() && isIncorrectAnswer(option)"
+                        [class.dark:bg-red-950]="showAnswer() && isIncorrectAnswer(option)"
+                        [class.text-red-600]="showAnswer() && isIncorrectAnswer(option)"
+                        [class.cursor-not-allowed]="showAnswer()"
+                        [class.opacity-50]="showAnswer() && !isCorrectAnswer(option) && !isIncorrectAnswer(option)">
+                        <span class="flex items-center justify-between">
+                            <span>{{ option }}</span>
+                            <span *ngIf="showAnswer() && isCorrectAnswer(option)" class="text-2xl">✓</span>
+                            <span *ngIf="showAnswer() && isIncorrectAnswer(option)" class="text-2xl">✗</span>
+                        </span>
+                    </button>
+                </div>
+
+                <!-- Feedback Message -->
+                <div *ngIf="showAnswer()" class="mt-6 p-4 rounded-lg" role="alert" aria-live="polite"
+                    [class.bg-emerald-50]="isCorrectAnswer(selectedOption()!)"
+                    [class.dark:bg-emerald-950]="isCorrectAnswer(selectedOption()!)"
+                    [class.bg-red-50]="!isCorrectAnswer(selectedOption()!)"
+                    [class.dark:bg-red-950]="!isCorrectAnswer(selectedOption()!)">
+                    <p class="text-center font-medium" [class.text-emerald-600]="isCorrectAnswer(selectedOption()!)"
+                        [class.text-red-600]="!isCorrectAnswer(selectedOption()!)">
+                        <span *ngIf="isCorrectAnswer(selectedOption()!)" id="correct-feedback">🎉 Correct! Well
+                            done!</span>
+                        <span *ngIf="!isCorrectAnswer(selectedOption()!)" id="incorrect-feedback">
+                            Not quite. The correct answer is "{{ currentExercise().correctAnswer }}"
+                        </span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex justify-center gap-4">
+                <button *ngIf="!showAnswer()" (click)="checkAnswer()" [disabled]="!selectedOption()"
+                    class="px-8 py-3 font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                    Check Answer
+                </button>
+
+                <button *ngIf="showAnswer() && !isLastExercise()" (click)="nextExercise()"
+                    class="px-8 py-3 font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors">
+                    Next Question
+                </button>
+
+                <button *ngIf="showAnswer() && isLastExercise()" (click)="finish()"
+                    class="px-8 py-3 font-semibold rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition-colors">
+                    Finish
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

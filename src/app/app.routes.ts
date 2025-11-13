@@ -10,6 +10,10 @@ import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-poli
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
 import { HelpCenterComponent } from './components/help-center/help-center.component';
 import { ContactUsComponent } from './components/contact-us/contact-us.component';
+import { FillInBlankExerciseComponent } from './components/exercises/fill-in-blank/fill-in-blank-exercise.component';
+import { MatchingPairsExerciseComponent } from './components/exercises/matching-pairs/matching-pairs-exercise.component';
+import { SentenceScrambleExerciseComponent } from './components/exercises/sentence-scramble/sentence-scramble-exercise.component';
+import { SwipeExerciseComponent } from './components/exercises/swipe/swipe-exercise.component';
 import { conversationGuard } from './guards/conversation.guard';
 import { languageSetupGuard } from './guards/language-setup.guard';
 import { introGuard } from './guards/intro.guard';
@@ -42,6 +46,26 @@ export const routes: Routes = [
     path: 'cost-summary',
     component: CostSummaryComponent,
     canActivate: [adminGuard]
+  },
+  {
+    path: 'exercises/fill-in-blank',
+    component: FillInBlankExerciseComponent,
+    canActivate: [languageSetupGuard, conversationGuard]
+  },
+  {
+    path: 'exercises/matching-pairs',
+    component: MatchingPairsExerciseComponent,
+    canActivate: [languageSetupGuard, conversationGuard]
+  },
+  {
+    path: 'exercises/sentence-scramble',
+    component: SentenceScrambleExerciseComponent,
+    canActivate: [languageSetupGuard, conversationGuard]
+  },
+  {
+    path: 'exercises/swipe',
+    component: SwipeExerciseComponent,
+    canActivate: [languageSetupGuard, conversationGuard]
   },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: '**', redirectTo: '/home' }

@@ -1,0 +1,113 @@
+<div class="min-h-screen bg-[var(--c-bg-primary)] p-4 md:p-6 lg:p-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <header class="mb-8 flex items-center justify-between">
+            <h2 class="text-2xl md:text-3xl font-bold text-[var(--c-text-primary)]">
+                Unscramble the Sentence
+            </h2>
+            <button (click)="goBack()"
+                class="px-4 py-2 font-semibold rounded-md bg-slate-200 text-slate-700 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 transition-colors">
+                Back to Exercises
+            </button>
+        </header>
+
+        <!-- Loading State -->
+        <div *ngIf="isLoading()" class="flex items-center justify-center py-20">
+            <div class="text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-500 mx-auto mb-4"></div>
+                <p class="text-[var(--c-text-secondary)]">Loading exercises...</p>
+            </div>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="errorMessage() && !isLoading()"
+            class="rounded-xl shadow-lg border border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)] p-8 text-center">
+            <div class="text-red-500 text-5xl mb-4">⚠️</div>
+            <h3 class="text-xl font-semibold text-[var(--c-text-primary)] mb-2">
+                Oops! Something went wrong
+            </h3>
+            <p class="text-[var(--c-text-secondary)] mb-6">
+                {{ errorMessage() }}
+            </p>
+            <button (click)="goBack()"
+                class="px-6 py-3 font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors">
+                Back to Exercises
+            </button>
+        </div>
+
+        <!-- Exercise Content -->
+        <div *ngIf="!isLoading() && !errorMessage() && currentExercise()" class="space-y-6 fade-in">
+            <!-- Progress Indicator -->
+            <div class="flex items-center justify-between text-sm text-[var(--c-text-secondary)] mb-4">
+                <span>Question {{ currentIndex() + 1 }} of {{ exercises().length }}</span>
+                <div class="flex gap-2">
+                    <div *ngFor="let ex of exercises(); let i = index" class="w-2 h-2 rounded-full transition-colors"
+                        [class.bg-sky-500]="i === currentIndex()" [class.bg-slate-300]="i !== currentIndex()"
+                        [class.dark:bg-slate-600]="i !== currentIndex()"></div>
+                </div>
+            </div>
+
+            <!-- Exercise Card -->
+            <div
+                class="rounded-xl shadow-lg border border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)] p-6 md:p-8">
+                <!-- Reference Sentence -->
+                <div class="mb-6 p-4 rounded-lg bg-slate-50 dark:bg-slate-800">
+                    <p class="text-sm font-semibold text-[var(--c-text-secondary)] mb-2">Source:</p>
+                    <p class="text-lg text-[var(--c-text-primary)]">{{ currentExercise().sourceText }}</p>
+                </div>
+
+                <!-- Instructions -->
+                <p class="text-center text-[var(--c-text-secondary)] mb-4">
+                    Drag and drop the words to form the correct sentence
+                </p>
+
+                <!-- Scrambled Words -->
+                <div class="flex flex-wrap gap-3 justify-center min-h-[100px]">
+                    <div *ngFor="let word of userOrder(); let i = index"
+                        class="px-4 py-3 rounded-lg border-2 font-medium cursor-move transition-all duration-200 gpu-accelerated interactive-hover"
+                        [class.pulse]="showAnswer() && isCorrectPosition(i)"
+                        [class.shake]="showAnswer() && !isCorrectPosition(i)" [class.border-slate-300]="!showAnswer()"
+                        [class.dark:border-slate-600]="!showAnswer()" [class.bg-[var(--c-bg-surface)]="!showAnswer()"
+                        [class.text-[var(--c-text-primary)]="!showAnswer()" [class.hover:border-sky-500]="!showAnswer()"
+                        [class.hover:shadow-md]="!showAnswer()"
+                        [class.border-emerald-500]="showAnswer() && isCorrectPosition(i)"
+                        [class.bg-emerald-50]="showAnswer() && isCorrectPosition(i)"
+                        [class.dark:bg-emerald-950]="showAnswer() && isCorrectPosition(i)"
+                        [class.text-emerald-600]="showAnswer() && isCorrectPosition(i)"
+                        [class.border-red-500]="showAnswer() && !isCorrectPosition(i)"
+                        [class.bg-red-50]="showAnswer() && !isCorrectPosition(i)"
+                        [class.dark:bg-red-950]="showAnswer() && !isCorrectPosition(i)"
+                        [class.text-red-600]="showAnswer() && !isCorrectPosition(i)" draggable="true"
+                        (dragstart)="onDragStart($event, i)" (drop)="onDrop($event, i)" (dragover)="onDragOver($event)"
+                        (touchstart)="onTouchStart($event, i)" (touchend)="onTouchEnd($event, i)">
+                        {{ word }}
+                    </div>
+                </div>
+
+                <!-- Correct Answer Display -->
+                <div *ngIf="showAnswer()" class="mt-6 p-4 rounded-lg bg-emerald-50 dark:bg-emerald-950">
+                    <p class="text-sm font-semibold text-emerald-600 mb-2">Correct order:</p>
+                    <p class="text-lg text-emerald-600">{{ correctSentence() }}</p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex justify-center gap-4">
+                <button *ngIf="!showAnswer()" (click)="checkOrder()"
+                    class="px-8 py-3 font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors">
+                    Check Order
+                </button>
+
+                <button *ngIf="showAnswer() && !isLastExercise()" (click)="nextExercise()"
+                    class="px-8 py-3 font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors">
+                    Next Question
+                </button>
+
+                <button *ngIf="showAnswer() && isLastExercise()" (click)="finish()"
+                    class="px-8 py-3 font-semibold rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition-colors">
+                    Finish
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

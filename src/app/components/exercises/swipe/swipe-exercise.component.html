@@ -1,0 +1,129 @@
+<div class="min-h-screen bg-[var(--c-bg-primary)] p-4 md:p-6 lg:p-8">
+    <div class="max-w-2xl mx-auto">
+        <!-- Header -->
+        <header class="mb-8 flex items-center justify-between">
+            <h2 class="text-2xl md:text-3xl font-bold text-[var(--c-text-primary)]">
+                Swipe to Review
+            </h2>
+            <button (click)="goBack()"
+                class="px-4 py-2 font-semibold rounded-md bg-slate-200 text-slate-700 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 transition-colors">
+                Back to Exercises
+            </button>
+        </header>
+
+        <!-- Loading State -->
+        <div *ngIf="isLoading()" class="flex items-center justify-center py-20">
+            <div class="text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-500 mx-auto mb-4"></div>
+                <p class="text-[var(--c-text-secondary)]">Loading exercise...</p>
+            </div>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="errorMessage() && !isLoading()"
+            class="rounded-xl shadow-lg border border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)] p-8 text-center">
+            <div class="text-red-500 text-5xl mb-4">⚠️</div>
+            <h3 class="text-xl font-semibold text-[var(--c-text-primary)] mb-2">
+                Oops! Something went wrong
+            </h3>
+            <p class="text-[var(--c-text-secondary)] mb-6">
+                {{ errorMessage() }}
+            </p>
+            <button (click)="goBack()"
+                class="px-6 py-3 font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors">
+                Back to Exercises
+            </button>
+        </div>
+
+        <!-- Exercise Content -->
+        <div *ngIf="!isLoading() && !errorMessage() && !showSummary()" class="space-y-6 fade-in">
+            <!-- Progress -->
+            <div class="text-center text-[var(--c-text-secondary)] mb-4">
+                <span class="text-lg font-semibold">{{ currentCardIndex() + 1 }} / {{ totalCards() }}</span>
+            </div>
+
+            <!-- Instructions -->
+            <div class="text-center text-[var(--c-text-secondary)] mb-6">
+                <p>Swipe right if the translation is correct, left if incorrect</p>
+            </div>
+
+            <!-- Swipe Area -->
+            <div class="relative h-[400px] flex items-center justify-center">
+                <!-- Swipe Indicators -->
+                <div class="absolute inset-0 flex items-center justify-between px-8 pointer-events-none">
+                    <div class="flex flex-col items-center text-red-500 opacity-30">
+                        <span class="text-6xl">✗</span>
+                        <span class="text-sm font-semibold mt-2">Incorrect</span>
+                    </div>
+                    <div class="flex flex-col items-center text-emerald-500 opacity-30">
+                        <span class="text-6xl">✓</span>
+                        <span class="text-sm font-semibold mt-2">Correct</span>
+                    </div>
+                </div>
+
+                <!-- Swipe Card -->
+                <div *ngIf="currentCard()"
+                    class="relative w-full max-w-md h-80 rounded-2xl shadow-2xl border-2 border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)] p-8 flex flex-col items-center justify-center transition-transform duration-200 gpu-accelerated scale-up"
+                    [style.transform]="cardTransform()" (touchstart)="onTouchStart($event)"
+                    (touchmove)="onTouchMove($event)" (touchend)="onTouchEnd($event)">
+
+                    <!-- Feedback Overlay -->
+                    <div *ngIf="showFeedback()"
+                        class="absolute inset-0 rounded-2xl flex items-center justify-center transition-opacity duration-300"
+                        [class.bg-emerald-500]="feedbackCorrect()" [class.bg-red-500]="!feedbackCorrect()"
+                        [class.bg-opacity-90]="true">
+                        <span class="text-white text-8xl">
+                            {{ feedbackCorrect() ? '✓' : '✗' }}
+                        </span>
+                    </div>
+
+                    <div class="text-center">
+                        <p class="text-3xl font-bold text-[var(--c-text-primary)] mb-6">
+                            {{ currentCard().word }}
+                        </p>
+                        <p class="text-2xl text-[var(--c-text-secondary)]">
+                            {{ currentCard().translation }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Button Controls -->
+            <div class="flex justify-center gap-8 mt-8">
+                <button (click)="swipeLeft()"
+                    class="w-16 h-16 rounded-full bg-red-500 text-white hover:bg-red-600 transition-all hover:scale-110 shadow-lg flex items-center justify-center button-press">
+                    <span class="text-3xl">✗</span>
+                </button>
+                <button (click)="swipeRight()"
+                    class="w-16 h-16 rounded-full bg-emerald-500 text-white hover:bg-emerald-600 transition-all hover:scale-110 shadow-lg flex items-center justify-center button-press">
+                    <span class="text-3xl">✓</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div *ngIf="showSummary()" class="space-y-6 scale-up">
+            <div
+                class="rounded-xl shadow-lg border border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)] p-8 text-center">
+                <div class="text-6xl mb-6">🎉</div>
+                <h3 class="text-2xl font-bold text-[var(--c-text-primary)] mb-4">
+                    Exercise Complete!
+                </h3>
+                <div class="space-y-2 mb-6">
+                    <p class="text-lg text-[var(--c-text-secondary)]">
+                        You got <span class="font-bold text-emerald-600">{{ correctCount() }}</span> out of
+                        <span class="font-bold">{{ totalCards() }}</span> correct
+                    </p>
+                    <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-4 overflow-hidden">
+                        <div class="bg-emerald-500 h-full transition-all duration-500"
+                            [style.width.%]="(correctCount() / totalCards()) * 100"></div>
+                    </div>
+                </div>
+                <button (click)="finish()"
+                    class="px-8 py-3 font-semibold rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition-colors">
+                    Finish
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

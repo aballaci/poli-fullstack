@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestro
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { SessionStore } from '../../state/session.store';
+import { ExerciseService } from '../../services/exercise.service';
 import { ReadingModeComponent } from '../reading-mode/reading-mode.component';
 import { SummaryViewComponent } from '../summary-view/summary-view.component';
 import { FlashCardsComponent } from '../flash-cards/flash-cards.component';
@@ -41,6 +42,7 @@ export class ConversationViewComponent implements OnDestroy {
   store = inject(SessionStore);
   router = inject(Router);
   cdr = inject(ChangeDetectorRef);
+  exerciseService = inject(ExerciseService);
 
   // Component state
   steps = conversationSteps;
@@ -108,6 +110,7 @@ export class ConversationViewComponent implements OnDestroy {
 
   startNewSession(): void {
     this.store.resetConversation();
+    this.exerciseService.resetCompletionState();
     this.router.navigate(['/selector']);
   }
 
