@@ -75,13 +75,13 @@ interface FillInBlankExercises {
 ```typescript
 interface MatchingPair {
   id: string;
-  sourceText: string;
-  targetText: string;
+  sourceWord: string;
+  targetWord: string;
 }
 
 interface MatchingPairsExercise {
-  sourceSentences: Array<{ id: string; text: string }>;
-  targetSentences: Array<{ id: string; text: string }>;
+  sourceWords: Array<{ id: string; word: string }>;
+  targetWords: Array<{ id: string; word: string }>;
   correctPairs: Array<{ sourceId: string; targetId: string }>;
 }
 ```
@@ -140,6 +140,13 @@ Each exercise type will have a dedicated prompt that includes:
 - Target language
 - Scenario sentences
 - Specific instructions for exercise format
+
+**Matching Pairs Specific Instructions**:
+- Extract individual words from source and target sentences (not full sentences)
+- Create word-to-word translation pairs
+- Select 8-12 word pairs appropriate for the difficulty level
+- Shuffle target words for the game interface
+- Focus on vocabulary from highlighted words when available
 
 #### Response Schema
 

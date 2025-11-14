@@ -53,10 +53,13 @@
   
   - [x] 3.4 Implement matching pairs exercise generator
 
-    - Create function `generateMatchingPairsExercise()` that extracts all sentence pairs
-    - Build prompt with difficulty level, languages, and all sentence pairs
-    - Call Google AI API with structured schema for matching pairs format
-    - Parse response and return MatchingPairsExercise object
+
+
+
+    - Create function `generateMatchingPairsExercise()` that extracts individual words from source and target sentences
+    - Build prompt with difficulty level, languages, and word pairs (not full sentences)
+    - Call Google AI API with structured schema for matching pairs format (word-to-word matching)
+    - Parse response and return MatchingPairsExercise object with sourceWords and targetWords arrays
     - _Requirements: 2.1, 2.2, 2.3, 2.5_
   
   - [x] 3.5 Implement sentence scramble exercise generator

@@ -15,13 +15,13 @@ export interface FillInBlankExercises {
 // Matching Pairs Exercise Models
 export interface MatchingPair {
     id: string;
-    sourceText: string;
-    targetText: string;
+    sourceWord: string;
+    targetWord: string;
 }
 
 export interface MatchingPairsExercise {
-    sourceSentences: Array<{ id: string; text: string }>;
-    targetSentences: Array<{ id: string; text: string }>;
+    sourceWords: Array<{ id: string; word: string }>;
+    targetWords: Array<{ id: string; word: string }>;
     correctPairs: Array<{ sourceId: string; targetId: string }>;
 }
 

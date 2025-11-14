@@ -59,13 +59,19 @@ Sentence Pairs:
 ${pairsList}
 
 Create a matching pairs game where:
-1. List all source language sentences with their IDs
-2. List all target language sentences with their IDs (in a different order for the game)
-3. Provide the correct pairings (sourceId to targetId mappings)
+1. Extract individual words from the source language sentences (not full sentences)
+2. Extract the corresponding individual word translations from the target language sentences
+3. Create word-to-word translation pairs (e.g., "hello" → "hola", not full sentences)
+4. Select 8-12 word pairs that are appropriate for ${context.difficulty} level learners
+5. Prioritize important vocabulary words (nouns, verbs, adjectives) over articles or prepositions
+6. Assign unique IDs to each source word (e.g., "word1", "word2", etc.)
+7. Assign unique IDs to each target word (e.g., "word1", "word2", etc.)
+8. List target words in a different order than source words for the game
+9. Provide the correct word-to-word pairings (sourceId to targetId mappings)
 
-The learner will match source sentences to their target translations.
+The learner will match individual source language words to their target language word translations.
 
-Return a JSON object matching the provided schema with sourceSentences, targetSentences, and correctPairs arrays.`;
+Return a JSON object matching the provided schema with sourceWords, targetWords, and correctPairs arrays.`;
 }
 
 /**

@@ -10,7 +10,7 @@ This feature automatically generates four types of language learning exercises w
 - **Exercise Generator Lambda**: The Lambda function triggered by DynamoDB Streams when a Scenario item is created
 - **Google AI Service**: The Google Generative AI API used to generate exercise content
 - **Fill-in-the-Blank Exercise**: A language exercise where one word is removed from a sentence and the learner must select the correct word from four options
-- **Matching Pairs Exercise**: A game where learners match source language sentences with their target language translations
+- **Matching Pairs Exercise**: A game where learners match individual words from source language sentences with their target language translations
 - **Sentence Scramble Exercise**: An exercise where learners arrange jumbled target language words into the correct order based on a source language sentence
 - **Swipe Exercise**: A rapid-fire review mechanic where learners swipe right for correct translations and left for incorrect ones
 - **Scenario JSON**: The JSON object stored in the scenario field containing the conversation scenario structure with sentences, highlighted words, and translations
@@ -33,15 +33,15 @@ This feature automatically generates four types of language learning exercises w
 
 ### Requirement 2
 
-**User Story:** As a language learner, I want matching pairs exercises automatically generated from scenarios, so that I can practice connecting source and target language sentences
+**User Story:** As a language learner, I want matching pairs exercises automatically generated from scenarios, so that I can practice connecting individual words between source and target languages
 
 #### Acceptance Criteria
 
-1. THE Exercise Generator Lambda SHALL extract all sentence pairs (both source and target language) from the Scenario JSON
-2. THE Exercise Generator Lambda SHALL call the Google AI Service with all sentence pairs, difficulty level, source language, and target language parameters to generate a matching pairs game exercise
-3. THE matching pairs exercise SHALL include all source language sentences and their corresponding target language translations in a shuffled order
+1. THE Exercise Generator Lambda SHALL extract individual words from both source and target language sentences in the Scenario JSON
+2. THE Exercise Generator Lambda SHALL call the Google AI Service with the extracted words, difficulty level, source language, and target language parameters to generate a matching pairs game exercise
+3. THE matching pairs exercise SHALL include individual words from source language sentences and their corresponding target language word translations in a shuffled order
 4. THE Exercise Generator Lambda SHALL store the matching pairs exercise data in a new field named "matchingPairsExercise" in the Scenario Table item
-5. THE matching pairs exercise data SHALL include the list of source sentences, the list of target sentences, and the correct pairings
+5. THE matching pairs exercise data SHALL include the list of source words, the list of target words, and the correct word-to-word pairings
 
 ### Requirement 3
 

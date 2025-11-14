@@ -30,26 +30,26 @@ export const fillInBlankSchema = {
 export const matchingPairsSchema = {
     type: Type.OBJECT,
     properties: {
-        sourceSentences: {
+        sourceWords: {
             type: Type.ARRAY,
             items: {
                 type: Type.OBJECT,
                 properties: {
                     id: { type: Type.STRING },
-                    text: { type: Type.STRING }
+                    word: { type: Type.STRING }
                 },
-                required: ["id", "text"]
+                required: ["id", "word"]
             }
         },
-        targetSentences: {
+        targetWords: {
             type: Type.ARRAY,
             items: {
                 type: Type.OBJECT,
                 properties: {
                     id: { type: Type.STRING },
-                    text: { type: Type.STRING }
+                    word: { type: Type.STRING }
                 },
-                required: ["id", "text"]
+                required: ["id", "word"]
             }
         },
         correctPairs: {
@@ -64,7 +64,7 @@ export const matchingPairsSchema = {
             }
         }
     },
-    required: ["sourceSentences", "targetSentences", "correctPairs"]
+    required: ["sourceWords", "targetWords", "correctPairs"]
 };
 
 // Sentence Scramble Exercise Schema
