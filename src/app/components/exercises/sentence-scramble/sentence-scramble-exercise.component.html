@@ -1,11 +1,13 @@
-<div class="min-h-screen bg-[var(--c-bg-primary)] p-4 md:p-6 lg:p-8">
+<div class="min-h-screen bg-[var(--c-bg-primary)] px-4 py-4 sm:p-6 lg:p-8">
     <div class="max-w-4xl mx-auto">
         <!-- Header -->
-        <header class="mb-8 flex items-center justify-between">
-            <h2 class="text-2xl md:text-3xl font-bold text-[var(--c-text-primary)]">
+        <header class="mb-6 sm:mb-8 flex items-center justify-between gap-2">
+            <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-[var(--c-text-primary)]">
                 {{ 'exercises.sentence_scramble.title' | transloco }}
             </h2>
-            <button (click)="goBack()" class="px-4 py-2 font-semibold rounded-md transition-colors" [ngClass]="{
+            <button (click)="goBack()"
+                class="px-3 py-2 sm:px-4 sm:py-2 font-semibold rounded-md transition-colors min-h-[44px] text-sm sm:text-base"
+                [ngClass]="{
                     'bg-slate-200 text-slate-700 hover:bg-slate-300': themeService.theme() === 'light',
                     'bg-slate-700 text-slate-200 hover:bg-slate-600': themeService.theme() === 'dark'
                 }">
@@ -55,14 +57,14 @@
 
             <!-- Exercise Card -->
             <div
-                class="rounded-xl shadow-lg border border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)] p-6 md:p-8">
+                class="rounded-xl shadow-lg border border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)] p-4 sm:p-6 md:p-8">
                 <!-- Reference Sentence -->
-                <div class="mb-6 p-4 rounded-lg bg-[var(--c-bg-muted)]">
-                    <p class="text-lg text-[var(--c-text-primary)]">{{ currentExercise().sourceText }}</p>
+                <div class="mb-4 sm:mb-6 p-3 sm:p-4 rounded-lg bg-[var(--c-bg-muted)]">
+                    <p class="text-base sm:text-lg text-[var(--c-text-primary)]">{{ currentExercise().sourceText }}</p>
                 </div>
 
                 <!-- Instructions -->
-                <p class="text-center text-[var(--c-text-secondary)] mb-4">
+                <p class="text-center text-sm sm:text-base text-[var(--c-text-secondary)] mb-4">
                     {{ 'exercises.drag_words_instruction' | transloco }}
                 </p>
 
@@ -70,14 +72,16 @@
                 <div class="mb-6">
                     <p class="text-sm font-semibold text-[var(--c-text-secondary)] mb-3">{{ 'exercises.your_answer' |
                         transloco }}</p>
-                    <div class="flex flex-wrap gap-3 p-4 rounded-lg border-2 border-dashed min-h-[80px]" [ngClass]="{
+                    <div data-drop-zone="target"
+                        class="flex flex-wrap gap-3 p-4 rounded-lg border-2 border-dashed min-h-[80px] sm:min-h-[100px]"
+                        [ngClass]="{
                             'border-sky-300 bg-sky-50/30': themeService.theme() === 'light',
                             'border-sky-600 bg-sky-950/30': themeService.theme() === 'dark'
                         }" (drop)="onDropToTarget($event)" (dragover)="onDragOver($event)">
                         <div *ngFor="let word of targetWords(); let i = index"
-                            class="px-4 py-2 rounded-lg border-2 font-medium cursor-move transition-all duration-200"
+                            class="px-3 py-2 sm:px-4 sm:py-3 rounded-lg border-2 font-medium cursor-move transition-all duration-200 select-none touch-none min-h-[44px] flex items-center text-base sm:text-lg"
                             [ngClass]="{
-                                'border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)] hover:border-sky-500': !showAnswer(),
+                                'border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)] hover:border-sky-500 active:scale-105': !showAnswer(),
                                 'border-emerald-500 text-emerald-700': showAnswer() && isCorrectPosition(i),
                                 'bg-emerald-100': showAnswer() && isCorrectPosition(i) && themeService.theme() === 'light',
                                 'bg-emerald-900/30': showAnswer() && isCorrectPosition(i) && themeService.theme() === 'dark',
@@ -85,7 +89,9 @@
                                 'bg-red-100': showAnswer() && !isCorrectPosition(i) && themeService.theme() === 'light',
                                 'bg-red-900/30': showAnswer() && !isCorrectPosition(i) && themeService.theme() === 'dark'
                             }" draggable="true" (dragstart)="onDragStart($event, word, 'target', i)"
-                            (drop)="onDropToTarget($event, i)" (dragover)="onDragOver($event)">
+                            (drop)="onDropToTarget($event, i)" (dragover)="onDragOver($event)"
+                            (touchstart)="onTouchStart($event, word, 'target', i)" (touchmove)="onTouchMove($event)"
+                            (touchend)="onTouchEnd($event)">
                             {{ word }}
                         </div>
                         <div *ngIf="targetWords().length === 0"
@@ -99,11 +105,14 @@
                 <div class="mb-6">
                     <p class="text-sm font-semibold text-[var(--c-text-secondary)] mb-3">{{ 'exercises.word_bank' |
                         transloco }}</p>
-                    <div class="flex flex-wrap gap-3 p-4 rounded-lg border-2 border-dashed border-[var(--c-border-subtle)] bg-[var(--c-bg-muted)] min-h-[80px]"
+                    <div data-drop-zone="available"
+                        class="flex flex-wrap gap-3 p-4 rounded-lg border-2 border-dashed border-[var(--c-border-subtle)] bg-[var(--c-bg-muted)] min-h-[80px] sm:min-h-[100px]"
                         (drop)="onDropToAvailable($event)" (dragover)="onDragOver($event)">
                         <div *ngFor="let word of availableWords(); let i = index"
-                            class="px-4 py-2 rounded-lg border-2 border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)] font-medium cursor-move transition-all duration-200 hover:border-sky-500 hover:shadow-md"
-                            draggable="true" (dragstart)="onDragStart($event, word, 'available', i)">
+                            class="px-3 py-2 sm:px-4 sm:py-3 rounded-lg border-2 border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)] font-medium cursor-move transition-all duration-200 hover:border-sky-500 hover:shadow-md active:scale-105 select-none touch-none min-h-[44px] flex items-center text-base sm:text-lg"
+                            draggable="true" (dragstart)="onDragStart($event, word, 'available', i)"
+                            (touchstart)="onTouchStart($event, word, 'available', i)" (touchmove)="onTouchMove($event)"
+                            (touchend)="onTouchEnd($event)">
                             {{ word }}
                         </div>
                         <div *ngIf="availableWords().length === 0"
@@ -126,19 +135,19 @@
             </div>
 
             <!-- Action Buttons -->
-            <div class="flex justify-center gap-4">
+            <div class="flex justify-center gap-3 sm:gap-4">
                 <button *ngIf="!showAnswer()" (click)="checkOrder()" [disabled]="!allWordsPlaced()"
-                    class="px-8 py-3 font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                    class="px-6 py-3 sm:px-8 sm:py-3 font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] text-sm sm:text-base">
                     {{ 'exercises.check_order' | transloco }}
                 </button>
 
                 <button *ngIf="showAnswer() && !isLastExercise()" (click)="nextExercise()"
-                    class="px-8 py-3 font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors">
+                    class="px-6 py-3 sm:px-8 sm:py-3 font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors min-h-[44px] text-sm sm:text-base">
                     {{ 'exercises.next_question' | transloco }}
                 </button>
 
                 <button *ngIf="showAnswer() && isLastExercise()" (click)="finish()"
-                    class="px-8 py-3 font-semibold rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition-colors">
+                    class="px-6 py-3 sm:px-8 sm:py-3 font-semibold rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition-colors min-h-[44px] text-sm sm:text-base">
                     {{ 'exercises.finish' | transloco }}
                 </button>
             </div>

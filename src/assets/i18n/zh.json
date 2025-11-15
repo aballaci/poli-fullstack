@@ -108,7 +108,9 @@
         "interface_language_tooltip": "界面语言 - 更改菜单和按钮的语言",
         "target_language_tooltip": "学习语言 - 更改您正在练习的语言 (当前为 {{language}})",
         "theme_toggle_dark": "切换到浅色主题",
-        "theme_toggle_light": "切换到深色主题"
+        "theme_toggle_light": "切换到深色主题",
+        "menu": "菜单",
+        "close_menu": "关闭菜单"
     },
     "wizard": {
         "title": "Poli",

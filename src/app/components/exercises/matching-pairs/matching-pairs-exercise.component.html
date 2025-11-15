@@ -1,22 +1,24 @@
-<div class="min-h-screen bg-[var(--c-bg-primary)] p-4 md:p-6 lg:p-8">
+<div class="min-h-screen bg-[var(--c-bg-primary)] px-4 py-4 sm:p-6 lg:p-8">
     <div class="max-w-6xl mx-auto">
         <!-- Header -->
-        <header class="mb-8">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-2xl md:text-3xl font-bold text-[var(--c-text-primary)]">
+        <header class="mb-6 sm:mb-8">
+            <div class="flex items-center justify-between mb-4 gap-2">
+                <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-[var(--c-text-primary)]">
                     {{ 'exercises.matching_pairs.title' | transloco }}
                 </h2>
 
                 <!-- Hearts Display -->
-                <div class="flex items-center gap-2">
-                    <div *ngFor="let heart of hearts()" class="text-2xl transition-all duration-300">
+                <div class="flex items-center gap-1 sm:gap-2">
+                    <div *ngFor="let heart of hearts()" class="text-xl sm:text-2xl transition-all duration-300">
                         <span *ngIf="heart" class="text-red-500">❤️</span>
                         <span *ngIf="!heart" class="text-[var(--c-text-muted)] opacity-40">🤍</span>
                     </div>
                 </div>
             </div>
 
-            <button (click)="goBack()" class="px-4 py-2 font-semibold rounded-md transition-colors" [ngClass]="{
+            <button (click)="goBack()"
+                class="px-3 py-2 sm:px-4 sm:py-2 font-semibold rounded-md transition-colors min-h-[44px] text-sm sm:text-base"
+                [ngClass]="{
                     'bg-slate-200 text-slate-700 hover:bg-slate-300': themeService.theme() === 'light',
                     'bg-slate-700 text-slate-200 hover:bg-slate-600': themeService.theme() === 'dark'
                 }">
@@ -51,20 +53,20 @@
         <!-- Exercise Content -->
         <div *ngIf="!isLoading() && !errorMessage()" class="space-y-6 fade-in">
             <!-- Instructions -->
-            <div class="text-center mb-6">
-                <p class="text-[var(--c-text-secondary)]">
+            <div class="text-center mb-4 sm:mb-6">
+                <p class="text-sm sm:text-base text-[var(--c-text-secondary)]">
                     {{ 'exercises.matching_pairs.instructions' | transloco }}
                 </p>
             </div>
 
             <!-- Matching Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <!-- Source Column -->
-                <div class="flex flex-col items-end space-y-2">
+                <div class="flex flex-col items-end space-y-2 sm:space-y-3">
                     <div *ngFor="let source of visibleSourceWords()" (click)="selectCard(source.id, 'source')"
-                        class="rounded-lg shadow-sm border px-3 py-2 transition-all duration-200 cursor-pointer gpu-accelerated interactive-hover text-right"
+                        class="rounded-lg shadow-sm border px-3 py-3 sm:px-4 sm:py-3 transition-all duration-100 cursor-pointer gpu-accelerated interactive-hover text-right min-h-[44px] flex items-center justify-end w-full max-w-full"
                         [ngClass]="{
-                            'border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)]': !isCardSelected(source.id, 'source') && !isSuccessAnimating(source.id),
+                            'border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)] active:scale-95': !isCardSelected(source.id, 'source') && !isSuccessAnimating(source.id),
                             'border-sky-400 ring-1 ring-sky-300': isCardSelected(source.id, 'source') && !isSuccessAnimating(source.id),
                             'bg-sky-100/30': isCardSelected(source.id, 'source') && !isSuccessAnimating(source.id) && themeService.theme() === 'light',
                             'bg-sky-900/30': isCardSelected(source.id, 'source') && !isSuccessAnimating(source.id) && themeService.theme() === 'dark',
@@ -72,7 +74,8 @@
                             'bg-emerald-100': isSuccessAnimating(source.id) && themeService.theme() === 'light',
                             'bg-emerald-900/30': isSuccessAnimating(source.id) && themeService.theme() === 'dark'
                         }">
-                        <p class="text-[var(--c-text-primary)] font-medium flex items-center justify-between gap-2">
+                        <p
+                            class="text-[var(--c-text-primary)] font-medium flex items-center justify-between gap-2 text-base sm:text-lg w-full">
                             <span *ngIf="isSuccessAnimating(source.id)"
                                 class="text-xl text-emerald-500 animate-bounce">✓</span>
                             <span>{{ source.word }}</span>
@@ -81,11 +84,11 @@
                 </div>
 
                 <!-- Target Column -->
-                <div class="flex flex-col items-start space-y-2">
+                <div class="flex flex-col items-start space-y-2 sm:space-y-3">
                     <div *ngFor="let target of visibleTargetWords()" (click)="selectCard(target.id, 'target')"
-                        class="rounded-lg shadow-sm border px-3 py-2 transition-all duration-200 cursor-pointer gpu-accelerated interactive-hover"
+                        class="rounded-lg shadow-sm border px-3 py-3 sm:px-4 sm:py-3 transition-all duration-100 cursor-pointer gpu-accelerated interactive-hover min-h-[44px] flex items-center w-full max-w-full"
                         [ngClass]="{
-                            'border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)]': !isCardSelected(target.id, 'target') && !isSuccessAnimating(target.id),
+                            'border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)] active:scale-95': !isCardSelected(target.id, 'target') && !isSuccessAnimating(target.id),
                             'border-sky-400 ring-1 ring-sky-300': isCardSelected(target.id, 'target') && !isSuccessAnimating(target.id),
                             'bg-sky-100/30': isCardSelected(target.id, 'target') && !isSuccessAnimating(target.id) && themeService.theme() === 'light',
                             'bg-sky-900/30': isCardSelected(target.id, 'target') && !isSuccessAnimating(target.id) && themeService.theme() === 'dark',
@@ -93,7 +96,8 @@
                             'bg-emerald-100': isSuccessAnimating(target.id) && themeService.theme() === 'light',
                             'bg-emerald-900/30': isSuccessAnimating(target.id) && themeService.theme() === 'dark'
                         }">
-                        <p class="text-[var(--c-text-primary)] font-medium flex items-center justify-between gap-2">
+                        <p
+                            class="text-[var(--c-text-primary)] font-medium flex items-center justify-between gap-2 text-base sm:text-lg w-full">
                             <span>{{ target.word }}</span>
                             <span *ngIf="isSuccessAnimating(target.id)"
                                 class="text-xl text-emerald-500 animate-bounce">✓</span>

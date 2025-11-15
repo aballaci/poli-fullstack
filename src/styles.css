@@ -55,3 +55,73 @@ amplify-authenticator.auth-wrapper [data-amplify-router] {
 
 /* The [data-amplify-container] element only exists during login/signup */
 /* After authentication, it's replaced with the authenticated content */
+
+/* Mobile Optimizations */
+
+/* Prevent text selection during drag operations */
+.select-none {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Disable touch actions for draggable elements */
+.touch-none {
+    touch-action: none;
+    -webkit-touch-callout: none;
+}
+
+/* GPU-accelerated transforms for smooth animations */
+.gpu-accelerated {
+    transform: translateZ(0);
+    will-change: transform;
+    backface-visibility: hidden;
+}
+
+/* Interactive hover effects with touch support */
+.interactive-hover {
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
+}
+
+.interactive-hover:active {
+    transform: scale(0.98);
+}
+
+/* Ensure minimum touch target size on mobile */
+@media (max-width: 768px) {
+
+    button,
+    a,
+    [role="button"],
+    input[type="button"],
+    input[type="submit"] {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    /* Increase font size on mobile to prevent zoom */
+    input,
+    textarea,
+    select {
+        font-size: 16px;
+    }
+}
+
+/* Prevent body scroll when mobile menu is open */
+body.mobile-menu-open {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+}
+
+/* Smooth scrolling for better mobile experience */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Optimize scroll performance with passive listeners */
+* {
+    -webkit-overflow-scrolling: touch;
+}

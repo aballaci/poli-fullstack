@@ -6,6 +6,8 @@ import { ExerciseService } from '../../../services/exercise.service';
 import { SessionStore } from '../../../state/session.store';
 import { ThemeService } from '../../../services/theme.service';
 import { SoundService } from '../../../services/sound.service';
+import { TouchService } from '../../../services/touch.service';
+import { ViewportService } from '../../../services/viewport.service';
 import { SentenceScrambleExercise, SentenceScrambleExercises } from '../../../models/exercise.models';
 
 @Component({
@@ -20,6 +22,8 @@ export class SentenceScrambleExerciseComponent implements OnInit {
     private router = inject(Router);
     readonly themeService = inject(ThemeService);
     private soundService = inject(SoundService);
+    private touchService = inject(TouchService);
+    readonly viewportService = inject(ViewportService);
 
     // Exercise data
     readonly exercises = signal<SentenceScrambleExercise[]>([]);
@@ -34,6 +38,20 @@ export class SentenceScrambleExerciseComponent implements OnInit {
     readonly draggedWord = signal<string | null>(null);
     readonly draggedFrom = signal<'available' | 'target' | null>(null);
     readonly draggedIndex = signal<number | null>(null);
+
+    // Touch state
+    readonly touchState = signal<{
+        startX: number;
+        startY: number;
+        currentX: number;
+        currentY: number;
+        element: HTMLElement | null;
+        word: string | null;
+        from: 'available' | 'target' | null;
+        index: number | null;
+        isDragging: boolean;
+        holdTimer: any;
+    } | null>(null);
 
     // Computed properties
     readonly currentExercise = computed(() => {
@@ -265,6 +283,145 @@ export class SentenceScrambleExerciseComponent implements OnInit {
         this.router.navigate(['/conversation'], {
             state: { step: 'Exercises' }
         });
+    }
+
+    /**
+     * Handle touch start event
+     */
+    onTouchStart(event: TouchEvent, word: string, from: 'available' | 'target', index: number): void {
+        if (this.showAnswer()) return;
+
+        const touch = event.touches[0];
+        const element = event.target as HTMLElement;
+
+        // Initialize touch state
+        this.touchState.set({
+            startX: touch.clientX,
+            startY: touch.clientY,
+            currentX: touch.clientX,
+            currentY: touch.clientY,
+            element,
+            word,
+            from,
+            index,
+            isDragging: false,
+            holdTimer: null
+        });
+
+        // Set hold timer to activate drag mode after 200ms
+        const holdTimer = setTimeout(() => {
+            const state = this.touchState();
+            if (state && !state.isDragging) {
+                // Check if there was minimal movement (not a scroll)
+                const gesture = this.touchService.detectGesture(
+                    state.startX,
+                    state.startY,
+                    state.currentX,
+                    state.currentY
+                );
+
+                if (gesture.type !== 'scroll') {
+                    // Activate drag mode
+                    this.touchState.update(s => s ? { ...s, isDragging: true } : null);
+                    this.draggedWord.set(word);
+                    this.draggedFrom.set(from);
+                    this.draggedIndex.set(index);
+
+                    // Add visual feedback
+                    element.style.transform = 'scale(1.05)';
+                    element.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+                }
+            }
+        }, 200);
+
+        this.touchState.update(s => s ? { ...s, holdTimer } : null);
+    }
+
+    /**
+     * Handle touch move event
+     */
+    onTouchMove(event: TouchEvent): void {
+        const state = this.touchState();
+        if (!state) return;
+
+        const touch = event.touches[0];
+        this.touchState.update(s => s ? {
+            ...s,
+            currentX: touch.clientX,
+            currentY: touch.clientY
+        } : null);
+
+        // Detect gesture type
+        const gesture = this.touchService.detectGesture(
+            state.startX,
+            state.startY,
+            touch.clientX,
+            touch.clientY
+        );
+
+        // If scroll detected, clear hold timer and disable drag
+        if (gesture.type === 'scroll') {
+            if (state.holdTimer) {
+                clearTimeout(state.holdTimer);
+            }
+            this.touchState.set(null);
+            this.clearDragState();
+            return;
+        }
+
+        // If dragging, prevent default and update visual position
+        if (state.isDragging) {
+            event.preventDefault();
+            if (state.element) {
+                const deltaX = touch.clientX - state.startX;
+                const deltaY = touch.clientY - state.startY;
+                state.element.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(1.05)`;
+            }
+        }
+    }
+
+    /**
+     * Handle touch end event
+     */
+    onTouchEnd(event: TouchEvent): void {
+        const state = this.touchState();
+        if (!state) return;
+
+        // Clear hold timer
+        if (state.holdTimer) {
+            clearTimeout(state.holdTimer);
+        }
+
+        // Reset visual state
+        if (state.element) {
+            state.element.style.transform = '';
+            state.element.style.boxShadow = '';
+        }
+
+        // If dragging, handle drop
+        if (state.isDragging) {
+            const touch = event.changedTouches[0];
+            const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
+
+            if (dropTarget) {
+                // Check if dropped on target area
+                const targetArea = dropTarget.closest('[data-drop-zone="target"]');
+                const availableArea = dropTarget.closest('[data-drop-zone="available"]');
+
+                if (targetArea) {
+                    // Simulate drop to target
+                    const dropEvent = new DragEvent('drop');
+                    this.onDropToTarget(dropEvent);
+                } else if (availableArea && state.from === 'target') {
+                    // Simulate drop to available
+                    const dropEvent = new DragEvent('drop');
+                    this.onDropToAvailable(dropEvent);
+                }
+            }
+        }
+
+        // Clear touch state
+        this.touchState.set(null);
     }
 }
 

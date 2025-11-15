@@ -4,8 +4,8 @@
   <span class="hidden">{{ targetLanguage()?.code }}</span>
   <div class="container mx-auto px-4 py-3 flex justify-between items-center">
     <a routerLink="/home" class="flex items-center space-x-2 hover:opacity-80 transition-opacity cursor-pointer">
-      <!-- SVG Logo -->
-      <svg width="40" height="40" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <!-- SVG Logo - responsive size -->
+      <svg class="w-10 h-10 sm:w-10 sm:h-10" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
@@ -26,8 +26,13 @@
         <!-- Smile -->
         <path d="M 35 68 Q 50 80 65 68" stroke="#FFFFFF" stroke-width="4" fill="none" stroke-linecap="round" />
       </svg>
-      <span class="text-2xl font-bold text-gradient">Poli /ˈpɒ.lɪ.ɡlɒt/</span>
+      <!-- Responsive app name: "Poli" on mobile, full name on desktop -->
+      <span class="text-xl sm:text-2xl font-bold text-gradient">
+        <span class="sm:hidden">Poli</span>
+        <span class="hidden sm:inline">Poli /ˈpɒ.lɪ.ɡlɒt/</span>
+      </span>
     </a>
+    <!-- Desktop Navigation -->
     <div class="hidden md:flex space-x-8">
       <a [routerLink]="['/home']" fragment="home"
         class="text-[var(--c-text-body)] hover:text-purple-600 transition font-medium">{{ 'header.home' | transloco
@@ -44,16 +49,24 @@
       <a routerLink="/intro" class="text-[var(--c-text-body)] hover:text-purple-600 transition font-medium">{{
         'header.about' | transloco }}</a>
     </div>
-    <div class="flex items-center space-x-4">
+
+    <!-- Mobile Hamburger Button -->
+    <button *ngIf="isMobileView()" (click)="toggleMobileMenu()" type="button"
+      class="hamburger-button md:hidden p-2 rounded-md text-[var(--c-text-body)] hover:bg-[var(--c-bg-muted)] transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500"
+      [attr.aria-label]="'header.menu' | transloco" [attr.aria-expanded]="mobileMenuOpen()">
+      <i class="fa-solid text-2xl" [ngClass]="mobileMenuOpen() ? 'fa-times' : 'fa-bars'"></i>
+    </button>
+    <div class="flex items-center space-x-2 sm:space-x-4">
       <!-- Language Selection Group -->
-      <div class="flex items-center space-x-3">
+      <div class="hidden md:flex items-center space-x-3">
         <!-- Target Language Selector -->
         @if (targetLanguage(); as lang) {
         <button (click)="navigateToLanguageWizard()" type="button"
-          class="flex items-center space-x-2 px-3 py-2 rounded-md bg-[var(--c-bg-muted)] hover:bg-[var(--c-bg-surface)] transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+          class="flex items-center space-x-2 px-3 py-2 rounded-md bg-[var(--c-bg-muted)] hover:bg-[var(--c-bg-surface)] transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 min-h-[44px]"
           [attr.title]="('header.target_language_tooltip' | transloco: { language: lang.display_name })">
-          <span class="text-sm font-medium text-[var(--c-text-body)]">{{ 'header.learning' | transloco }}: {{
-            lang.display_name }}</span>
+          <span class="text-sm font-medium text-[var(--c-text-body)]">
+            <span class="hidden sm:inline">{{ 'header.learning' | transloco }}: </span>{{ lang.display_name }}
+          </span>
           <i class="fa-solid fa-chevron-down text-xs text-[var(--c-text-muted)]"></i>
         </button>
         }
@@ -63,7 +76,7 @@
 
       <!-- Theme Toggle Icon -->
       <button (click)="toggleTheme()" type="button"
-        class="p-2 rounded-md text-[var(--c-text-body)] hover:bg-[var(--c-bg-muted)] transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+        class="hidden md:block p-2 rounded-md text-[var(--c-text-body)] hover:bg-[var(--c-bg-muted)] transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 min-w-[44px] min-h-[44px]"
         [attr.aria-label]="theme() === 'dark' ? ('header.theme_toggle_dark' | transloco) : ('header.theme_toggle_light' | transloco)">
         @if (theme() === 'dark') {
         <i class="fa-solid fa-moon text-xl"></i>
@@ -76,22 +89,134 @@
       @if (store.isConfigured()) {
       <div class="hidden sm:flex items-center space-x-4 pl-2 border-l border-[var(--c-border-subtle)]">
         <a routerLink="/selector"
-          class="flex items-center space-x-2 text-sm font-medium text-[var(--c-text-body)] hover:text-purple-600 transition-colors">
+          class="flex items-center space-x-2 text-sm font-medium text-[var(--c-text-body)] hover:text-purple-600 transition-colors min-h-[44px]">
           <i class="fa-solid fa-trophy text-yellow-500"></i>
           <span>{{ 'header.dashboard' | transloco }}</span>
         </a>
         <a routerLink="/settings"
-          class="flex items-center space-x-2 text-sm font-medium text-[var(--c-text-body)] hover:text-purple-600 transition-colors">
+          class="flex items-center space-x-2 text-sm font-medium text-[var(--c-text-body)] hover:text-purple-600 transition-colors min-h-[44px]">
           <i class="fa-solid fa-gear"></i>
           <span>{{ 'header.settings' | transloco }}</span>
         </a>
       </div>
       } @else {
-      <a routerLink="/wizard" class="text-[var(--c-text-body)] hover:text-purple-600 font-medium transition">{{
+      <a routerLink="/wizard"
+        class="hidden md:inline text-[var(--c-text-body)] hover:text-purple-600 font-medium transition">{{
         'header.login' | transloco }}</a>
       <button (click)="navigateToApp()"
-        class="bg-purple-600 text-white px-5 py-2.5 rounded-full font-medium hover:bg-purple-700 transition shadow-sm hover:shadow-md">{{
+        class="hidden md:inline-block bg-purple-600 text-white px-5 py-2.5 rounded-full font-medium hover:bg-purple-700 transition shadow-sm hover:shadow-md min-h-[44px]">{{
         'header.signup' | transloco }}</button>
+      }
+    </div>
+  </div>
+
+  <!-- Mobile Menu Overlay -->
+  @if (mobileMenuOpen()) {
+  <div class="mobile-menu-overlay fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden" (click)="closeMobileMenu()">
+  </div>
+  }
+
+  <!-- Mobile Menu Drawer -->
+  <div
+    class="mobile-menu fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-[var(--c-bg-surface)] shadow-2xl z-50 transform transition-transform duration-300 ease-in-out md:hidden"
+    [class.translate-x-0]="mobileMenuOpen()" [class.translate-x-full]="!mobileMenuOpen()">
+
+    <!-- Mobile Menu Header -->
+    <div class="flex items-center justify-between p-4 border-b border-[var(--c-border-subtle)]">
+      <span class="text-lg font-bold text-gradient">Poli</span>
+      <button (click)="closeMobileMenu()" type="button"
+        class="p-2 rounded-md text-[var(--c-text-body)] hover:bg-[var(--c-bg-muted)] transition-colors min-w-[44px] min-h-[44px]"
+        [attr.aria-label]="'header.close_menu' | transloco">
+        <i class="fa-solid fa-times text-2xl"></i>
+      </button>
+    </div>
+
+    <!-- Mobile Menu Content -->
+    <div class="flex flex-col p-4 space-y-2">
+      <!-- Navigation Links -->
+      <a (click)="navigateAndClose('/home', 'home')"
+        class="flex items-center px-4 py-3 rounded-md text-[var(--c-text-body)] hover:bg-[var(--c-bg-muted)] transition-colors font-medium min-h-[44px] cursor-pointer">
+        <i class="fa-solid fa-home w-6"></i>
+        <span class="ml-3">{{ 'header.home' | transloco }}</span>
+      </a>
+
+      <a (click)="navigateAndClose('/home', 'languages')"
+        class="flex items-center px-4 py-3 rounded-md text-[var(--c-text-body)] hover:bg-[var(--c-bg-muted)] transition-colors font-medium min-h-[44px] cursor-pointer">
+        <i class="fa-solid fa-language w-6"></i>
+        <span class="ml-3">{{ 'header.languages' | transloco }}</span>
+      </a>
+
+      <a (click)="navigateAndClose('/home', 'features')"
+        class="flex items-center px-4 py-3 rounded-md text-[var(--c-text-body)] hover:bg-[var(--c-bg-muted)] transition-colors font-medium min-h-[44px] cursor-pointer">
+        <i class="fa-solid fa-star w-6"></i>
+        <span class="ml-3">{{ 'header.features' | transloco }}</span>
+      </a>
+
+      <a (click)="navigateAndClose('/home', 'pricing')"
+        class="flex items-center px-4 py-3 rounded-md text-[var(--c-text-body)] hover:bg-[var(--c-bg-muted)] transition-colors font-medium min-h-[44px] cursor-pointer">
+        <i class="fa-solid fa-tag w-6"></i>
+        <span class="ml-3">{{ 'header.pricing' | transloco }}</span>
+      </a>
+
+      <a (click)="navigateAndClose('/intro')"
+        class="flex items-center px-4 py-3 rounded-md text-[var(--c-text-body)] hover:bg-[var(--c-bg-muted)] transition-colors font-medium min-h-[44px] cursor-pointer">
+        <i class="fa-solid fa-info-circle w-6"></i>
+        <span class="ml-3">{{ 'header.about' | transloco }}</span>
+      </a>
+
+      <div class="border-t border-[var(--c-border-subtle)] my-2"></div>
+
+      <!-- Target Language Selector -->
+      @if (targetLanguage(); as lang) {
+      <button (click)="navigateToLanguageWizard(); closeMobileMenu();" type="button"
+        class="flex items-center px-4 py-3 rounded-md bg-[var(--c-bg-muted)] hover:bg-[var(--c-bg-surface)] transition-colors min-h-[44px] w-full text-left">
+        <i class="fa-solid fa-graduation-cap w-6"></i>
+        <span class="ml-3 text-sm font-medium text-[var(--c-text-body)]">
+          {{ lang.display_name }}
+        </span>
+      </button>
+      }
+
+      <!-- Interface Language Switcher -->
+      <div class="px-4 py-2">
+        <app-language-switcher [tooltip]="'header.interface_language_tooltip' | transloco"></app-language-switcher>
+      </div>
+
+      <!-- Theme Toggle -->
+      <button (click)="toggleTheme()" type="button"
+        class="flex items-center px-4 py-3 rounded-md text-[var(--c-text-body)] hover:bg-[var(--c-bg-muted)] transition-colors min-h-[44px] w-full text-left">
+        <i class="fa-solid w-6" [ngClass]="theme() === 'dark' ? 'fa-moon' : 'fa-sun'"></i>
+        <span class="ml-3">{{ theme() === 'dark' ? ('header.theme_toggle_dark' | transloco) :
+          ('header.theme_toggle_light' | transloco) }}</span>
+      </button>
+
+      @if (store.isConfigured()) {
+      <div class="border-t border-[var(--c-border-subtle)] my-2"></div>
+
+      <a (click)="navigateAndClose('/selector')"
+        class="flex items-center px-4 py-3 rounded-md text-[var(--c-text-body)] hover:bg-[var(--c-bg-muted)] transition-colors font-medium min-h-[44px] cursor-pointer">
+        <i class="fa-solid fa-trophy text-yellow-500 w-6"></i>
+        <span class="ml-3">{{ 'header.dashboard' | transloco }}</span>
+      </a>
+
+      <a (click)="navigateAndClose('/settings')"
+        class="flex items-center px-4 py-3 rounded-md text-[var(--c-text-body)] hover:bg-[var(--c-bg-muted)] transition-colors font-medium min-h-[44px] cursor-pointer">
+        <i class="fa-solid fa-gear w-6"></i>
+        <span class="ml-3">{{ 'header.settings' | transloco }}</span>
+      </a>
+      } @else {
+      <div class="border-t border-[var(--c-border-subtle)] my-2"></div>
+
+      <a (click)="navigateAndClose('/wizard')"
+        class="flex items-center px-4 py-3 rounded-md text-[var(--c-text-body)] hover:bg-[var(--c-bg-muted)] transition-colors font-medium min-h-[44px] cursor-pointer">
+        <i class="fa-solid fa-sign-in-alt w-6"></i>
+        <span class="ml-3">{{ 'header.login' | transloco }}</span>
+      </a>
+
+      <button (click)="navigateToApp(); closeMobileMenu();"
+        class="flex items-center justify-center w-full bg-purple-600 text-white px-5 py-3 rounded-full font-medium hover:bg-purple-700 transition shadow-sm hover:shadow-md min-h-[44px] mt-2">
+        {{ 'header.signup' | transloco }}
+      </button>
       }
     </div>
   </div>

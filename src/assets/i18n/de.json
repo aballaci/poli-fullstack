@@ -108,7 +108,9 @@
         "interface_language_tooltip": "Oberflächensprache - Ändere die Sprache der Menüs und Schaltflächen",
         "target_language_tooltip": "Lernsprache - Ändere die Sprache, die du übst (aktuell {{language}})",
         "theme_toggle_dark": "Zum hellen Design wechseln",
-        "theme_toggle_light": "Zum dunklen Design wechseln"
+        "theme_toggle_light": "Zum dunklen Design wechseln",
+        "menu": "Menü",
+        "close_menu": "Menü schließen"
     },
     "wizard": {
         "title": "Poli",

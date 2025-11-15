@@ -6,6 +6,7 @@ import { ExerciseService } from '../../../services/exercise.service';
 import { SessionStore } from '../../../state/session.store';
 import { ThemeService } from '../../../services/theme.service';
 import { SoundService } from '../../../services/sound.service';
+import { ViewportService } from '../../../services/viewport.service';
 import { WordItem, MatchingPairsExercise } from '../../../models/exercise.models';
 
 interface SelectedCard {
@@ -30,6 +31,7 @@ export class MatchingPairsExerciseComponent implements OnInit {
     private router = inject(Router);
     readonly themeService = inject(ThemeService);
     private soundService = inject(SoundService);
+    readonly viewportService = inject(ViewportService);
 
     // Exercise data
     readonly sourceWords = signal<WordItem[]>([]);

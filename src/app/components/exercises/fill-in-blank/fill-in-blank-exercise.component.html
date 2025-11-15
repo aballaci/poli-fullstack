@@ -1,11 +1,13 @@
-<div class="min-h-screen bg-[var(--c-bg-primary)] p-4 md:p-6 lg:p-8">
+<div class="min-h-screen bg-[var(--c-bg-primary)] px-4 py-4 sm:p-6 lg:p-8">
     <div class="max-w-4xl mx-auto">
         <!-- Header -->
-        <header class="mb-8 flex items-center justify-between">
-            <h2 class="text-2xl md:text-3xl font-bold text-[var(--c-text-primary)]">
+        <header class="mb-6 sm:mb-8 flex items-center justify-between gap-2">
+            <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-[var(--c-text-primary)]">
                 {{ 'exercises.fill_in_blank.title' | transloco }}
             </h2>
-            <button (click)="goBack()" class="px-4 py-2 font-semibold rounded-md transition-colors" [ngClass]="{
+            <button (click)="goBack()"
+                class="px-3 py-2 sm:px-4 sm:py-2 font-semibold rounded-md transition-colors min-h-[44px] text-sm sm:text-base"
+                [ngClass]="{
                     'bg-slate-200 text-slate-700 hover:bg-slate-300': themeService.theme() === 'light',
                     'bg-slate-700 text-slate-200 hover:bg-slate-600': themeService.theme() === 'dark'
                 }">
@@ -56,14 +58,15 @@
 
             <!-- Exercise Card -->
             <div
-                class="rounded-xl shadow-lg border border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)] p-6 md:p-8">
+                class="rounded-xl shadow-lg border border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)] p-4 sm:p-6 md:p-8">
                 <!-- Sentence Display -->
-                <div class="mb-8">
-                    <p class="text-xl md:text-2xl text-[var(--c-text-primary)] leading-relaxed text-left">
+                <div class="mb-6 sm:mb-8">
+                    <p class="text-base sm:text-xl md:text-2xl text-[var(--c-text-primary)] leading-relaxed text-left">
                         <ng-container *ngFor="let part of formattedSentence(); let i = index">
                             <span>{{ part.text }}</span><span *ngIf="i < formattedSentence().length - 1"
                                 class="inline-flex items-end whitespace-nowrap"><span
-                                    class="inline-block w-[80px] border-b-2 border-dashed mx-1 mb-[0.35em]" [ngClass]="{
+                                    class="inline-block w-[60px] sm:w-[80px] border-b-2 border-dashed mx-1 mb-[0.35em]"
+                                    [ngClass]="{
                                     'border-sky-500': themeService.theme() === 'light',
                                     'border-sky-400': themeService.theme() === 'dark'
                                 }"></span><span>{{ part.punctuation }}</span></span>
@@ -72,13 +75,13 @@
                 </div>
 
                 <!-- Options Grid -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <button *ngFor="let option of currentExercise().options; let i = index"
                         (click)="selectOption(option)" [disabled]="showAnswer()"
                         [attr.aria-label]="'Option ' + (i + 1) + ': ' + option"
                         [attr.aria-pressed]="selectedOption() === option"
                         [attr.aria-describedby]="showAnswer() && isCorrectAnswer(option) ? 'correct-feedback' : (showAnswer() && isIncorrectAnswer(option) ? 'incorrect-feedback' : null)"
-                        class="px-6 py-4 text-lg font-medium rounded-lg border-2 transition-all duration-200 interactive-hover button-press"
+                        class="px-4 py-3 sm:px-6 sm:py-4 text-base sm:text-lg font-medium rounded-lg border-2 transition-all duration-200 interactive-hover button-press min-h-[44px]"
                         [ngClass]="{
                             'pulse': showAnswer() && isCorrectAnswer(option),
                             'shake': showAnswer() && isIncorrectAnswer(option),

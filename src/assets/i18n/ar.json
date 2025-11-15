@@ -108,7 +108,9 @@
         "interface_language_tooltip": "لغة الواجهة - تغيير لغة القوائم والأزرار",
         "target_language_tooltip": "لغة التعلّم - تغيير اللغة التي تتدرب عليها (حاليًا {{language}})",
         "theme_toggle_dark": "التبديل إلى المظهر الفاتح",
-        "theme_toggle_light": "التبديل إلى المظهر الداكن"
+        "theme_toggle_light": "التبديل إلى المظهر الداكن",
+        "menu": "القائمة",
+        "close_menu": "إغلاق القائمة"
     },
     "wizard": {
         "title": "Poli",

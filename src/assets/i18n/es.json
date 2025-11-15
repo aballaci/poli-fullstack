@@ -108,7 +108,9 @@
         "interface_language_tooltip": "Idioma de la interfaz - Cambia el idioma de menús y botones",
         "target_language_tooltip": "Idioma de aprendizaje - Cambia el idioma que estás practicando (actualmente {{language}})",
         "theme_toggle_dark": "Cambiar a tema claro",
-        "theme_toggle_light": "Cambiar a tema oscuro"
+        "theme_toggle_light": "Cambiar a tema oscuro",
+        "menu": "Menú",
+        "close_menu": "Cerrar menú"
     },
     "wizard": {
         "title": "Poli",

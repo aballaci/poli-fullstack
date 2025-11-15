@@ -108,7 +108,9 @@
         "interface_language_tooltip": "インターフェース言語 - メニューやボタンの言語を変更します",
         "target_language_tooltip": "学習言語 - 練習中の言語を変更します (現在: {{language}})",
         "theme_toggle_dark": "ライトテーマに切り替える",
-        "theme_toggle_light": "ダークテーマに切り替える"
+        "theme_toggle_light": "ダークテーマに切り替える",
+        "menu": "メニュー",
+        "close_menu": "メニューを閉じる"
     },
     "wizard": {
         "title": "Poli",

@@ -104,6 +104,8 @@
         "dashboard": "Dashboard",
         "settings": "Settings",
         "learning": "Learning",
+        "menu": "Menu",
+        "close_menu": "Close menu",
         "change_language_aria": "Change target language (currently {{language}})",
         "interface_language_tooltip": "Interface Language - Change the language of menus and buttons",
         "target_language_tooltip": "Learning Language - Change the language you're practicing (currently {{language}})",

@@ -6,3 +6,27 @@
   background-clip: text;
 }
 
+/* Mobile menu overlay */
+.mobile-menu-overlay {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Mobile menu drawer */
+.mobile-menu {
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Prevent body scroll when mobile menu is open */
+body.mobile-menu-open {
+  overflow: hidden;
+}
