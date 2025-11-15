@@ -40,6 +40,38 @@ export class FillInBlankExerciseComponent implements OnInit {
 
     readonly scenarioId = computed(() => this.sessionStore.activeScenario()?.id);
 
+    /**
+     * Format the sentence with a stylish dashed line for the blank
+     * Returns an array of objects with text and optional punctuation
+     */
+    readonly formattedSentence = computed(() => {
+        const exercise = this.currentExercise();
+        if (!exercise) return [];
+
+        // Split the sentence by ___ to get parts before and after the blank
+        const parts = exercise.sentenceWithBlank.split('___');
+
+        // Process each part to extract trailing punctuation from the second part
+        const result = parts.map((part, index) => {
+            if (index === parts.length - 1) {
+                // Last part - check for leading punctuation
+                const match = part.match(/^([.,!?;:]+)(.*)$/);
+                if (match) {
+                    return {
+                        text: match[2].trim(),
+                        punctuation: match[1]
+                    };
+                }
+            }
+            return {
+                text: part.trim(),
+                punctuation: ''
+            };
+        });
+
+        return result;
+    });
+
     ngOnInit(): void {
         this.loadExercises();
     }
@@ -76,22 +108,14 @@ export class FillInBlankExerciseComponent implements OnInit {
     }
 
     /**
-     * Handle option selection
+     * Handle option selection - automatically validates the answer
      */
     selectOption(option: string): void {
         if (this.showAnswer()) {
             return; // Don't allow selection after answer is revealed
         }
         this.selectedOption.set(option);
-    }
-
-    /**
-     * Check the selected answer
-     */
-    checkAnswer(): void {
-        if (!this.selectedOption()) {
-            return;
-        }
+        // Automatically show the answer when an option is selected
         this.showAnswer.set(true);
     }
 
@@ -167,17 +191,11 @@ export class FillInBlankExerciseComponent implements OnInit {
             return;
         }
 
-        // Number keys 1-4 to select options
+        // Number keys 1-4 to select options (automatically validates)
         const numKey = parseInt(event.key);
         if (numKey >= 1 && numKey <= 4 && numKey <= current.options.length) {
             event.preventDefault();
             this.selectOption(current.options[numKey - 1]);
-        }
-
-        // Enter or Space to check answer
-        if ((event.key === 'Enter' || event.key === ' ') && this.selectedOption()) {
-            event.preventDefault();
-            this.checkAnswer();
         }
     }
 }
