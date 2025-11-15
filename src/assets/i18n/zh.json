@@ -347,7 +347,14 @@
         "practice": "口语",
         "reading": "阅读",
         "summary": "摘要",
-        "vocabulary": "词汇"
+        "vocabulary": "词汇",
+        "challenge_short": "挑战",
+        "exercises_short": "练习",
+        "flashcards_short": "卡片",
+        "practice_short": "口语",
+        "reading_short": "阅读",
+        "summary_short": "摘要",
+        "vocabulary_short": "词汇"
     },
     "practice": {
         "analyzing_speech": "正在分析您的语音...",

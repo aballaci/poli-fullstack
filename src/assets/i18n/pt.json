@@ -347,7 +347,14 @@
         "practice": "Prática",
         "reading": "Leitura",
         "summary": "Resumo",
-        "vocabulary": "Vocabulário"
+        "vocabulary": "Vocabulário",
+        "challenge_short": "Desafio",
+        "exercises_short": "Exercícios",
+        "flashcards_short": "Cartões",
+        "practice_short": "Prática",
+        "reading_short": "Leitura",
+        "summary_short": "Resumo",
+        "vocabulary_short": "Vocab"
     },
     "practice": {
         "analyzing_speech": "Analisando sua fala...",

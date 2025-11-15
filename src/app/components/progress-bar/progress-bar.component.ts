@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { ConversationStep, conversationSteps } from '../conversation-view/conversation-view.component';
 import { ThemeService } from '../../services/theme.service';
+import { ViewportService } from '../../services/viewport.service';
 import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
@@ -9,12 +10,14 @@ import { TranslocoModule } from '@jsverse/transloco';
   standalone: true,
   imports: [CommonModule, NgClass, TranslocoModule],
   templateUrl: './progress-bar.component.html',
+  styleUrls: ['./progress-bar.component.css'],
 })
 export class ProgressBarComponent {
   @Input() currentStep: ConversationStep = 'Reading';
   @Output() stepClick = new EventEmitter<ConversationStep>();
   steps = conversationSteps;
   themeService = inject(ThemeService);
+  viewportService = inject(ViewportService);
 
   // --color-primary: #2F80ED; (used for active)
   // --color-emerald: #10B981; (used for completed)
@@ -70,5 +73,11 @@ export class ProgressBarComponent {
 
   onStepClick(step: ConversationStep): void {
     this.stepClick.emit(step);
+  }
+
+  // Get translation key for step label (use short version on mobile)
+  getStepLabelKey(step: ConversationStep): string {
+    const baseKey = `progress_bar.${step.toLowerCase()}`;
+    return this.viewportService.isMobile() ? `${baseKey}_short` : baseKey;
   }
 }

@@ -338,7 +338,14 @@
         "practice": "Üben",
         "reading": "Lesen",
         "summary": "Zusammenfassung",
-        "vocabulary": "Wortschatz"
+        "vocabulary": "Wortschatz",
+        "challenge_short": "Challenge",
+        "exercises_short": "Übungen",
+        "flashcards_short": "Karten",
+        "practice_short": "Üben",
+        "reading_short": "Lesen",
+        "summary_short": "Fazit",
+        "vocabulary_short": "Vokabeln"
     },
     "practice": {
         "analyzing_speech": "Analysiere deine Sprache...",

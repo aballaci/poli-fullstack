@@ -347,7 +347,14 @@
         "practice": "練習",
         "reading": "リーディング",
         "summary": "概要",
-        "vocabulary": "語彙"
+        "vocabulary": "語彙",
+        "challenge_short": "挑戦",
+        "exercises_short": "練習",
+        "flashcards_short": "カード",
+        "practice_short": "練習",
+        "reading_short": "読む",
+        "summary_short": "概要",
+        "vocabulary_short": "語彙"
     },
     "practice": {
         "analyzing_speech": "スピーチを分析中...",

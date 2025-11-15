@@ -347,7 +347,14 @@
         "practice": "Pratica",
         "reading": "Lettura",
         "summary": "Riepilogo",
-        "vocabulary": "Vocabolario"
+        "vocabulary": "Vocabolario",
+        "challenge_short": "Sfida",
+        "exercises_short": "Esercizi",
+        "flashcards_short": "Carte",
+        "practice_short": "Pratica",
+        "reading_short": "Lettura",
+        "summary_short": "Riepilogo",
+        "vocabulary_short": "Vocab"
     },
     "practice": {
         "analyzing_speech": "Analisi del Tuo Parlato...",

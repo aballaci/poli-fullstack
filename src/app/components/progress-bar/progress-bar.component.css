@@ -1,3 +1,36 @@
+/* Mobile-optimized progress bar styles */
+:host {
+  display: block;
+  width: 100%;
+}
+
+/* Ensure proper text wrapping on mobile */
+@media (max-width: 639px) {
+  p {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    -ms-hyphens: auto;
+  }
+}
+
+/* Smooth scrolling for overflow on very small screens */
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+}
+
+.overflow-x-auto::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari, Opera */
+}
+
+/* Legacy styles for backward compatibility */
 .progress-bar-container {
   display: flex;
   justify-content: center;

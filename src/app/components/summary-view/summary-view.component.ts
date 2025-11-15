@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, output, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, output, inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { TranslocoModule } from '@jsverse/transloco';
 import { SessionStore } from '../../state/session.store';
 
@@ -12,6 +12,7 @@ import { SessionStore } from '../../state/session.store';
 })
 export class SummaryViewComponent {
   store = inject(SessionStore);
+  private platformId = inject(PLATFORM_ID);
 
   startNewSession = output<void>();
 
@@ -30,12 +31,27 @@ export class SummaryViewComponent {
   }
 
   private playAudio(fileName: string): void {
-    const baseUrl = this.store.s3BaseUrl();
-    if (!baseUrl || typeof window === 'undefined') {
+    if (!isPlatformBrowser(this.platformId)) {
       return;
     }
-    const audio = new Audio(`${baseUrl}${fileName}`);
-    audio.play().catch(e => console.error(`[Audio] Failed to play ${fileName}`, e));
+
+    const baseUrl = this.store.s3BaseUrl();
+    if (!baseUrl) {
+      return;
+    }
+
+    try {
+      const audio = new Audio(`${baseUrl}${fileName}`);
+      audio.volume = 0.5;
+      audio.play().catch(e => {
+        // Silently fail on autoplay restrictions
+        if (e.name !== 'NotAllowedError') {
+          console.error(`[Audio] Failed to play ${fileName}`, e);
+        }
+      });
+    } catch (e) {
+      console.error(`[Audio] Failed to create audio element for ${fileName}`, e);
+    }
   }
 
   getScoreColor(score: number): string {

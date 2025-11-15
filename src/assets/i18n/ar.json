@@ -347,7 +347,14 @@
         "practice": "تمرين",
         "reading": "قراءة",
         "summary": "ملخص",
-        "vocabulary": "مفردات"
+        "vocabulary": "مفردات",
+        "challenge_short": "التحدي",
+        "exercises_short": "تمارين",
+        "flashcards_short": "بطاقات",
+        "practice_short": "تمرين",
+        "reading_short": "قراءة",
+        "summary_short": "ملخص",
+        "vocabulary_short": "مفردات"
     },
     "practice": {
         "analyzing_speech": "جاري تحليل نطقك...",

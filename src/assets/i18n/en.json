@@ -347,7 +347,14 @@
         "practice": "Practice",
         "reading": "Reading",
         "summary": "Summary",
-        "vocabulary": "Vocabulary"
+        "vocabulary": "Vocabulary",
+        "challenge_short": "Challenge",
+        "exercises_short": "Exercises",
+        "flashcards_short": "Cards",
+        "practice_short": "Practice",
+        "reading_short": "Reading",
+        "summary_short": "Summary",
+        "vocabulary_short": "Vocab"
     },
     "practice": {
         "analyzing_speech": "Analyzing Your Speech...",
