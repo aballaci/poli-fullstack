@@ -4,7 +4,7 @@ import { TranslocoHttpLoader } from './transloco-loader';
 
 export const translocoConfig = provideTransloco({
     config: {
-        availableLangs: ['en', 'it', 'de', 'fr', 'es', 'pt', 'ja'],
+        availableLangs: ['en', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'zh', 'ar'],
         defaultLang: 'en',
         fallbackLang: 'en',
         reRenderOnLangChange: true,
