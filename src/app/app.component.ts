@@ -4,13 +4,14 @@ import { Amplify } from 'aws-amplify';
 import outputs from '../../amplify_outputs.json';
 import { CommonModule } from '@angular/common';
 import { AmplifyAuthenticatorModule, AuthenticatorService } from '@aws-amplify/ui-angular';
-import { RouterLink } from '@angular/router';
 import { SessionStore } from './state/session.store';
 import { ThemeService } from './services/theme.service';
+import { LanguageService } from './services/language.service';
 import { filter } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
+import { UndoNotificationComponent } from './components/undo-notification/undo-notification.component';
 
 Amplify.configure(outputs);
 
@@ -19,12 +20,13 @@ Amplify.configure(outputs);
   standalone: true,
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
-  imports: [RouterOutlet, RouterLink, CommonModule, AmplifyAuthenticatorModule, HeaderComponent, FooterComponent],
+  imports: [RouterOutlet, CommonModule, AmplifyAuthenticatorModule, HeaderComponent, FooterComponent, UndoNotificationComponent],
 })
 export class AppComponent {
   title = 'amplify-angular-template';
   store = inject(SessionStore);
   themeService = inject(ThemeService); // to initialize it
+  languageService = inject(LanguageService); // to initialize it
   router = inject(Router);
 
   // Track current route to determine if authentication is needed

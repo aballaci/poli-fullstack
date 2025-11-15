@@ -30,28 +30,35 @@
     </a>
     <div class="hidden md:flex space-x-8">
       <a [routerLink]="['/home']" fragment="home"
-        class="text-[var(--c-text-body)] hover:text-purple-600 transition font-medium">Home</a>
+        class="text-[var(--c-text-body)] hover:text-purple-600 transition font-medium">{{ 'header.home' | transloco
+        }}</a>
       <a [routerLink]="['/home']" fragment="languages"
-        class="text-[var(--c-text-body)] hover:text-purple-600 transition font-medium">Languages</a>
+        class="text-[var(--c-text-body)] hover:text-purple-600 transition font-medium">{{ 'header.languages' | transloco
+        }}</a>
       <a [routerLink]="['/home']" fragment="features"
-        class="text-[var(--c-text-body)] hover:text-purple-600 transition font-medium">Features</a>
+        class="text-[var(--c-text-body)] hover:text-purple-600 transition font-medium">{{ 'header.features' | transloco
+        }}</a>
       <a [routerLink]="['/home']" fragment="pricing"
-        class="text-[var(--c-text-body)] hover:text-purple-600 transition font-medium">Pricing</a>
-      <a routerLink="/intro" class="text-[var(--c-text-body)] hover:text-purple-600 transition font-medium">About</a>
+        class="text-[var(--c-text-body)] hover:text-purple-600 transition font-medium">{{ 'header.pricing' | transloco
+        }}</a>
+      <a routerLink="/intro" class="text-[var(--c-text-body)] hover:text-purple-600 transition font-medium">{{
+        'header.about' | transloco }}</a>
     </div>
     <div class="flex items-center space-x-4">
       <!-- Target Language Flag -->
       @if (targetLanguage(); as lang) {
       <button (click)="navigateToLanguageWizard()" type="button"
         class="flex items-center justify-center w-8 h-8 rounded-md bg-[var(--c-bg-muted)] border border-[var(--c-border-subtle)] hover:bg-[var(--c-bg-surface)] hover:border-[var(--color-primary)]/30 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-        [attr.aria-label]="'Change target language (currently ' + lang.display_name + ')'">
+        [attr.aria-label]="('header.change_language_aria' | transloco: { language: lang.display_name })">
         <span class="fi fi-{{ lang.flag }} rounded-sm text-lg"></span>
       </button>
       }
+      <!-- Language Switcher -->
+      <app-language-switcher></app-language-switcher>
       <!-- Theme Toggle Icon -->
       <button (click)="toggleTheme()" type="button"
         class="p-2 rounded-md text-[var(--c-text-body)] hover:bg-[var(--c-bg-muted)] transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-        [attr.aria-label]="theme() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'">
+        [attr.aria-label]="theme() === 'dark' ? ('header.theme_toggle_dark' | transloco) : ('header.theme_toggle_light' | transloco)">
         @if (theme() === 'dark') {
         <i class="fa-solid fa-moon text-xl"></i>
         } @else {
@@ -59,15 +66,16 @@
         }
       </button>
       @if (store.isConfigured()) {
-      <a routerLink="/selector"
-        class="text-[var(--c-text-body)] hover:text-purple-600 font-medium transition">Dashboard</a>
-      <a routerLink="/settings"
-        class="text-[var(--c-text-body)] hover:text-purple-600 font-medium transition">Settings</a>
+      <a routerLink="/selector" class="text-[var(--c-text-body)] hover:text-purple-600 font-medium transition">{{
+        'header.dashboard' | transloco }}</a>
+      <a routerLink="/settings" class="text-[var(--c-text-body)] hover:text-purple-600 font-medium transition">{{
+        'header.settings' | transloco }}</a>
       } @else {
-      <a routerLink="/wizard" class="text-[var(--c-text-body)] hover:text-purple-600 font-medium transition">Login</a>
+      <a routerLink="/wizard" class="text-[var(--c-text-body)] hover:text-purple-600 font-medium transition">{{
+        'header.login' | transloco }}</a>
       <button (click)="navigateToApp()"
-        class="bg-purple-600 text-white px-5 py-2.5 rounded-full font-medium hover:bg-purple-700 transition shadow-sm hover:shadow-md">Sign
-        Up Free</button>
+        class="bg-purple-600 text-white px-5 py-2.5 rounded-full font-medium hover:bg-purple-700 transition shadow-sm hover:shadow-md">{{
+        'header.signup' | transloco }}</button>
       }
     </div>
   </div>

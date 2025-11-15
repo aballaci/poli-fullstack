@@ -4,55 +4,61 @@
       <div class="bg-[var(--c-bg-surface)] rounded-xl card-shadow p-8 sm:p-12 animate-fade-in">
         <!-- Header -->
         <div class="text-center mb-8">
-          <h1 class="text-4xl md:text-5xl font-bold mb-2 text-gradient">Poli</h1>
-          <p class="text-[var(--c-text-muted)]">Let's set up your language learning journey</p>
+          <h1 class="text-4xl md:text-5xl font-bold mb-2 text-gradient">{{ 'wizard.title' | transloco }}</h1>
+          <p class="text-[var(--c-text-muted)]">{{ 'wizard.subtitle' | transloco }}</p>
         </div>
 
         <div class="border-t border-[var(--c-border-subtle)] my-8"></div>
 
         @switch (step()) {
-          @case ('source') {
-            <div class="animate-fade-in">
-              <h3 class="text-2xl font-bold text-[var(--c-text-headings)] mb-2 text-center">Step 1: What is your native language?</h3>
-              <p class="text-[var(--c-text-muted)] text-center mb-8">This will be your reference language.</p>
-              <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
-                @for (lang of languageService.availableLanguages; track lang.code) {
-                  <button (click)="selectSourceLanguage(lang)" class="language-card flex flex-col items-center justify-center p-6 bg-[var(--c-bg-surface)] border-2 border-[var(--c-border-subtle)] rounded-xl hover:border-purple-300 hover:shadow-lg transition-all duration-200">
-                    <span class="fi fi-{{ lang.flag }} text-5xl mb-3"></span>
-                    <span class="font-semibold text-[var(--c-text-headings)]">{{ lang.display_name }}</span>
-                  </button>
-                }
-              </div>
-            </div>
-          }
-          @case ('target') {
-            <div class="animate-fade-in">
-              <h3 class="text-2xl font-bold text-[var(--c-text-headings)] mb-2 text-center">Step 2: What language do you want to learn?</h3>
-              <p class="text-[var(--c-text-muted)] text-center mb-8">Select your target language for practice.</p>
-              <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
-                @for (lang of availableTargetLanguages; track lang.code) {
-                  <button (click)="selectTargetLanguage(lang)" class="language-card flex flex-col items-center justify-center p-6 bg-[var(--c-bg-surface)] border-2 border-[var(--c-border-subtle)] rounded-xl hover:border-purple-300 hover:shadow-lg transition-all duration-200">
-                    <span class="fi fi-{{ lang.flag }} text-5xl mb-3"></span>
-                    <span class="font-semibold text-[var(--c-text-headings)]">{{ lang.display_name }}</span>
-                  </button>
-                }
-              </div>
-            </div>
-          }
-          @case ('difficulty') {
-            <div class="animate-fade-in">
-              <h3 class="text-2xl font-bold text-[var(--c-text-headings)] mb-2 text-center">Step 3: What is your current skill level?</h3>
-              <p class="text-[var(--c-text-muted)] text-center mb-8">This helps tailor the content to your needs (CEFR levels).</p>
-              <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
-                @for (level of languageService.difficultyLevels; track level) {
-                  <button (click)="selectDifficulty(level)" class="hover-lift flex flex-col items-center justify-center p-6 bg-[var(--c-bg-surface)] border-2 border-[var(--c-border-subtle)] rounded-xl hover:border-purple-300 hover:shadow-lg transition-all duration-200 text-center">
-                    <span class="text-3xl font-bold text-purple-600 mb-2">{{ level }}</span>
-                    <span class="text-sm text-[var(--c-text-muted)] font-medium">{{ {A1: 'Beginner', A2: 'Elementary', B1: 'Intermediate', B2: 'Upper-Intermediate', C1: 'Advanced', C2: 'Proficient'}[level] }}</span>
-                  </button>
-                }
-              </div>
-            </div>
-          }
+        @case ('source') {
+        <div class="animate-fade-in">
+          <h3 class="text-2xl font-bold text-[var(--c-text-headings)] mb-2 text-center">{{ 'wizard.step1_title' |
+            transloco }}</h3>
+          <p class="text-[var(--c-text-muted)] text-center mb-8">{{ 'wizard.step1_subtitle' | transloco }}</p>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
+            @for (lang of languageService.availableLanguages; track lang.code) {
+            <button (click)="selectSourceLanguage(lang)"
+              class="language-card flex flex-col items-center justify-center p-6 bg-[var(--c-bg-surface)] border-2 border-[var(--c-border-subtle)] rounded-xl hover:border-purple-300 hover:shadow-lg transition-all duration-200">
+              <span class="fi fi-{{ lang.flag }} text-5xl mb-3"></span>
+              <span class="font-semibold text-[var(--c-text-headings)]">{{ lang.display_name }}</span>
+            </button>
+            }
+          </div>
+        </div>
+        }
+        @case ('target') {
+        <div class="animate-fade-in">
+          <h3 class="text-2xl font-bold text-[var(--c-text-headings)] mb-2 text-center">{{ 'wizard.step2_title' |
+            transloco }}</h3>
+          <p class="text-[var(--c-text-muted)] text-center mb-8">{{ 'wizard.step2_subtitle' | transloco }}</p>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
+            @for (lang of availableTargetLanguages; track lang.code) {
+            <button (click)="selectTargetLanguage(lang)"
+              class="language-card flex flex-col items-center justify-center p-6 bg-[var(--c-bg-surface)] border-2 border-[var(--c-border-subtle)] rounded-xl hover:border-purple-300 hover:shadow-lg transition-all duration-200">
+              <span class="fi fi-{{ lang.flag }} text-5xl mb-3"></span>
+              <span class="font-semibold text-[var(--c-text-headings)]">{{ lang.display_name }}</span>
+            </button>
+            }
+          </div>
+        </div>
+        }
+        @case ('difficulty') {
+        <div class="animate-fade-in">
+          <h3 class="text-2xl font-bold text-[var(--c-text-headings)] mb-2 text-center">{{ 'wizard.step3_title' |
+            transloco }}</h3>
+          <p class="text-[var(--c-text-muted)] text-center mb-8">{{ 'wizard.step3_subtitle' | transloco }}</p>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
+            @for (level of languageService.difficultyLevels; track level) {
+            <button (click)="selectDifficulty(level)"
+              class="hover-lift flex flex-col items-center justify-center p-6 bg-[var(--c-bg-surface)] border-2 border-[var(--c-border-subtle)] rounded-xl hover:border-purple-300 hover:shadow-lg transition-all duration-200 text-center">
+              <span class="text-3xl font-bold text-purple-600 mb-2">{{ level }}</span>
+              <span class="text-sm text-[var(--c-text-muted)] font-medium">{{ getLevelName(level) | transloco }}</span>
+            </button>
+            }
+          </div>
+        </div>
+        }
         }
       </div>
     </div>

@@ -3,13 +3,12 @@
   <section id="home" class="gradient-hero-bg py-24">
     <div class="container mx-auto px-4 flex flex-col md:flex-row items-center">
       <div class="md:w-1/2 mb-10 md:mb-0 animate-fade-in">
-        <h1 class="text-4xl md:text-5xl font-bold mb-4 text-gradient">Speak a New Language with Confidence</h1>
-        <p class="text-lg text-gray-700 mb-8 max-w-lg">Join millions of learners on Poli. Our interactive lessons and
-          real conversations help you speak fluently, faster.</p>
+        <h1 class="text-4xl md:text-5xl font-bold mb-4 text-gradient">{{ 'home.hero_title' | transloco }}</h1>
+        <p class="text-lg text-gray-700 mb-8 max-w-lg">{{ 'home.hero_subtitle' | transloco }}</p>
         <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
           <button (click)="navigateToApp()"
-            class="bg-purple-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-purple-700 transition shadow-lg hover:shadow-xl">Start
-            Your Free Trial</button>
+            class="bg-purple-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-purple-700 transition shadow-lg hover:shadow-xl">{{
+            'home.start_trial' | transloco }}</button>
         </div>
         <div class="mt-8 flex items-center space-x-4 text-gray-700">
           <div class="flex items-center">
@@ -18,7 +17,7 @@
             <i class="fas fa-star text-yellow-400"></i>
             <i class="fas fa-star text-yellow-400"></i>
             <i class="fas fa-star-half-alt text-yellow-400"></i>
-            <span class="ml-2 font-medium">4.8 (2.5k reviews)</span>
+            <span class="ml-2 font-medium">{{ 'home.reviews' | transloco: { rating: '4.8', count: '2.5k' } }}</span>
           </div>
         </div>
       </div>
@@ -48,9 +47,8 @@
   <!-- Languages Section -->
   <section id="languages" class="py-20 bg-white">
     <div class="container mx-auto px-4">
-      <h2 class="text-3xl font-bold text-center mb-4 text-gray-900">Start Your Journey</h2>
-      <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">From Spanish to Japanese, find the path that inspires
-        you. Our courses are built by experts and loved by learners.</p>
+      <h2 class="text-3xl font-bold text-center mb-4 text-gray-900">{{ 'home.journey_title' | transloco }}</h2>
+      <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">{{ 'home.journey_subtitle' | transloco }}</p>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         <!-- Spanish -->
@@ -63,10 +61,12 @@
               <span class="fi fi-es"></span>
               <span>Spanish</span>
             </h3>
-            <p class="text-gray-600 text-sm mb-4">500+ lessons</p>
+            <p class="text-gray-600 text-sm mb-4">{{ 'home.lessons' | transloco: { count: '500' } }}</p>
             <div class="flex justify-center space-x-2">
-              <span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full font-medium">Beginner</span>
-              <span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full font-medium">Advanced</span>
+              <span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full font-medium">{{ 'home.beginner'
+                | transloco }}</span>
+              <span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full font-medium">{{ 'home.advanced'
+                | transloco }}</span>
             </div>
           </div>
         </div>
@@ -74,17 +74,18 @@
         <!-- French -->
         <div class="language-card bg-white rounded-xl card-shadow overflow-hidden cursor-pointer"
           (click)="navigateToLanguageWizard('French')">
-          <img src="/assets/paris.webp" alt="Learn French - Eiffel Tower in Paris"
-            class="w-full h-48 object-cover">
+          <img src="/assets/paris.webp" alt="Learn French - Eiffel Tower in Paris" class="w-full h-48 object-cover">
           <div class="p-6 text-center">
             <h3 class="font-semibold text-xl mb-2 flex items-center justify-center space-x-2 text-gray-900">
               <span class="fi fi-fr"></span>
               <span>French</span>
             </h3>
-            <p class="text-gray-600 text-sm mb-4">450+ lessons</p>
+            <p class="text-gray-600 text-sm mb-4">{{ 'home.lessons' | transloco: { count: '450' } }}</p>
             <div class="flex justify-center space-x-2">
-              <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full font-medium">Beginner</span>
-              <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full font-medium">Advanced</span>
+              <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full font-medium">{{ 'home.beginner'
+                | transloco }}</span>
+              <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full font-medium">{{ 'home.advanced'
+                | transloco }}</span>
             </div>
           </div>
         </div>
@@ -99,10 +100,12 @@
               <span class="fi fi-de"></span>
               <span>German</span>
             </h3>
-            <p class="text-gray-600 text-sm mb-4">400+ lessons</p>
+            <p class="text-gray-600 text-sm mb-4">{{ 'home.lessons' | transloco: { count: '400' } }}</p>
             <div class="flex justify-center space-x-2">
-              <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-medium">Beginner</span>
-              <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-medium">Advanced</span>
+              <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-medium">{{ 'home.beginner'
+                | transloco }}</span>
+              <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-medium">{{ 'home.advanced'
+                | transloco }}</span>
             </div>
           </div>
         </div>
@@ -116,10 +119,12 @@
               <span class="fi fi-it"></span>
               <span>Italian</span>
             </h3>
-            <p class="text-gray-600 text-sm mb-4">380+ lessons</p>
+            <p class="text-gray-600 text-sm mb-4">{{ 'home.lessons' | transloco: { count: '380' } }}</p>
             <div class="flex justify-center space-x-2">
-              <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">Beginner</span>
-              <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">Advanced</span>
+              <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">{{ 'home.beginner' |
+                transloco }}</span>
+              <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">{{ 'home.advanced' |
+                transloco }}</span>
             </div>
           </div>
         </div>
@@ -133,10 +138,12 @@
               <span class="fi fi-jp"></span>
               <span>Japanese</span>
             </h3>
-            <p class="text-gray-600 text-sm mb-4">350+ lessons</p>
+            <p class="text-gray-600 text-sm mb-4">{{ 'home.lessons' | transloco: { count: '350' } }}</p>
             <div class="flex justify-center space-x-2">
-              <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full font-medium">Beginner</span>
-              <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full font-medium">Advanced</span>
+              <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full font-medium">{{ 'home.beginner' |
+                transloco }}</span>
+              <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full font-medium">{{ 'home.advanced' |
+                transloco }}</span>
             </div>
           </div>
         </div>
@@ -151,10 +158,12 @@
               <span class="fi fi-cn"></span>
               <span>Chinese</span>
             </h3>
-            <p class="text-gray-600 text-sm mb-4">400+ lessons</p>
+            <p class="text-gray-600 text-sm mb-4">{{ 'home.lessons' | transloco: { count: '400' } }}</p>
             <div class="flex justify-center space-x-2">
-              <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full font-medium">Beginner</span>
-              <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full font-medium">Advanced</span>
+              <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full font-medium">{{ 'home.beginner' |
+                transloco }}</span>
+              <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full font-medium">{{ 'home.advanced' |
+                transloco }}</span>
             </div>
           </div>
         </div>
@@ -169,10 +178,12 @@
               <span class="fi fi-pt"></span>
               <span>Portuguese</span>
             </h3>
-            <p class="text-gray-600 text-sm mb-4">320+ lessons</p>
+            <p class="text-gray-600 text-sm mb-4">{{ 'home.lessons' | transloco: { count: '320' } }}</p>
             <div class="flex justify-center space-x-2">
-              <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">Beginner</span>
-              <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">Advanced</span>
+              <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">{{ 'home.beginner' |
+                transloco }}</span>
+              <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">{{ 'home.advanced' |
+                transloco }}</span>
             </div>
           </div>
         </div>
@@ -187,10 +198,12 @@
               <span class="fi fi-sa"></span>
               <span>Arabic</span>
             </h3>
-            <p class="text-gray-600 text-sm mb-4">300+ lessons</p>
+            <p class="text-gray-600 text-sm mb-4">{{ 'home.lessons' | transloco: { count: '300' } }}</p>
             <div class="flex justify-center space-x-2">
-              <span class="bg-teal-100 text-teal-800 text-xs px-2 py-1 rounded-full font-medium">Beginner</span>
-              <span class="bg-teal-100 text-teal-800 text-xs px-2 py-1 rounded-full font-medium">Advanced</span>
+              <span class="bg-teal-100 text-teal-800 text-xs px-2 py-1 rounded-full font-medium">{{ 'home.beginner' |
+                transloco }}</span>
+              <span class="bg-teal-100 text-teal-800 text-xs px-2 py-1 rounded-full font-medium">{{ 'home.advanced' |
+                transloco }}</span>
             </div>
           </div>
         </div>
@@ -201,9 +214,8 @@
   <!-- Features Section -->
   <section id="features" class="py-20 bg-gray-50">
     <div class="container mx-auto px-4">
-      <h2 class="text-3xl font-bold text-center mb-4 text-gray-900">A Better Way to Learn</h2>
-      <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">We blend proven teaching methods with smart
-        technology to create an experience you'll actually enjoy.</p>
+      <h2 class="text-3xl font-bold text-center mb-4 text-gray-900">{{ 'home.better_way_title' | transloco }}</h2>
+      <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">{{ 'home.better_way_subtitle' | transloco }}</p>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <!-- Feature 1 -->
@@ -211,8 +223,8 @@
           <div class="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mb-4">
             <i class="fas fa-comments text-purple-600 text-xl"></i>
           </div>
-          <h3 class="font-semibold text-lg mb-2 text-gray-900">Real Conversations</h3>
-          <p class="text-gray-600">Practice with native speakers through video calls and our AI-powered chat.</p>
+          <h3 class="font-semibold text-lg mb-2 text-gray-900">{{ 'home.feature_conversations_title' | transloco }}</h3>
+          <p class="text-gray-600">{{ 'home.feature_conversations_desc' | transloco }}</p>
         </div>
 
         <!-- Feature 2 -->
@@ -220,8 +232,8 @@
           <div class="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mb-4">
             <i class="fas fa-brain text-purple-600 text-xl"></i>
           </div>
-          <h3 class="font-semibold text-lg mb-2 text-gray-900">Adaptive Learning</h3>
-          <p class="text-gray-600">Our AI adjusts lessons based on your personal progress and learning style.</p>
+          <h3 class="font-semibold text-lg mb-2 text-gray-900">{{ 'home.feature_adaptive_title' | transloco }}</h3>
+          <p class="text-gray-600">{{ 'home.feature_adaptive_desc' | transloco }}</p>
         </div>
 
         <!-- Feature 3 -->
@@ -229,8 +241,8 @@
           <div class="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mb-4">
             <i class="fas fa-gamepad text-purple-600 text-xl"></i>
           </div>
-          <h3 class="font-semibold text-lg mb-2 text-gray-900">Fun, Game-like Lessons</h3>
-          <p class="text-gray-600">Earn points, badges, and rewards as you progress. Learning feels like playing!</p>
+          <h3 class="font-semibold text-lg mb-2 text-gray-900">{{ 'home.feature_gamelike_title' | transloco }}</h3>
+          <p class="text-gray-600">{{ 'home.feature_gamelike_desc' | transloco }}</p>
         </div>
 
         <!-- Feature 4 -->
@@ -238,8 +250,8 @@
           <div class="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mb-4">
             <i class="fas fa-globe text-purple-600 text-xl"></i>
           </div>
-          <h3 class="font-semibold text-lg mb-2 text-gray-900">Cultural Immersion</h3>
-          <p class="text-gray-600">Learn about culture, traditions, and customs alongside the language.</p>
+          <h3 class="font-semibold text-lg mb-2 text-gray-900">{{ 'home.feature_cultural_title' | transloco }}</h3>
+          <p class="text-gray-600">{{ 'home.feature_cultural_desc' | transloco }}</p>
         </div>
 
         <!-- Feature 5 -->
@@ -247,8 +259,8 @@
           <div class="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mb-4">
             <i class="fas fa-chart-line text-purple-600 text-xl"></i>
           </div>
-          <h3 class="font-semibold text-lg mb-2 text-gray-900">Progress Tracking</h3>
-          <p class="text-gray-600">Monitor your improvement with detailed analytics and personalized reports.</p>
+          <h3 class="font-semibold text-lg mb-2 text-gray-900">{{ 'home.feature_progress_title' | transloco }}</h3>
+          <p class="text-gray-600">{{ 'home.feature_progress_desc' | transloco }}</p>
         </div>
 
         <!-- Feature 6 -->
@@ -256,8 +268,8 @@
           <div class="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mb-4">
             <i class="fas fa-mobile-alt text-purple-600 text-xl"></i>
           </div>
-          <h3 class="font-semibold text-lg mb-2 text-gray-900">Learn Anywhere</h3>
-          <p class="text-gray-600">Access lessons on any device, with or without an internet connection.</p>
+          <h3 class="font-semibold text-lg mb-2 text-gray-900">{{ 'home.feature_anywhere_title' | transloco }}</h3>
+          <p class="text-gray-600">{{ 'home.feature_anywhere_desc' | transloco }}</p>
         </div>
       </div>
     </div>
@@ -266,9 +278,8 @@
   <!-- How It Works -->
   <section class="py-20 bg-white">
     <div class="container mx-auto px-4">
-      <h2 class="text-3xl font-bold text-center mb-4 text-gray-900">How It Works</h2>
-      <p class="text-center text-gray-600 mb-16 max-w-2xl mx-auto">Getting started is simple. You'll be speaking your
-        first words in minutes.</p>
+      <h2 class="text-3xl font-bold text-center mb-4 text-gray-900">{{ 'home.how_it_works_title' | transloco }}</h2>
+      <p class="text-center text-gray-600 mb-16 max-w-2xl mx-auto">{{ 'home.how_it_works_subtitle' | transloco }}</p>
 
       <div
         class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-12 md:space-y-0 md:space-x-8">
@@ -278,8 +289,8 @@
             class="w-20 h-20 rounded-full bg-purple-100 flex items-center justify-center mb-4 text-purple-600 text-3xl">
             <i class="fas fa-flag"></i>
           </div>
-          <h3 class="font-semibold text-lg mb-2 text-gray-900">1. Choose Your Language</h3>
-          <p class="text-gray-600 max-w-xs">Select from 8+ languages and set your current proficiency level.</p>
+          <h3 class="font-semibold text-lg mb-2 text-gray-900">{{ 'home.step1_title' | transloco }}</h3>
+          <p class="text-gray-600 max-w-xs">{{ 'home.step1_desc' | transloco }}</p>
         </div>
 
         <!-- Arrow -->
@@ -293,8 +304,8 @@
             class="w-20 h-20 rounded-full bg-purple-100 flex items-center justify-center mb-4 text-purple-600 text-3xl">
             <i class="fas fa-lightbulb"></i>
           </div>
-          <h3 class="font-semibold text-lg mb-2 text-gray-900">2. Start Learning</h3>
-          <p class="text-gray-600 max-w-xs">Follow personalized lessons and practice with interactive exercises.</p>
+          <h3 class="font-semibold text-lg mb-2 text-gray-900">{{ 'home.step2_title' | transloco }}</h3>
+          <p class="text-gray-600 max-w-xs">{{ 'home.step2_desc' | transloco }}</p>
         </div>
 
         <!-- Arrow -->
@@ -308,8 +319,8 @@
             class="w-20 h-20 rounded-full bg-purple-100 flex items-center justify-center mb-4 text-purple-600 text-3xl">
             <i class="fas fa-comments"></i>
           </div>
-          <h3 class="font-semibold text-lg mb-2 text-gray-900">3. Achieve Fluency</h3>
-          <p class="text-gray-600 max-w-xs">Practice with native speakers and track your real-world progress.</p>
+          <h3 class="font-semibold text-lg mb-2 text-gray-900">{{ 'home.step3_title' | transloco }}</h3>
+          <p class="text-gray-600 max-w-xs">{{ 'home.step3_desc' | transloco }}</p>
         </div>
       </div>
     </div>
@@ -318,9 +329,8 @@
   <!-- Testimonials -->
   <section class="py-20 bg-gray-50">
     <div class="container mx-auto px-4">
-      <h2 class="text-3xl font-bold text-center mb-4 text-gray-900">What Our Users Say</h2>
-      <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">See what real learners have to say about their
-        progress with Poli.</p>
+      <h2 class="text-3xl font-bold text-center mb-4 text-gray-900">{{ 'testimonials.title' | transloco }}</h2>
+      <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">{{ 'testimonials.subtitle' | transloco }}</p>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <!-- Testimonial 1 -->
@@ -330,11 +340,10 @@
               class="w-12 h-12 rounded-full mr-4 border-2 border-purple-100">
             <div>
               <h4 class="font-semibold text-gray-900">Emma Thompson</h4>
-              <p class="text-gray-600 text-sm">Spanish Learner</p>
+              <p class="text-gray-600 text-sm">{{ 'testimonials.emma_role' | transloco }}</p>
             </div>
           </div>
-          <p class="text-gray-700 mb-4">"Poli made learning Spanish fun and effective. I can now have conversations with
-            confidence!"</p>
+          <p class="text-gray-700 mb-4">"{{ 'testimonials.emma_quote' | transloco }}"</p>
           <div class="flex text-yellow-400">
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
@@ -351,11 +360,10 @@
               class="w-12 h-12 rounded-full mr-4 border-2 border-purple-100">
             <div>
               <h4 class="font-semibold text-gray-900">James Wilson</h4>
-              <p class="text-gray-600 text-sm">Japanese Learner</p>
+              <p class="text-gray-600 text-sm">{{ 'testimonials.james_role' | transloco }}</p>
             </div>
           </div>
-          <p class="text-gray-700 mb-4">"The adaptive learning system helped me progress faster than any other method
-            I've tried."</p>
+          <p class="text-gray-700 mb-4">"{{ 'testimonials.james_quote' | transloco }}"</p>
           <div class="flex text-yellow-400">
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
@@ -372,11 +380,10 @@
               class="w-12 h-12 rounded-full mr-4 border-2 border-purple-100">
             <div>
               <h4 class="font-semibold text-gray-900">Sophia Chen</h4>
-              <p class="text-gray-600 text-sm">French Learner</p>
+              <p class="text-gray-600 text-sm">{{ 'testimonials.sophia_role' | transloco }}</p>
             </div>
           </div>
-          <p class="text-gray-700 mb-4">"The cultural immersion aspect of Poli made learning French so much more
-            meaningful."</p>
+          <p class="text-gray-700 mb-4">"{{ 'testimonials.sophia_quote' | transloco }}"</p>
           <div class="flex text-yellow-400">
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
@@ -392,85 +399,90 @@
   <!-- Pricing -->
   <section id="pricing" class="py-20 bg-white">
     <div class="container mx-auto px-4">
-      <h2 class="text-3xl font-bold text-center mb-4 text-gray-900">Choose Your Plan</h2>
-      <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Simple, transparent pricing. Choose the plan that's
-        right for your goals.</p>
+      <h2 class="text-3xl font-bold text-center mb-4 text-gray-900">{{ 'pricing.title' | transloco }}</h2>
+      <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">{{ 'pricing.subtitle' | transloco }}</p>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto items-center">
         <!-- Basic Plan -->
         <div class="bg-gray-50 rounded-xl p-8 card-shadow hover-lift">
-          <h3 class="text-xl font-bold mb-2 text-gray-900">Basic</h3>
-          <p class="text-gray-600 mb-6">For casual learners</p>
+          <h3 class="text-xl font-bold mb-2 text-gray-900">{{ 'pricing.basic_title' | transloco }}</h3>
+          <p class="text-gray-600 mb-6">{{ 'pricing.basic_subtitle' | transloco }}</p>
           <div class="mb-6">
-            <span class="text-4xl font-bold text-gray-900">$9.99</span>
-            <span class="text-gray-600">/month</span>
+            <span class="text-4xl font-bold text-gray-900">{{ 'pricing.basic_price' | transloco }}</span>
+            <span class="text-gray-600">{{ 'pricing.per_month' | transloco }}</span>
           </div>
           <ul class="mb-8 space-y-3">
-            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Access to core
-                lessons</span></li>
-            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Basic progress
-                tracking</span></li>
-            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Mobile app access</span>
+            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>{{
+                'pricing.feature_core_lessons' | transloco }}</span></li>
+            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>{{
+                'pricing.feature_basic_tracking' | transloco }}</span></li>
+            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>{{
+                'pricing.feature_mobile_access' | transloco }}</span>
             </li>
-            <li class="flex items-center text-gray-400"><i class="fas fa-times text-gray-400 mr-2"></i><span>Live
-                conversations</span></li>
-            <li class="flex items-center text-gray-400"><i class="fas fa-times text-gray-400 mr-2"></i><span>Cultural
-                content</span></li>
+            <li class="flex items-center text-gray-400"><i class="fas fa-times text-gray-400 mr-2"></i><span>{{
+                'pricing.feature_live_conversations' | transloco }}</span></li>
+            <li class="flex items-center text-gray-400"><i class="fas fa-times text-gray-400 mr-2"></i><span>{{
+                'pricing.feature_cultural_content' | transloco }}</span></li>
           </ul>
           <button (click)="navigateToApp()"
-            class="w-full bg-white text-purple-600 border border-purple-200 py-3 rounded-full font-semibold hover:bg-purple-50 transition">Get
-            Started</button>
+            class="w-full bg-white text-purple-600 border border-purple-200 py-3 rounded-full font-semibold hover:bg-purple-50 transition">{{
+            'pricing.get_started' | transloco }}</button>
         </div>
 
         <!-- Premium Plan -->
         <div class="bg-purple-600 text-white rounded-xl p-10 card-shadow transform md:scale-105 relative">
           <div
             class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-purple-800 px-4 py-1 rounded-full text-sm font-semibold">
-            MOST POPULAR
+            {{ 'pricing.most_popular' | transloco }}
           </div>
-          <h3 class="text-xl font-bold mb-2 text-white">Premium</h3>
-          <p class="text-purple-200 mb-6">For serious learners</p>
+          <h3 class="text-xl font-bold mb-2 text-white">{{ 'pricing.premium_title' | transloco }}</h3>
+          <p class="text-purple-200 mb-6">{{ 'pricing.premium_subtitle' | transloco }}</p>
           <div class="mb-6">
-            <span class="text-4xl font-bold text-white">$19.99</span>
-            <span class="text-purple-200">/month</span>
+            <span class="text-4xl font-bold text-white">{{ 'pricing.premium_price' | transloco }}</span>
+            <span class="text-purple-200">{{ 'pricing.per_month' | transloco }}</span>
           </div>
           <ul class="mb-8 space-y-3">
-            <li class="flex items-center"><i class="fas fa-check text-white mr-2"></i><span>Everything in Basic</span>
+            <li class="flex items-center"><i class="fas fa-check text-white mr-2"></i><span>{{
+                'pricing.feature_everything_basic' | transloco }}</span>
             </li>
-            <li class="flex items-center"><i class="fas fa-check text-white mr-2"></i><span>Live conversations</span>
+            <li class="flex items-center"><i class="fas fa-check text-white mr-2"></i><span>{{
+                'pricing.feature_live_conversations' | transloco }}</span>
             </li>
-            <li class="flex items-center"><i class="fas fa-check text-white mr-2"></i><span>Cultural content</span></li>
-            <li class="flex items-center"><i class="fas fa-check text-white mr-2"></i><span>Advanced lessons</span></li>
-            <li class="flex items-center"><i class="fas fa-check text-white mr-2"></i><span>Priority support</span></li>
+            <li class="flex items-center"><i class="fas fa-check text-white mr-2"></i><span>{{
+                'pricing.feature_cultural_content' | transloco }}</span></li>
+            <li class="flex items-center"><i class="fas fa-check text-white mr-2"></i><span>{{
+                'pricing.feature_advanced_lessons' | transloco }}</span></li>
+            <li class="flex items-center"><i class="fas fa-check text-white mr-2"></i><span>{{
+                'pricing.feature_priority_support' | transloco }}</span></li>
           </ul>
           <button (click)="navigateToApp()"
-            class="w-full bg-yellow-400 text-purple-800 py-3 rounded-full font-semibold hover:bg-yellow-300 transition">Get
-            Started</button>
+            class="w-full bg-yellow-400 text-purple-800 py-3 rounded-full font-semibold hover:bg-yellow-300 transition">{{
+            'pricing.get_started' | transloco }}</button>
         </div>
 
         <!-- Pro Plan -->
         <div class="bg-gray-50 rounded-xl p-8 card-shadow hover-lift">
-          <h3 class="text-xl font-bold mb-2 text-gray-900">Pro</h3>
-          <p class="text-gray-600 mb-6">For language professionals</p>
+          <h3 class="text-xl font-bold mb-2 text-gray-900">{{ 'pricing.pro_title' | transloco }}</h3>
+          <p class="text-gray-600 mb-6">{{ 'pricing.pro_subtitle' | transloco }}</p>
           <div class="mb-6">
-            <span class="text-4xl font-bold text-gray-900">$39.99</span>
-            <span class="text-gray-600">/month</span>
+            <span class="text-4xl font-bold text-gray-900">{{ 'pricing.pro_price' | transloco }}</span>
+            <span class="text-gray-600">{{ 'pricing.per_month' | transloco }}</span>
           </div>
           <ul class="mb-8 space-y-3">
-            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Everything in
-                Premium</span></li>
-            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>1-on-1 tutoring
-                sessions</span></li>
-            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Custom learning
-                paths</span></li>
-            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Industry-specific
-                content</span></li>
-            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Certification
-                prep</span></li>
+            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>{{
+                'pricing.feature_everything_premium' | transloco }}</span></li>
+            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>{{
+                'pricing.feature_tutoring' | transloco }}</span></li>
+            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>{{
+                'pricing.feature_custom_paths' | transloco }}</span></li>
+            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>{{
+                'pricing.feature_industry_content' | transloco }}</span></li>
+            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>{{
+                'pricing.feature_certification' | transloco }}</span></li>
           </ul>
           <button (click)="navigateToApp()"
-            class="w-full bg-purple-600 text-white py-3 rounded-full font-semibold hover:bg-purple-700 transition">Get
-            Started</button>
+            class="w-full bg-purple-600 text-white py-3 rounded-full font-semibold hover:bg-purple-700 transition">{{
+            'pricing.get_started' | transloco }}</button>
         </div>
       </div>
     </div>
@@ -479,15 +491,15 @@
   <!-- CTA Section -->
   <section class="gradient-bg py-20 text-white">
     <div class="container mx-auto px-4 text-center">
-      <h2 class="text-3xl font-bold mb-4 text-white">Ready to Start Your Language Journey?</h2>
-      <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">Join Poli today and unlock a world of new opportunities.</p>
+      <h2 class="text-3xl font-bold mb-4 text-white">{{ 'cta.title' | transloco }}</h2>
+      <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">{{ 'cta.subtitle' | transloco }}</p>
       <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
         <button (click)="navigateToApp()"
-          class="bg-yellow-400 text-purple-800 px-8 py-3 rounded-full font-semibold hover:bg-yellow-300 transition shadow-lg hover:shadow-xl">Start
-          Your Free Trial</button>
+          class="bg-yellow-400 text-purple-800 px-8 py-3 rounded-full font-semibold hover:bg-yellow-300 transition shadow-lg hover:shadow-xl">{{
+          'cta.start_trial' | transloco }}</button>
         <button (click)="navigateToApp()"
-          class="bg-transparent border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-purple-800 transition">Explore
-          Pro Plans</button>
+          class="bg-transparent border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-purple-800 transition">{{
+          'cta.explore_plans' | transloco }}</button>
       </div>
     </div>
   </section>

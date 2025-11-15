@@ -2,11 +2,12 @@ import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { ConversationStep, conversationSteps } from '../conversation-view/conversation-view.component';
 import { ThemeService } from '../../services/theme.service';
+import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-progress-bar',
   standalone: true,
-  imports: [CommonModule, NgClass],
+  imports: [CommonModule, NgClass, TranslocoModule],
   templateUrl: './progress-bar.component.html',
 })
 export class ProgressBarComponent {

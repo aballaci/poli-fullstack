@@ -4,11 +4,12 @@ import { Router } from '@angular/router';
 import { GeminiService } from '../../services/gemini.service';
 import { SessionStore } from '../../state/session.store';
 import { ScenarioSummary } from '../../models';
+import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
     selector: 'app-scenario-catalog',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, TranslocoModule],
     templateUrl: './scenario-catalog.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })

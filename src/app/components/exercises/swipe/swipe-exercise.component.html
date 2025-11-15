@@ -3,13 +3,13 @@
         <!-- Header -->
         <header class="mb-8 flex items-center justify-between">
             <h2 class="text-2xl md:text-3xl font-bold text-[var(--c-text-primary)]">
-                Swipe to Review
+                {{ 'exercises.swipe.title' | transloco }}
             </h2>
             <button (click)="goBack()" class="px-4 py-2 font-semibold rounded-md transition-colors" [ngClass]="{
                     'bg-slate-200 text-slate-700 hover:bg-slate-300': themeService.theme() === 'light',
                     'bg-slate-700 text-slate-200 hover:bg-slate-600': themeService.theme() === 'dark'
                 }">
-                Back to Exercises
+                {{ 'exercises.back_to_exercises' | transloco }}
             </button>
         </header>
 
@@ -17,7 +17,7 @@
         <div *ngIf="isLoading()" class="flex items-center justify-center py-20">
             <div class="text-center">
                 <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-500 mx-auto mb-4"></div>
-                <p class="text-[var(--c-text-secondary)]">Loading exercise...</p>
+                <p class="text-[var(--c-text-secondary)]">{{ 'exercises.loading_exercise' | transloco }}</p>
             </div>
         </div>
 
@@ -26,14 +26,14 @@
             class="rounded-xl shadow-lg border border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)] p-8 text-center">
             <div class="text-red-500 text-5xl mb-4">⚠️</div>
             <h3 class="text-xl font-semibold text-[var(--c-text-primary)] mb-2">
-                Oops! Something went wrong
+                {{ 'exercises.oops_something_wrong' | transloco }}
             </h3>
             <p class="text-[var(--c-text-secondary)] mb-6">
                 {{ errorMessage() }}
             </p>
             <button (click)="goBack()"
                 class="px-6 py-3 font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors">
-                Back to Exercises
+                {{ 'exercises.back_to_exercises' | transloco }}
             </button>
         </div>
 
@@ -46,7 +46,7 @@
 
             <!-- Instructions -->
             <div class="text-center text-[var(--c-text-secondary)] mb-6">
-                <p>Swipe right if the translation is correct, left if incorrect</p>
+                <p>{{ 'exercises.swipe_instruction' | transloco }}</p>
             </div>
 
             <!-- Swipe Area -->
@@ -55,11 +55,11 @@
                 <div class="absolute inset-0 flex items-center justify-between px-8 pointer-events-none">
                     <div class="flex flex-col items-center text-red-500 opacity-30">
                         <span class="text-6xl">✗</span>
-                        <span class="text-sm font-semibold mt-2">Incorrect</span>
+                        <span class="text-sm font-semibold mt-2">{{ 'exercises.incorrect' | transloco }}</span>
                     </div>
                     <div class="flex flex-col items-center text-emerald-500 opacity-30">
                         <span class="text-6xl">✓</span>
-                        <span class="text-sm font-semibold mt-2">Correct</span>
+                        <span class="text-sm font-semibold mt-2">{{ 'exercises.correct' | transloco }}</span>
                     </div>
                 </div>
 
@@ -110,12 +110,11 @@
                 class="rounded-xl shadow-lg border border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)] p-8 text-center">
                 <div class="text-6xl mb-6">🎉</div>
                 <h3 class="text-2xl font-bold text-[var(--c-text-primary)] mb-4">
-                    Exercise Complete!
+                    {{ 'exercises.exercise_complete' | transloco }}
                 </h3>
                 <div class="space-y-2 mb-6">
-                    <p class="text-lg text-[var(--c-text-secondary)]">
-                        You got <span class="font-bold text-emerald-600">{{ correctCount() }}</span> out of
-                        <span class="font-bold">{{ totalCards() }}</span> correct
+                    <p class="text-lg text-[var(--c-text-secondary)]"
+                        [innerHTML]="'exercises.got_correct' | transloco: { correct: correctCount(), total: totalCards() }">
                     </p>
                     <div class="w-full rounded-full h-4 overflow-hidden" [ngClass]="{
                             'bg-slate-200': themeService.theme() === 'light',
@@ -127,7 +126,7 @@
                 </div>
                 <button (click)="finish()"
                     class="px-8 py-3 font-semibold rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition-colors">
-                    Finish
+                    {{ 'exercises.finish' | transloco }}
                 </button>
             </div>
         </div>

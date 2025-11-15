@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, effect, inject, input, NgZone, OnDestroy, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { SessionStore } from '../../state/session.store';
 import { GeminiService } from '../../services/gemini.service';
 import { Language, Sentence, SentencePart, SpeechAssessment } from '../../models';
@@ -18,7 +18,7 @@ declare global {
 @Component({
   selector: 'app-practice-view',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, TranslocoModule],
   templateUrl: './practice-view.component.html',
   styles: [`
     .animate-fade-in {
@@ -93,7 +93,7 @@ export class PracticeViewComponent implements OnDestroy {
 
   // Assessment State
   currentAssessment = signal<SpeechAssessment | null>(null);
-  
+
   // Computed signal to help with template detection
   readonly hasAssessment = computed(() => {
     const assessment = this.currentAssessment();
@@ -182,7 +182,7 @@ export class PracticeViewComponent implements OnDestroy {
     console.log('[PracticeView] startPracticeAttempt called');
     console.log('[PracticeView] Current state - recordingState:', this.recordingState(), 'practiceStep:', this.practiceStep());
     console.log('[PracticeView] canStartPractice:', this.canStartPractice());
-    
+
     if (!this.canStartPractice()) {
       console.warn('[PracticeView] Cannot start - recordingState:', this.recordingState(), 'practiceStep:', this.practiceStep(), 'canStartPractice:', this.canStartPractice());
       return;
@@ -287,30 +287,30 @@ export class PracticeViewComponent implements OnDestroy {
         console.log('[PracticeView] Assessment received:', assessment);
         console.log('[PracticeView] Assessment type:', typeof assessment);
         console.log('[PracticeView] Assessment keys:', Object.keys(assessment || {}));
-        
+
         // Validate assessment structure
         if (!assessment || typeof assessment !== 'object') {
           throw new Error('Invalid assessment received from server');
         }
-        
+
         if (typeof assessment.pronunciation_score !== 'number' || typeof assessment.fluency_score !== 'number') {
           console.error('[PracticeView] Invalid assessment scores:', assessment);
           throw new Error('Assessment missing required scores');
         }
-        
+
         // Set assessment signal - this should trigger change detection automatically
         this.currentAssessment.set(assessment);
         console.log('[PracticeView] Assessment signal set, current value:', this.currentAssessment());
         console.log('[PracticeView] Assessment pronunciation_score:', this.currentAssessment()?.pronunciation_score);
         console.log('[PracticeView] Assessment fluency_score:', this.currentAssessment()?.fluency_score);
-        
+
         this.store.addSentenceResult(sentence, assessment, transcript);
         this.playResultSound(assessment.pronunciation_score >= 70);
-        
+
         // Reset recording state after assessment is complete
         this.recordingState.set('idle');
         console.log('[PracticeView] Recording state set to idle, current:', this.recordingState());
-        
+
         // Use setTimeout to ensure change detection happens after signal updates
         setTimeout(() => {
           this.cdr.detectChanges();
@@ -338,7 +338,7 @@ export class PracticeViewComponent implements OnDestroy {
         suggestions: []
       };
 
-        this.currentAssessment.set(mockAssessment);
+      this.currentAssessment.set(mockAssessment);
       this.store.addSentenceResult(sentence, mockAssessment, transcript);
       this.playResultSound(similarity >= 70);
       // Reset recording state after assessment is complete
@@ -351,17 +351,17 @@ export class PracticeViewComponent implements OnDestroy {
   retry(): void {
     console.log('[PracticeView] Retry button clicked');
     console.log('[PracticeView] Before reset - practiceStep:', this.practiceStep(), 'recordingState:', this.recordingState());
-    
+
     // Reset state
     this.resetForNewSentence();
-    
+
     console.log('[PracticeView] After reset - practiceStep:', this.practiceStep(), 'recordingState:', this.recordingState());
-    
+
     // Ensure change detection runs in Angular zone
     this.zone.run(() => {
       // Force change detection to ensure UI updates immediately
       this.cdr.detectChanges();
-      
+
       // Use setTimeout to ensure change detection happens after all signal updates
       setTimeout(() => {
         this.cdr.detectChanges();
@@ -376,7 +376,7 @@ export class PracticeViewComponent implements OnDestroy {
       clearInterval(this.countdownInterval);
       this.countdownInterval = null;
     }
-    
+
     // Stop any active recognition
     if (this.recognition) {
       try {
@@ -387,7 +387,7 @@ export class PracticeViewComponent implements OnDestroy {
       }
       this.recognition = null;
     }
-    
+
     // Reset all state signals in correct order
     this.recordingState.set('idle');
     this.countdownValue.set(null);

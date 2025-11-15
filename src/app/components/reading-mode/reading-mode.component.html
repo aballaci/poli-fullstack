@@ -12,8 +12,7 @@
       <!-- Instructions -->
       <p class="text-[var(--c-text-body)] text-sm text-center sm:text-left">
         <i class="fa-solid fa-lightbulb text-yellow-400 dark:text-yellow-300"></i>
-        Hover over <span class="font-semibold">highlighted words</span> for translations. Click <i
-          class="fa-solid fa-volume-high"></i> to listen.
+        <span [innerHTML]="'reading.instructions' | transloco"></span>
       </p>
     </div>
 
@@ -21,7 +20,7 @@
     <div class="space-y-3">
       @for (sentence of scenario().sentences; track sentence.id) {
       <div class="flex items-center gap-4 p-3">
-        <button (click)="speak(sentence.target.text, targetLang()!.code)" title="Listen"
+        <button (click)="speak(sentence.target.text, targetLang()!.code)" [title]="'reading.listen_button' | transloco"
           class="text-[var(--c-text-muted)] hover:text-[var(--color-primary)] dark:hover:text-[var(--color-primary)] transition-colors flex-shrink-0">
           <i class="fa-solid fa-volume-high text-xl"></i>
         </button>

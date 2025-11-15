@@ -7,10 +7,10 @@
 
     <!-- Back Button -->
     @if(currentStep() !== 'Summary') {
-    <button (click)="startNewSession()" title="Back to Scenarios"
+    <button (click)="startNewSession()" [title]="'conversation.back_to_scenarios' | transloco"
       class="absolute top-0 left-0 text-sm text-[var(--c-text-muted)] hover:text-[var(--color-primary)] transition-colors p-2 rounded-full hover:bg-[var(--c-bg-muted)]">
       <i class="fa-solid fa-arrow-left text-xl"></i>
-      <span class="sr-only">Back to Scenarios</span>
+      <span class="sr-only">{{ 'conversation.back_to_scenarios' | transloco }}</span>
     </button>
     }
   </div>
@@ -29,7 +29,7 @@
     <div class="text-center mt-6">
       <button (click)="goToNextStep()"
         class="px-6 py-3 font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors">
-        Next Step
+        {{ 'conversation.next_step' | transloco }}
       </button>
     </div>
   </div>
@@ -46,7 +46,7 @@
     <div class="text-center mt-6">
       <button (click)="goToNextStep()"
         class="px-6 py-3 font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors">
-        Next Step
+        {{ 'conversation.next_step' | transloco }}
       </button>
     </div>
   </div>
@@ -71,23 +71,24 @@
       <button (click)="previousSentence()" [disabled]="isFirstSentence()"
         class="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md bg-slate-200 text-slate-800 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
         <i class="fa-solid fa-chevron-left"></i>
-        <span>Back</span>
+        <span>{{ 'conversation.back_button' | transloco }}</span>
       </button>
       } @else {
       <div class="w-24"></div> <!-- Placeholder for spacing -->
       }
 
       <p class="text-sm text-center font-semibold text-[var(--c-text-muted)]">
-        Sentence {{ currentSentenceIndex() + 1 }} of {{ currentScenario.sentences.length }}
+        {{ 'conversation.sentence_counter' | transloco: { current: currentSentenceIndex() + 1, total:
+        currentScenario.sentences.length } }}
       </p>
 
       <button (click)="nextSentence()"
         class="w-24 justify-center flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md bg-sky-500 text-white hover:bg-sky-600 transition-colors">
         @if(isLastSentence()) {
-        <span>Finish</span>
+        <span>{{ 'conversation.finish_button' | transloco }}</span>
         <i class="fa-solid fa-flag-checkered"></i>
         } @else {
-        <span>Next</span>
+        <span>{{ 'conversation.next_button' | transloco }}</span>
         <i class="fa-solid fa-chevron-right"></i>
         }
       </button>
@@ -97,7 +98,7 @@
     <div
       class="mt-6 pt-6 border-t border-[var(--c-border-subtle)] flex flex-col sm:flex-row items-center justify-center gap-x-8 gap-y-4">
       <!-- Practice Direction Toggle -->
-      <button (click)="toggleFlowDirection()" title="Switch practice direction"
+      <button (click)="toggleFlowDirection()" [title]="'conversation.switch_practice_direction' | transloco"
         class="px-4 py-2 text-sm rounded-lg bg-[var(--c-bg-muted)] hover:bg-[var(--c-border-subtle)] transition-colors text-[var(--c-text-body)] font-medium flex items-center shadow-sm">
 
         @if (flowDirection() === 'source-to-target') {
@@ -124,8 +125,8 @@
       </button>
       <!-- AI Evaluation Toggle -->
       <div class="flex items-center gap-2">
-        <label for="ai-toggle-convo" class="text-sm font-semibold text-[var(--c-text-muted)] cursor-pointer">AI
-          Evaluation</label>
+        <label for="ai-toggle-convo" class="text-sm font-semibold text-[var(--c-text-muted)] cursor-pointer">{{
+          'conversation.ai_evaluation' | transloco }}</label>
         <button id="ai-toggle-convo" (click)="toggleAiEvaluation()" type="button"
           class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
           [class.bg-sky-500]="useAI()" [class.bg-slate-300]="!useAI()" role="switch" [attr.aria-checked]="useAI()">
@@ -155,16 +156,17 @@
       <div class="w-24"></div> <!-- Placeholder for spacing -->
 
       <p class="text-sm text-center font-semibold text-[var(--c-text-muted)]">
-        Sentence {{ currentSentenceIndex() + 1 }} of {{ currentScenario.sentences.length }}
+        {{ 'conversation.sentence_counter' | transloco: { current: currentSentenceIndex() + 1, total:
+        currentScenario.sentences.length } }}
       </p>
 
       <button (click)="nextSentence()"
         class="w-24 justify-center flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md bg-sky-500 text-white hover:bg-sky-600 transition-colors">
         @if(isLastSentence()) {
-        <span>Finish</span>
+        <span>{{ 'conversation.finish_button' | transloco }}</span>
         <i class="fa-solid fa-flag-checkered"></i>
         } @else {
-        <span>Next</span>
+        <span>{{ 'conversation.next_button' | transloco }}</span>
         <i class="fa-solid fa-chevron-right"></i>
         }
       </button>
@@ -180,7 +182,7 @@
 <div class="flex justify-center items-center h-full">
   <div class="text-center text-[var(--c-text-muted)]">
     <i class="fa-solid fa-spinner fa-spin text-4xl"></i>
-    <p class="mt-4">Loading scenario...</p>
+    <p class="mt-4">{{ 'conversation.loading_scenario' | transloco }}</p>
   </div>
 </div>
 }

@@ -10,6 +10,7 @@ import { PracticeViewComponent } from '../practice-view/practice-view.component'
 import { VocabularyComponent } from '../vocabulary/vocabulary.component';
 import { ExercisesComponent } from '../exercises/exercises.component';
 import { ProgressBarComponent } from '../progress-bar/progress-bar.component';
+import { TranslocoModule } from '@jsverse/transloco';
 
 export const conversationSteps = [
   'Reading',
@@ -34,6 +35,7 @@ export type ConversationStep = (typeof conversationSteps)[number];
     VocabularyComponent,
     ExercisesComponent,
     ProgressBarComponent,
+    TranslocoModule
   ],
   templateUrl: './conversation-view.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

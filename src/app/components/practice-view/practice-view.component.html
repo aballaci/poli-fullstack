@@ -15,7 +15,7 @@
     @if (practiceStep() === 'initial') {
     <p
       class="p-4 text-center text-sm text-[var(--c-text-muted)] bg-[var(--c-bg-muted)] border-b border-[var(--c-border-subtle)]">
-      Read both sentences, then click the microphone to start your attempt.
+      {{ 'practice.click_microphone' | transloco }}
     </p>
     }
 
@@ -26,16 +26,17 @@
       <div class="animate-fade-in text-center">
         @if (useAI() && !currentAssessment() && !error()) {
         <!-- Loading State -->
-        <h3 class="text-2xl font-bold text-[var(--c-text-headings)] mb-4">Analyzing Your Speech...</h3>
+        <h3 class="text-2xl font-bold text-[var(--c-text-headings)] mb-4">{{ 'practice.analyzing_speech' | transloco }}
+        </h3>
         <div class="space-y-4 text-left my-6">
           <div class="bg-[var(--c-bg-muted)] p-4 rounded-lg">
-            <p class="text-sm font-semibold text-[var(--c-text-muted)]">Original:</p>
+            <p class="text-sm font-semibold text-[var(--c-text-muted)]">{{ 'practice.original_label' | transloco }}</p>
             <p class="text-lg text-[var(--c-text-body)]">"{{ challenge().part.text }}"</p>
           </div>
           <div class="bg-[var(--c-bg-muted)] p-4 rounded-lg">
-            <p class="text-sm font-semibold text-[var(--c-text-muted)]">Your attempt:</p>
+            <p class="text-sm font-semibold text-[var(--c-text-muted)]">{{ 'practice.attempt_label' | transloco }}</p>
             <p class="text-lg italic text-[var(--c-text-headings)]">
-              "{{ userTranscript() || 'No speech detected.' }}"
+              "{{ userTranscript() || ('practice.no_speech_detected' | transloco) }}"
             </p>
           </div>
         </div>
@@ -46,12 +47,13 @@
         </div>
         } @else {
         <!-- Results State -->
-        <h3 class="text-2xl font-bold text-[var(--c-text-headings)] mb-4">Your Results</h3>
+        <h3 class="text-2xl font-bold text-[var(--c-text-headings)] mb-4">{{ 'practice.your_results' | transloco }}</h3>
         @if(useAI() && currentAssessment(); as assessment) {
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <!-- Pronunciation Score -->
           <div class="flex flex-col items-center">
-            <h4 class="text-sm font-semibold text-[var(--c-text-muted)] mb-2">Pronunciation</h4>
+            <h4 class="text-sm font-semibold text-[var(--c-text-muted)] mb-2">{{ 'practice.pronunciation' | transloco }}
+            </h4>
             <div class="relative w-24 h-24">
               <svg class="w-full h-full" viewBox="0 0 36 36">
                 <path class="stroke-current text-slate-200 dark:text-slate-700"
@@ -69,7 +71,7 @@
           </div>
           <!-- Fluency Score -->
           <div class="flex flex-col items-center">
-            <h4 class="text-sm font-semibold text-[var(--c-text-muted)] mb-2">Fluency</h4>
+            <h4 class="text-sm font-semibold text-[var(--c-text-muted)] mb-2">{{ 'practice.fluency' | transloco }}</h4>
             <div class="relative w-24 h-24">
               <svg class="w-full h-full" viewBox="0 0 36 36">
                 <path class="stroke-current text-slate-200 dark:text-slate-700"
@@ -94,20 +96,21 @@
         } @else {
         <div class="space-y-4 text-left">
           <div class="bg-[var(--c-bg-muted)] p-4 rounded-lg">
-            <p class="text-sm font-semibold text-[var(--c-text-muted)]">Original:</p>
+            <p class="text-sm font-semibold text-[var(--c-text-muted)]">{{ 'practice.original_label' | transloco }}</p>
             <p class="text-lg text-[var(--c-text-body)]">"{{ challenge().part.text }}"</p>
           </div>
           <div class="bg-[var(--c-bg-muted)] p-4 rounded-lg">
-            <p class="text-sm font-semibold text-[var(--c-text-muted)]">Your attempt:</p>
+            <p class="text-sm font-semibold text-[var(--c-text-muted)]">{{ 'practice.attempt_label' | transloco }}</p>
             <p class="text-lg italic text-[var(--c-text-headings)]">
-              "{{ userTranscript() || 'No speech detected.' }}"
+              "{{ userTranscript() || ('practice.no_speech_detected' | transloco) }}"
             </p>
           </div>
         </div>
         @if (useAI() && error()) {
-        <p class="mt-4 text-sm text-yellow-600 dark:text-yellow-400">Could not get AI feedback. {{ error() }}</p>
+        <p class="mt-4 text-sm text-yellow-600 dark:text-yellow-400">{{ 'practice.error_feedback' | transloco: { error:
+          error() } }}</p>
         } @else if (!useAI()) {
-        <p class="mt-4 text-sm text-sky-600 dark:text-sky-400">AI evaluation is off. Enable it for detailed feedback.
+        <p class="mt-4 text-sm text-sky-600 dark:text-sky-400">{{ 'practice.enable_ai_message' | transloco }}
         </p>
         }
         }
@@ -143,10 +146,11 @@
               @if (practiceMode() === 'practice') {
               <button (click)="peek()"
                 class="px-4 py-2 text-sm font-semibold rounded-md bg-slate-200 text-slate-700 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 transition-colors">
-                <i class="fa-solid fa-eye mr-2"></i> Peek
+                <i class="fa-solid fa-eye mr-2"></i> {{ 'practice.peek' | transloco }}
               </button>
               } @else {
-              <span class="text-[var(--c-text-muted)] font-semibold">Recall from memory</span>
+              <span class="text-[var(--c-text-muted)] font-semibold">{{ 'practice.recall_from_memory' | transloco
+                }}</span>
               }
             </div>
             }
@@ -176,23 +180,23 @@
           <button (click)="goToNextSentence()"
             class="flex items-center px-6 py-3 text-lg font-semibold text-white transition-colors rounded-md bg-sky-500 hover:bg-sky-600">
             @if (isLastSentence()) {
-            <span>Finish</span>
+            <span>{{ 'practice.finish' | transloco }}</span>
             <i class="ml-2 fa-solid fa-flag-checkered"></i>
             } @else {
-            <span>Next</span>
+            <span>{{ 'practice.next' | transloco }}</span>
             <i class="ml-2 fa-solid fa-chevron-right"></i>
             }
           </button>
           } @else {
           <button (click)="retry()"
             class="px-6 py-3 text-lg font-semibold rounded-md bg-sky-500 text-white hover:bg-sky-600 transition-colors">
-            <i class="fa-solid fa-repeat mr-2"></i> Repeat
+            <i class="fa-solid fa-repeat mr-2"></i> {{ 'practice.repeat' | transloco }}
           </button>
           }
           } @else {
           <button (click)="retry()"
             class="px-6 py-3 text-lg font-semibold rounded-md bg-slate-200 text-slate-800 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 transition-colors">
-            <i class="fa-solid fa-rotate-right mr-2"></i> Retry Attempt
+            <i class="fa-solid fa-rotate-right mr-2"></i> {{ 'practice.retry_attempt' | transloco }}
           </button>
           }
         </div>
@@ -228,20 +232,20 @@
         <div class="h-10 flex flex-col items-center justify-center">
           <p class="text-sm text-[var(--c-text-muted)]">
             @switch(recordingState()) {
-            @case('idle') { Click the microphone to start }
-            @case('countdown') { Get ready... }
-            @case('listening') { Listening... Click the square to stop }
-            @case('processing') { Analyzing your speech... }
+            @case('idle') { {{ 'practice.click_to_start' | transloco }} }
+            @case('countdown') { {{ 'practice.get_ready' | transloco }} }
+            @case('listening') { {{ 'practice.listening' | transloco }} }
+            @case('processing') { {{ 'practice.processing' | transloco }} }
             }
           </p>
           @if(recordingState() === 'listening') {
           <p class="text-sm text-sky-500 font-semibold animate-pulse">
-            Speak in {{ challenge().lang.display_name }}
+            {{ 'practice.speak_in_language' | transloco: { language: challenge().lang.display_name } }}
           </p>
           }
         </div>
         @if (!isSpeechRecognitionSupported && recordingState() === 'idle') {
-        <p class="text-xs text-yellow-600">Speech recognition is not supported by your browser.</p>
+        <p class="text-xs text-yellow-600">{{ 'practice.speech_not_supported' | transloco }}</p>
         }
       </div>
       }

@@ -2,6 +2,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { Language } from '../../models';
 import { LanguageService } from '../../services/language.service';
 import { SessionStore } from '../../state/session.store';
@@ -12,7 +13,7 @@ import { SessionStore } from '../../state/session.store';
   styleUrl: './language-wizard.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [CommonModule]
+  imports: [CommonModule, TranslocoModule]
 })
 export class LanguageWizardComponent implements OnInit {
   languageService = inject(LanguageService);
@@ -35,7 +36,7 @@ export class LanguageWizardComponent implements OnInit {
         };
         const mappedCode = codeMap[targetCode] || targetCode;
         const targetLang = this.languageService.availableLanguages.find(l => l.code === mappedCode);
-        
+
         if (targetLang) {
           // Set a default source language (English) if not set
           const defaultSource = this.languageService.availableLanguages.find(l => l.code === 'en');
@@ -68,9 +69,21 @@ export class LanguageWizardComponent implements OnInit {
     this.store.setDifficulty(level);
     this.router.navigate(['/selector']);
   }
-  
+
   get availableTargetLanguages(): Language[] {
     const sourceCode = this.store.sourceLanguage()?.code;
     return this.languageService.availableLanguages.filter(l => l.code !== sourceCode);
+  }
+
+  getLevelName(level: string): string {
+    const levelMap: { [key: string]: string } = {
+      'A1': 'wizard.level_a1',
+      'A2': 'wizard.level_a2',
+      'B1': 'wizard.level_b1',
+      'B2': 'wizard.level_b2',
+      'C1': 'wizard.level_c1',
+      'C2': 'wizard.level_c2'
+    };
+    return levelMap[level] || level;
   }
 }

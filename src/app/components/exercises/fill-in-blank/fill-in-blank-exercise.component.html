@@ -3,13 +3,13 @@
         <!-- Header -->
         <header class="mb-8 flex items-center justify-between">
             <h2 class="text-2xl md:text-3xl font-bold text-[var(--c-text-primary)]">
-                Fill in the Blank
+                {{ 'exercises.fill_in_blank.title' | transloco }}
             </h2>
             <button (click)="goBack()" class="px-4 py-2 font-semibold rounded-md transition-colors" [ngClass]="{
                     'bg-slate-200 text-slate-700 hover:bg-slate-300': themeService.theme() === 'light',
                     'bg-slate-700 text-slate-200 hover:bg-slate-600': themeService.theme() === 'dark'
                 }">
-                Back to Exercises
+                {{ 'exercises.back_to_exercises' | transloco }}
             </button>
         </header>
 
@@ -17,7 +17,7 @@
         <div *ngIf="isLoading()" class="flex items-center justify-center py-20">
             <div class="text-center">
                 <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-500 mx-auto mb-4"></div>
-                <p class="text-[var(--c-text-secondary)]">Loading exercises...</p>
+                <p class="text-[var(--c-text-secondary)]">{{ 'exercises.loading_exercise' | transloco }}</p>
             </div>
         </div>
 
@@ -26,14 +26,14 @@
             class="rounded-xl shadow-lg border border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)] p-8 text-center">
             <div class="text-red-500 text-5xl mb-4">⚠️</div>
             <h3 class="text-xl font-semibold text-[var(--c-text-primary)] mb-2">
-                Oops! Something went wrong
+                {{ 'exercises.oops_something_wrong' | transloco }}
             </h3>
             <p class="text-[var(--c-text-secondary)] mb-6">
                 {{ errorMessage() }}
             </p>
             <button (click)="goBack()"
                 class="px-6 py-3 font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors">
-                Back to Exercises
+                {{ 'exe Exers.back_to_exercises' | transloco }}
             </button>
         </div>
 
@@ -42,7 +42,8 @@
             <!-- Progress Indicator -->
             <div class="flex items-center justify-between text-sm text-[var(--c-text-secondary)] mb-4" role="status"
                 aria-label="Exercise progress">
-                <span>Question {{ currentIndex() + 1 }} of {{ exercises().length }}</span>
+                <span>{{ 'exercises.question_count' | transloco: { current: currentIndex() + 1, total:
+                    exercises().length } }}</span>
                 <div class="flex gap-2">
                     <div *ngFor="let ex of exercises(); let i = index" class="w-2 h-2 rounded-full transition-colors"
                         [ngClass]="{
@@ -58,7 +59,7 @@
                 class="rounded-xl shadow-lg border border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)] p-6 md:p-8">
                 <!-- Sentence Display -->
                 <div class="mb-8">
-                    <p class="text-xl md:text-2xl text-[var(--c-text-primary)] leading-relaxed text-center">
+                    <p class="text-xl md:text-2xl text-[var(--c-text-primary)] leading-relaxed text-left">
                         <ng-container *ngFor="let part of formattedSentence(); let i = index">
                             <span>{{ part.text }}</span><span *ngIf="i < formattedSentence().length - 1"
                                 class="inline-flex items-end whitespace-nowrap"><span
@@ -111,10 +112,10 @@
                     }">
                     <p class="text-center font-medium" [class.text-emerald-700]="isCorrectAnswer(selectedOption()!)"
                         [class.text-red-700]="!isCorrectAnswer(selectedOption()!)">
-                        <span *ngIf="isCorrectAnswer(selectedOption()!)" id="correct-feedback">🎉 Correct! Well
-                            done!</span>
+                        <span *ngIf="isCorrectAnswer(selectedOption()!)" id="correct-feedback">{{
+                            'exercises.correct_well_done' | transloco }}</span>
                         <span *ngIf="!isCorrectAnswer(selectedOption()!)" id="incorrect-feedback">
-                            Not quite. The correct answer is "{{ currentExercise().correctAnswer }}"
+                            {{ 'exercises.correct_answer_is' | transloco: { answer: currentExercise().correctAnswer } }}
                         </span>
                     </p>
                 </div>
@@ -124,12 +125,12 @@
             <div class="flex justify-center gap-4">
                 <button *ngIf="showAnswer() && !isLastExercise()" (click)="nextExercise()"
                     class="px-8 py-3 font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors">
-                    Next Question
+                    {{ 'exercises.next_question' | transloco }}
                 </button>
 
                 <button *ngIf="showAnswer() && isLastExercise()" (click)="finish()"
                     class="px-8 py-3 font-semibold rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition-colors">
-                    Finish
+                    {{ 'exercises.finish' | transloco }}
                 </button>
             </div>
         </div>

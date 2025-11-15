@@ -3,13 +3,13 @@
         <!-- Header -->
         <header class="mb-8 flex items-center justify-between">
             <h2 class="text-2xl md:text-3xl font-bold text-[var(--c-text-primary)]">
-                Unscramble the Sentence
+                {{ 'exercises.sentence_scramble.title' | transloco }}
             </h2>
             <button (click)="goBack()" class="px-4 py-2 font-semibold rounded-md transition-colors" [ngClass]="{
                     'bg-slate-200 text-slate-700 hover:bg-slate-300': themeService.theme() === 'light',
                     'bg-slate-700 text-slate-200 hover:bg-slate-600': themeService.theme() === 'dark'
                 }">
-                Back to Exercises
+                {{ 'exercises.back_to_exercises' | transloco }}
             </button>
         </header>
 
@@ -17,7 +17,7 @@
         <div *ngIf="isLoading()" class="flex items-center justify-center py-20">
             <div class="text-center">
                 <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-500 mx-auto mb-4"></div>
-                <p class="text-[var(--c-text-secondary)]">Loading exercises...</p>
+                <p class="text-[var(--c-text-secondary)]">{{ 'exercises.loading_exercises' | transloco }}</p>
             </div>
         </div>
 
@@ -26,14 +26,14 @@
             class="rounded-xl shadow-lg border border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)] p-8 text-center">
             <div class="text-red-500 text-5xl mb-4">⚠️</div>
             <h3 class="text-xl font-semibold text-[var(--c-text-primary)] mb-2">
-                Oops! Something went wrong
+                {{ 'exercises.oops_something_wrong' | transloco }}
             </h3>
             <p class="text-[var(--c-text-secondary)] mb-6">
                 {{ errorMessage() }}
             </p>
             <button (click)="goBack()"
                 class="px-6 py-3 font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors">
-                Back to Exercises
+                {{ 'exercises.back_to_exercises' | transloco }}
             </button>
         </div>
 
@@ -41,7 +41,8 @@
         <div *ngIf="!isLoading() && !errorMessage() && currentExercise()" class="space-y-6 fade-in">
             <!-- Progress Indicator -->
             <div class="flex items-center justify-between text-sm text-[var(--c-text-secondary)] mb-4">
-                <span>Question {{ currentIndex() + 1 }} of {{ exercises().length }}</span>
+                <span>{{ 'exercises.question_count' | transloco: { current: currentIndex() + 1, total:
+                    exercises().length } }}</span>
                 <div class="flex gap-2">
                     <div *ngFor="let ex of exercises(); let i = index" class="w-2 h-2 rounded-full transition-colors"
                         [ngClass]="{
@@ -62,12 +63,13 @@
 
                 <!-- Instructions -->
                 <p class="text-center text-[var(--c-text-secondary)] mb-4">
-                    Drag words from the word bank to the answer area below to form the correct sentence
+                    {{ 'exercises.drag_words_instruction' | transloco }}
                 </p>
 
-                             <!-- Target Area (Answer) -->
+                <!-- Target Area (Answer) -->
                 <div class="mb-6">
-                    <p class="text-sm font-semibold text-[var(--c-text-secondary)] mb-3">Your Answer:</p>
+                    <p class="text-sm font-semibold text-[var(--c-text-secondary)] mb-3">{{ 'exercises.your_answer' |
+                        transloco }}</p>
                     <div class="flex flex-wrap gap-3 p-4 rounded-lg border-2 border-dashed min-h-[80px]" [ngClass]="{
                             'border-sky-300 bg-sky-50/30': themeService.theme() === 'light',
                             'border-sky-600 bg-sky-950/30': themeService.theme() === 'dark'
@@ -88,14 +90,15 @@
                         </div>
                         <div *ngIf="targetWords().length === 0"
                             class="w-full text-center text-[var(--c-text-muted)] py-4">
-                            Drag words here
+                            {{ 'exercises.drag_words_here' | transloco }}
                         </div>
                     </div>
                 </div>
 
                 <!-- Available Words (Word Bank) -->
                 <div class="mb-6">
-                    <p class="text-sm font-semibold text-[var(--c-text-secondary)] mb-3">Word Bank:</p>
+                    <p class="text-sm font-semibold text-[var(--c-text-secondary)] mb-3">{{ 'exercises.word_bank' |
+                        transloco }}</p>
                     <div class="flex flex-wrap gap-3 p-4 rounded-lg border-2 border-dashed border-[var(--c-border-subtle)] bg-[var(--c-bg-muted)] min-h-[80px]"
                         (drop)="onDropToAvailable($event)" (dragover)="onDragOver($event)">
                         <div *ngFor="let word of availableWords(); let i = index"
@@ -105,19 +108,19 @@
                         </div>
                         <div *ngIf="availableWords().length === 0"
                             class="w-full text-center text-[var(--c-text-muted)] py-4">
-                            All words used
+                            {{ 'exercises.all_words_used' | transloco }}
                         </div>
                     </div>
                 </div>
 
-   
+
 
                 <!-- Correct Answer Display -->
                 <div *ngIf="showAnswer()" class="mt-6 p-4 rounded-lg text-emerald-700" [ngClass]="{
                     'bg-emerald-100': themeService.theme() === 'light',
                     'bg-emerald-900/30': themeService.theme() === 'dark'
                 }">
-                    <p class="text-sm font-semibold mb-2">Correct order:</p>
+                    <p class="text-sm font-semibold mb-2">{{ 'exercises.correct_order' | transloco }}</p>
                     <p class="text-lg">{{ correctSentence() }}</p>
                 </div>
             </div>
@@ -126,17 +129,17 @@
             <div class="flex justify-center gap-4">
                 <button *ngIf="!showAnswer()" (click)="checkOrder()" [disabled]="!allWordsPlaced()"
                     class="px-8 py-3 font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                    Check Order
+                    {{ 'exercises.check_order' | transloco }}
                 </button>
 
                 <button *ngIf="showAnswer() && !isLastExercise()" (click)="nextExercise()"
                     class="px-8 py-3 font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors">
-                    Next Question
+                    {{ 'exercises.next_question' | transloco }}
                 </button>
 
                 <button *ngIf="showAnswer() && isLastExercise()" (click)="finish()"
                     class="px-8 py-3 font-semibold rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition-colors">
-                    Finish
+                    {{ 'exercises.finish' | transloco }}
                 </button>
             </div>
         </div>

@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { GeminiService } from '../../services/gemini.service';
 import { LanguageService } from '../../services/language.service';
 import { SessionStore } from '../../state/session.store';
@@ -16,7 +17,7 @@ type SelectorState = 'idle' | 'loading' | 'error';
 @Component({
   selector: 'app-scenario-selector',
   standalone: true,
-  imports: [CommonModule, FormsModule, ScenarioCatalogComponent, ScenarioHistoryComponent],
+  imports: [CommonModule, FormsModule, TranslocoModule, ScenarioCatalogComponent, ScenarioHistoryComponent],
   templateUrl: './scenario-selector.component.html',
   styles: [`
     .animate-fade-in {

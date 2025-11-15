@@ -16,7 +16,7 @@
           'hover:text-pink-200': activeTab() === 'topics'
         }">
         <i class="fa-solid fa-layer-group"></i>
-        <span>From Topics</span>
+        <span>{{ 'dashboard.tab_topics' | transloco }}</span>
       </button>
       <button (click)="activeTab.set('custom')"
         class="px-5 py-2.5 font-semibold text-base transition-all duration-200 rounded-full flex items-center gap-2 relative"
@@ -29,7 +29,7 @@
           'hover:text-pink-200': activeTab() === 'custom'
         }">
         <i class="fa-solid fa-paste"></i>
-        <span>Use Custom Text</span>
+        <span>{{ 'dashboard.tab_custom' | transloco }}</span>
       </button>
       <button (click)="activeTab.set('catalog')"
         class="px-5 py-2.5 font-semibold text-base transition-all duration-200 rounded-full flex items-center gap-2 relative"
@@ -42,7 +42,7 @@
           'hover:text-pink-200': activeTab() === 'catalog'
         }">
         <i class="fa-solid fa-book"></i>
-        <span>Catalog</span>
+        <span>{{ 'dashboard.tab_catalog' | transloco }}</span>
       </button>
       <button (click)="activeTab.set('history')"
         class="px-5 py-2.5 font-semibold text-base transition-all duration-200 rounded-full flex items-center gap-2 relative"
@@ -55,7 +55,7 @@
           'hover:text-pink-200': activeTab() === 'history'
         }">
         <i class="fa-solid fa-clock-rotate-left"></i>
-        <span>History</span>
+        <span>{{ 'dashboard.tab_history' | transloco }}</span>
       </button>
     </div>
   </div>
@@ -67,8 +67,9 @@
     @switch (wizardStep()) {
     @case ('category') {
     <div class="animate-fade-in">
-      <h2 class="text-2xl font-bold text-[var(--c-text-headings)] mb-2">Choose a Category</h2>
-      <p class="text-[var(--c-text-muted)] mb-6">Select a category to see available practice topics.</p>
+      <h2 class="text-2xl font-bold text-[var(--c-text-headings)] mb-2">{{ 'dashboard.choose_category' | transloco }}
+      </h2>
+      <p class="text-[var(--c-text-muted)] mb-6">{{ 'dashboard.choose_category_subtitle' | transloco }}</p>
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
         @for (category of topics(); track category.id) {
         <button (click)="selectCategory(category)"
@@ -76,7 +77,7 @@
           [ngClass]="(categoryColors[category.id] && categoryColors[category.id].borderHover) || 'hover:border-slate-400'">
           <i
             [class]="'fa-solid text-4xl ' + category.icon + ' ' + ((categoryColors[category.id] && categoryColors[category.id].icon) || 'text-slate-500')"></i>
-          <span class="font-semibold text-[var(--c-text-headings)]">{{ category.label }}</span>
+          <span class="font-semibold text-[var(--c-text-headings)]">{{ category.label | transloco }}</span>
         </button>
         }
       </div>
@@ -93,18 +94,17 @@
         <h2 class="text-2xl font-bold flex items-center gap-3"
           [class]="(categoryColors[category.id] && categoryColors[category.id].icon) || 'text-[var(--c-text-headings)]'">
           <i [class]="'fa-solid ' + category.icon"></i>
-          {{ category.label }}
+          {{ category.label | transloco }}
         </h2>
       </div>
-      <p class="text-[var(--c-text-muted)] mb-6 ml-12">Select one or more topics to find existing scenarios or create a
-        new one.</p>
+      <p class="text-[var(--c-text-muted)] mb-6 ml-12">{{ 'dashboard.select_topics' | transloco }}</p>
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 ml-12">
         @for (subtopic of category.children; track subtopic.id) {
         <button (click)="toggleTopic(subtopic)"
           [class]="'p-4 rounded-2xl flex flex-col items-center justify-center space-y-3 h-36 text-center transition-all duration-200 bg-[var(--c-bg-muted)] border-2 shadow-sm hover:shadow-md hover:-translate-y-1 ' + (isSelected(subtopic) ? ((categoryColors[category.id] && categoryColors[category.id].borderSelected) || 'border-sky-500') : ('border-transparent ' + ((categoryColors[category.id] && categoryColors[category.id].borderHover) || 'hover:border-slate-400')))">
           <i
             [class]="'text-4xl ' + subtopic.icon + ' ' + ((categoryColors[category.id] && categoryColors[category.id].icon) || 'text-slate-500')"></i>
-          <span class="font-semibold text-sm text-[var(--c-text-headings)]">{{ subtopic.label }}</span>
+          <span class="font-semibold text-sm text-[var(--c-text-headings)]">{{ subtopic.label | transloco }}</span>
         </button>
         }
       </div>
@@ -113,23 +113,23 @@
       @if (matchingScenarios() !== null) {
       <div class="mt-8 ml-12">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold text-[var(--c-text-headings)]">Matching Scenarios</h3>
+          <h3 class="text-lg font-semibold text-[var(--c-text-headings)]">{{ 'dashboard.matching_scenarios' | transloco
+            }}</h3>
         </div>
         <!-- Tip Message -->
         <div class="mb-4 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
           <p class="text-sm text-blue-800 dark:text-blue-300 flex items-center gap-2">
             <i class="fa-solid fa-lightbulb"></i>
-            <span>You can open an existing scenario below or generate a new one by clicking the button at the
-              bottom.</span>
+            <span>{{ 'dashboard.tip_message' | transloco }}</span>
           </p>
         </div>
         @if (isFetchingMatches()) {
         <div class="text-sm text-[var(--c-text-muted)] flex items-center gap-2">
           <i class="fa-solid fa-spinner fa-spin"></i>
-          <span>Loading...</span>
+          <span>{{ 'dashboard.loading' | transloco }}</span>
         </div>
         } @else if (matchingScenarios()!.length === 0) {
-        <p class="text-sm text-[var(--c-text-muted)]">No scenarios found for this topic and level.</p>
+        <p class="text-sm text-[var(--c-text-muted)]">{{ 'dashboard.no_scenarios' | transloco }}</p>
         } @else {
         <div class="space-y-3 max-h-[40vh] overflow-y-auto pr-2">
           @for (scenario of matchingScenarios()!; track scenario.id) {
@@ -183,7 +183,7 @@
           </svg>
           <span>{{ loadingMessage() }}</span>
           } @else {
-          <span>Generate Scenario ({{ selectedTopics().size }})</span>
+          <span>{{ 'dashboard.generate_scenario' | transloco: { count: selectedTopics().size } }}</span>
           }
         </button>
       </div>
@@ -194,11 +194,11 @@
     }
     @case ('custom') {
     <div>
-      <h2 class="text-2xl font-bold text-[var(--c-text-headings)] mb-2">Use Your Own Text</h2>
-      <p class="text-[var(--c-text-muted)] mb-6">Paste any text below to create a personalized practice session.</p>
+      <h2 class="text-2xl font-bold text-[var(--c-text-headings)] mb-2">{{ 'dashboard.custom_title' | transloco }}</h2>
+      <p class="text-[var(--c-text-muted)] mb-6">{{ 'dashboard.custom_subtitle' | transloco }}</p>
 
       <textarea [value]="customText()" (input)="onCustomTextInput($event)" rows="8"
-        placeholder="e.g., paste a paragraph from a news article, a song lyric, or an email..."
+        [placeholder]="'dashboard.custom_placeholder' | transloco"
         class="w-full p-3 rounded-lg bg-[var(--c-bg-muted)] border border-[var(--c-border-subtle)] focus:ring-2 focus:ring-purple-500 focus:outline-none transition-shadow"></textarea>
 
       <div class="mt-6 pt-6 border-t border-[var(--c-border-subtle)] flex justify-end">
@@ -214,7 +214,7 @@
           </svg>
           <span>{{ loadingMessage() }}</span>
           } @else {
-          <span>Create Session</span>
+          <span>{{ 'dashboard.create_session' | transloco }}</span>
           }
         </button>
       </div>
@@ -230,7 +230,7 @@
 
     @if (error()) {
     <div class="mt-6 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-r-lg" role="alert">
-      <p class="font-bold">An Error Occurred</p>
+      <p class="font-bold">{{ 'dashboard.error_title' | transloco }}</p>
       <p>{{ error() }}</p>
     </div>
     }

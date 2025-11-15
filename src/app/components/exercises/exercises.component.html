@@ -2,16 +2,17 @@
   <div class="max-w-4xl mx-auto">
     <!-- Header -->
     <div class="text-center mb-8">
-      <h2 class="text-2xl sm:text-3xl font-bold text-[var(--c-text-headings)]">Choose an Exercise</h2>
+      <h2 class="text-2xl sm:text-3xl font-bold text-[var(--c-text-headings)]">{{ 'exercises.choose_exercise' |
+        transloco }}</h2>
       <p class="text-[var(--c-text-muted)] mt-2">
-        Practice your language skills with interactive exercises
+        {{ 'exercises.choose_exercise_subtitle' | transloco }}
       </p>
     </div>
 
     <!-- Loading State -->
     <div *ngIf="isLoading()" class="text-center py-12">
       <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-sky-500"></div>
-      <p class="text-[var(--c-text-muted)] mt-4">Loading exercises...</p>
+      <p class="text-[var(--c-text-muted)] mt-4">{{ 'exercises.loading_exercises' | transloco }}</p>
     </div>
 
     <!-- Exercise Grid -->
@@ -20,7 +21,7 @@
       <div class="bg-[var(--c-bg-surface)] rounded-lg border border-[var(--c-border-subtle)] p-4" role="status"
         aria-label="Exercise completion progress">
         <div class="flex items-center justify-between mb-2">
-          <span class="text-sm font-medium text-[var(--c-text-body)]">Progress</span>
+          <span class="text-sm font-medium text-[var(--c-text-body)]">{{ 'exercises.progress' | transloco }}</span>
           <span class="text-sm font-semibold text-sky-500" aria-live="polite">{{ completedCount() }} / {{ totalCount()
             }}</span>
         </div>
@@ -59,18 +60,19 @@
 
           <!-- Title -->
           <h3 class="text-lg font-semibold text-[var(--c-text-headings)] text-center mb-2">
-            {{ exercise.displayName }}
+            {{ exercise.displayName | transloco }}
           </h3>
 
           <!-- Description -->
           <p class="text-sm text-[var(--c-text-muted)] text-center" [id]="'desc-' + exercise.type">
-            {{ exercise.description }}
+            {{ exercise.description | transloco }}
           </p>
 
           <!-- Unavailable Badge -->
           <div *ngIf="!isExerciseAvailable(exercise.type)"
             class="absolute inset-0 flex items-center justify-center bg-[var(--c-bg-surface)] bg-opacity-90 rounded-xl">
-            <span class="text-sm font-medium text-[var(--c-text-muted)]">Not Available</span>
+            <span class="text-sm font-medium text-[var(--c-text-muted)]">{{ 'exercises.not_available' | transloco
+              }}</span>
           </div>
         </button>
       </div>
@@ -79,10 +81,10 @@
       <div *ngIf="availableExercises().size === 0"
         class="text-center py-8 bg-[var(--c-bg-surface)] rounded-lg border border-[var(--c-border-subtle)]">
         <p class="text-[var(--c-text-muted)]">
-          No exercises are available for this scenario yet.
+          {{ 'exercises.no_exercises_available' | transloco }}
         </p>
         <p class="text-sm text-[var(--c-text-muted)] mt-2">
-          Please try again later or select a different scenario.
+          {{ 'exercises.try_again_later' | transloco }}
         </p>
       </div>
 
@@ -90,7 +92,7 @@
       <div class="text-center mt-8">
         <button (click)="next.emit()" class="px-6 py-3 font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors
                  focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2">
-          Next Step
+          {{ 'exercises.next_step' | transloco }}
         </button>
       </div>
     </div>

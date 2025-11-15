@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Output, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ExerciseService } from '../../services/exercise.service';
 import { SessionStore } from '../../state/session.store';
 import { ThemeService } from '../../services/theme.service';
@@ -11,7 +12,7 @@ import { catchError } from 'rxjs/operators';
 @Component({
   selector: 'app-exercises',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslocoModule],
   templateUrl: './exercises.component.html',
 })
 export class ExercisesComponent implements OnInit {
@@ -26,27 +27,27 @@ export class ExercisesComponent implements OnInit {
   readonly exerciseTypes = signal<ExerciseTypeInfo[]>([
     {
       type: 'fillInBlank',
-      displayName: 'Fill in the Blank',
+      displayName: 'exercises.fill_in_blank.title',
       icon: '📝',
-      description: 'Complete sentences by selecting the correct word'
+      description: 'exercises.fill_in_blank.description'
     },
     {
       type: 'matchingPairs',
-      displayName: 'Matching Pairs',
+      displayName: 'exercises.matching_pairs.title',
       icon: '🔗',
-      description: 'Match source language sentences with translations'
+      description: 'exercises.matching_pairs.description'
     },
     {
       type: 'sentenceScramble',
-      displayName: 'Sentence Scramble',
+      displayName: 'exercises.sentence_scramble.title',
       icon: '🔀',
-      description: 'Arrange words in the correct order'
+      description: 'exercises.sentence_scramble.description'
     },
     {
       type: 'swipe',
-      displayName: 'Swipe Cards',
+      displayName: 'exercises.swipe.title',
       icon: '👆',
-      description: 'Swipe right for correct translations, left for incorrect'
+      description: 'exercises.swipe.description'
     }
   ]);
 

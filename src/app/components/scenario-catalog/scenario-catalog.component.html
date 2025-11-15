@@ -1,11 +1,11 @@
 <div>
   <div class="flex items-center justify-between mb-6">
-    <h2 class="text-2xl font-bold text-[var(--c-text-headings)]">Scenario Catalog</h2>
+    <h2 class="text-2xl font-bold text-[var(--c-text-headings)]">{{ 'scenario_catalog.title' | transloco }}</h2>
     <label class="flex items-center gap-2 text-sm text-[var(--c-text-muted)] cursor-pointer">
       <input type="checkbox" [checked]="filterByCurrentLevel()"
         (change)="filterByCurrentLevel.set($any($event.target).checked)"
         class="rounded text-[var(--color-primary)] focus:ring-[var(--color-primary)]">
-      <span>Filter by current level ({{ store.difficultyLevel() || 'N/A' }})</span>
+      <span>{{ 'scenario_catalog.filter_by_level' | transloco: { level: store.difficultyLevel() || 'N/A' } }}</span>
     </label>
   </div>
 
@@ -23,7 +23,7 @@
   } @else if (catalogList().length === 0) {
   <div class="text-center py-10 text-[var(--c-text-muted)]">
     <i class="fa-solid fa-book text-4xl mb-4 opacity-50"></i>
-    <p>No scenarios available yet. Generate a scenario to get started!</p>
+    <p>{{ 'scenario_catalog.empty_message' | transloco }}</p>
   </div>
   } @else {
   <div class="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
@@ -72,7 +72,7 @@
   <div
     class="mt-6 bg-red-100 dark:bg-red-900/20 border-l-4 border-red-500 text-red-700 dark:text-red-400 p-4 rounded-r-lg"
     role="alert">
-    <p class="font-bold">An Error Occurred</p>
+    <p class="font-bold">{{ 'scenario_catalog.error_occurred' | transloco }}</p>
     <p>{{ error() }}</p>
   </div>
   }

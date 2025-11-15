@@ -1,6 +1,7 @@
 import { Component, inject, signal, computed, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ExerciseService } from '../../../services/exercise.service';
 import { SessionStore } from '../../../state/session.store';
 import { ThemeService } from '../../../services/theme.service';
@@ -9,7 +10,7 @@ import { FillInBlankExercise, FillInBlankExercises } from '../../../models/exerc
 @Component({
     selector: 'app-fill-in-blank-exercise',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, TranslocoModule],
     templateUrl: './fill-in-blank-exercise.component.html',
 })
 export class FillInBlankExerciseComponent implements OnInit {

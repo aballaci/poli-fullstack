@@ -1,6 +1,7 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ExerciseService } from '../../../services/exercise.service';
 import { SessionStore } from '../../../state/session.store';
 import { ThemeService } from '../../../services/theme.service';
@@ -9,7 +10,7 @@ import { SentenceScrambleExercise, SentenceScrambleExercises } from '../../../mo
 @Component({
     selector: 'app-sentence-scramble-exercise',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, TranslocoModule],
     templateUrl: './sentence-scramble-exercise.component.html',
 })
 export class SentenceScrambleExerciseComponent implements OnInit {

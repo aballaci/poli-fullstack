@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslocoModule } from '@jsverse/transloco';
 import { HighlightedWord } from '../../models';
 
 @Component({
   selector: 'app-flash-cards',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslocoModule],
   templateUrl: './flash-cards.component.html',
   styles: [`
     /* Flashcard animation styles */

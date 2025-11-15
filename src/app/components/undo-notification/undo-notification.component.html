@@ -1,0 +1,11 @@
+@if (languageService.showUndoNotification()) {
+<div class="undo-notification">
+    <div class="notification-content">
+        <i class="fas fa-check-circle text-green-500 mr-2"></i>
+        <span class="text-[var(--c-text-heading)]">{{ 'language.changed' | transloco }}</span>
+        <button (click)="undo()" type="button" class="undo-button">
+            {{ 'common.undo' | transloco }}
+        </button>
+    </div>
+</div>
+}

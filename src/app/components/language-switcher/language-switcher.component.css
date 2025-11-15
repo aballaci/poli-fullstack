@@ -1,0 +1,27 @@
+.language-switcher {
+    position: relative;
+}
+
+.dropdown {
+    animation: fadeIn 0.15s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown button {
+    border-bottom: 1px solid var(--c-border-subtle);
+}
+
+.dropdown button:last-child {
+    border-bottom: none;
+}

@@ -2,11 +2,12 @@ import { ChangeDetectionStrategy, Component, input, signal, inject } from '@angu
 import { CommonModule } from '@angular/common';
 import { ConversationScenario, Language, Sentence } from '../../models';
 import { SessionStore } from '../../state/session.store';
+import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-reading-mode',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslocoModule],
   templateUrl: './reading-mode.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

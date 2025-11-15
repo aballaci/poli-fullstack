@@ -14,150 +14,150 @@ export interface Category {
 export const TOPICS_DATA: Category[] = [
   {
     "id": "everyday-social",
-    "label": "Everyday Life & Social",
+    "label": "topics.everyday_social",
     "icon": "fa-solid fa-comments",
     "children": [
-      {"id": "greetings", "label": "Greetings & Small Talk", "icon": "fa-solid fa-handshake"},
-      {"id": "weather", "label": "Weather & Seasons", "icon": "fa-solid fa-cloud-sun"},
-      {"id": "directions", "label": "Directions & Navigation", "icon": "fa-solid fa-diamond-turn-right"},
-      {"id": "time", "label": "Time & Schedules", "icon": "fa-solid fa-calendar-days"},
-      {"id": "feelings", "label": "Feelings & Opinions", "icon": "fa-solid fa-face-smile"},
-      {"id": "meeting-friends", "label": "Meeting People & Friends", "icon": "fa-solid fa-users"},
-      {"id": "etiquette", "label": "Etiquette & Politeness", "icon": "fa-solid fa-people-arrows"},
-      {"id": "events", "label": "Events & Parties", "icon": "fa-solid fa-champagne-glasses"}
+      { "id": "greetings", "label": "topics.greetings", "icon": "fa-solid fa-handshake" },
+      { "id": "weather", "label": "topics.weather", "icon": "fa-solid fa-cloud-sun" },
+      { "id": "directions", "label": "topics.directions", "icon": "fa-solid fa-diamond-turn-right" },
+      { "id": "time", "label": "topics.time", "icon": "fa-solid fa-calendar-days" },
+      { "id": "feelings", "label": "topics.feelings", "icon": "fa-solid fa-face-smile" },
+      { "id": "meeting-friends", "label": "topics.meeting_friends", "icon": "fa-solid fa-users" },
+      { "id": "etiquette", "label": "topics.etiquette", "icon": "fa-solid fa-people-arrows" },
+      { "id": "events", "label": "topics.events", "icon": "fa-solid fa-champagne-glasses" }
     ]
   },
   {
     "id": "travel-transport",
-    "label": "Travel & Transport",
+    "label": "topics.travel_transport",
     "icon": "fa-solid fa-plane",
     "children": [
-      {"id": "airport", "label": "Airport & Flying", "icon": "fa-solid fa-plane-departure"},
-      {"id": "public-transport", "label": "Train/Bus/Metro", "icon": "fa-solid fa-train-subway"},
-      {"id": "hotel", "label": "Hotel & Check‑in", "icon": "fa-solid fa-bell-concierge"},
-      {"id": "sightseeing", "label": "Sightseeing & Tours", "icon": "fa-solid fa-camera-retro"},
-      {"id": "car-rental", "label": "Car Rental & Driving", "icon": "fa-solid fa-car"},
-      {"id": "customs", "label": "Customs & Immigration", "icon": "fa-solid fa-passport"},
-      {"id": "emergencies", "label": "Emergencies Abroad", "icon": "fa-solid fa-kit-medical"},
-      {"id": "holiday-type", "label": "Beach/Mountain Holiday", "icon": "fa-solid fa-umbrella-beach"}
+      { "id": "airport", "label": "topics.airport", "icon": "fa-solid fa-plane-departure" },
+      { "id": "public-transport", "label": "topics.public_transport", "icon": "fa-solid fa-train-subway" },
+      { "id": "hotel", "label": "topics.hotel", "icon": "fa-solid fa-bell-concierge" },
+      { "id": "sightseeing", "label": "topics.sightseeing", "icon": "fa-solid fa-camera-retro" },
+      { "id": "car-rental", "label": "topics.car_rental", "icon": "fa-solid fa-car" },
+      { "id": "customs", "label": "topics.customs", "icon": "fa-solid fa-passport" },
+      { "id": "emergencies", "label": "topics.emergencies", "icon": "fa-solid fa-kit-medical" },
+      { "id": "holiday-type", "label": "topics.holiday_type", "icon": "fa-solid fa-umbrella-beach" }
     ]
   },
   {
     "id": "food-dining",
-    "label": "Food & Dining",
+    "label": "topics.food_dining",
     "icon": "fa-solid fa-utensils",
     "children": [
-      {"id": "cafe", "label": "Café & Ordering Drinks", "icon": "fa-solid fa-mug-saucer"},
-      {"id": "restaurant", "label": "At a Restaurant", "icon": "fa-solid fa-book-open-reader"},
-      {"id": "street-food", "label": "Street Food & Markets", "icon": "fa-solid fa-store"},
-      {"id": "dietary-needs", "label": "Dietary Needs & Allergies", "icon": "fa-solid fa-wheat-awn-circle-exclamation"},
-      {"id": "paying-bill", "label": "Tipping & Paying the Bill", "icon": "fa-solid fa-receipt"},
-      {"id": "cooking", "label": "Cooking & Recipes", "icon": "fa-solid fa-kitchen-set"},
-      {"id": "groceries", "label": "Groceries & Supermarket", "icon": "fa-solid fa-basket-shopping"},
-      {"id": "nightlife", "label": "Bar & Nightlife", "icon": "fa-solid fa-martini-glass-citrus"}
+      { "id": "cafe", "label": "topics.cafe", "icon": "fa-solid fa-mug-saucer" },
+      { "id": "restaurant", "label": "topics.restaurant", "icon": "fa-solid fa-book-open-reader" },
+      { "id": "street-food", "label": "topics.street_food", "icon": "fa-solid fa-store" },
+      { "id": "dietary-needs", "label": "topics.dietary_needs", "icon": "fa-solid fa-wheat-awn-circle-exclamation" },
+      { "id": "paying-bill", "label": "topics.paying_bill", "icon": "fa-solid fa-receipt" },
+      { "id": "cooking", "label": "topics.cooking", "icon": "fa-solid fa-kitchen-set" },
+      { "id": "groceries", "label": "topics.groceries", "icon": "fa-solid fa-basket-shopping" },
+      { "id": "nightlife", "label": "topics.nightlife", "icon": "fa-solid fa-martini-glass-citrus" }
     ]
   },
   {
     "id": "home-family",
-    "label": "Home & Family",
+    "label": "topics.home_family",
     "icon": "fa-solid fa-house",
     "children": [
-      {"id": "housing", "label": "Housing & Renting", "icon": "fa-solid fa-house-chimney-user"},
-      {"id": "utilities", "label": "Utilities & Bills", "icon": "fa-solid fa-lightbulb"},
-      {"id": "chores", "label": "Chores & Cleaning", "icon": "fa-solid fa-broom"},
-      {"id": "parenting", "label": "Family & Parenting", "icon": "fa-solid fa-children"},
-      {"id": "pets", "label": "Pets", "icon": "fa-solid fa-paw"},
-      {"id": "neighbors", "label": "Neighbors & Community", "icon": "fa-solid fa-person-shelter"},
-      {"id": "repairs", "label": "Moving & Repairs", "icon": "fa-solid fa-screwdriver-wrench"},
-      {"id": "gardening", "label": "Gardening", "icon": "fa-solid fa-seedling"}
+      { "id": "housing", "label": "topics.housing", "icon": "fa-solid fa-house-chimney-user" },
+      { "id": "utilities", "label": "topics.utilities", "icon": "fa-solid fa-lightbulb" },
+      { "id": "chores", "label": "topics.chores", "icon": "fa-solid fa-broom" },
+      { "id": "parenting", "label": "topics.parenting", "icon": "fa-solid fa-children" },
+      { "id": "pets", "label": "topics.pets", "icon": "fa-solid fa-paw" },
+      { "id": "neighbors", "label": "topics.neighbors", "icon": "fa-solid fa-person-shelter" },
+      { "id": "repairs", "label": "topics.repairs", "icon": "fa-solid fa-screwdriver-wrench" },
+      { "id": "gardening", "label": "topics.gardening", "icon": "fa-solid fa-seedling" }
     ]
   },
   {
     "id": "work-professions",
-    "label": "Work & Professions",
+    "label": "topics.work_professions",
     "icon": "fa-solid fa-briefcase",
     "children": [
-      {"id": "office", "label": "Office & Meetings", "icon": "fa-solid fa-users-viewfinder"},
-      {"id": "email", "label": "Emails & Messaging", "icon": "fa-solid fa-at"},
-      {"id": "factory", "label": "Factory Floor", "icon": "fa-solid fa-industry"},
-      {"id": "construction", "label": "Construction Site", "icon": "fa-solid fa-helmet-safety"},
-      {"id": "retail", "label": "Retail/Store", "icon": "fa-solid fa-cash-register"},
-      {"id": "bakery", "label": "Bakery & Kitchen", "icon": "fa-solid fa-bread-slice"},
-      {"id": "call-center", "label": "Call Center/Support", "icon": "fa-solid fa-headset"},
-      {"id": "healthcare-setting", "label": "Healthcare Setting", "icon": "fa-solid fa-user-doctor"}
+      { "id": "office", "label": "topics.office", "icon": "fa-solid fa-users-viewfinder" },
+      { "id": "email", "label": "topics.email", "icon": "fa-solid fa-at" },
+      { "id": "factory", "label": "topics.factory", "icon": "fa-solid fa-industry" },
+      { "id": "construction", "label": "topics.construction", "icon": "fa-solid fa-helmet-safety" },
+      { "id": "retail", "label": "topics.retail", "icon": "fa-solid fa-cash-register" },
+      { "id": "bakery", "label": "topics.bakery", "icon": "fa-solid fa-bread-slice" },
+      { "id": "call-center", "label": "topics.call_center", "icon": "fa-solid fa-headset" },
+      { "id": "healthcare-setting", "label": "topics.healthcare_setting", "icon": "fa-solid fa-user-doctor" }
     ]
   },
   {
     "id": "education-academia",
-    "label": "Education & Academia",
+    "label": "topics.education_academia",
     "icon": "fa-solid fa-school",
     "children": [
-      {"id": "classroom", "label": "Classroom & Campus", "icon": "fa-solid fa-chalkboard-user"},
-      {"id": "exams", "label": "Exams & Studying", "icon": "fa-solid fa-book"},
-      {"id": "biology", "label": "Biology", "icon": "fa-solid fa-dna"},
-      {"id": "engineering", "label": "Engineering", "icon": "fa-solid fa-gears"},
-      {"id": "mathematics", "label": "Mathematics", "icon": "fa-solid fa-square-root-variable"},
-      {"id": "history", "label": "History", "icon": "fa-solid fa-landmark"},
-      {"id": "literature", "label": "Literature Studies", "icon": "fa-solid fa-book-bookmark"},
-      {"id": "research", "label": "Lab & Research", "icon": "fa-solid fa-flask-vial"}
+      { "id": "classroom", "label": "topics.classroom", "icon": "fa-solid fa-chalkboard-user" },
+      { "id": "exams", "label": "topics.exams", "icon": "fa-solid fa-book" },
+      { "id": "biology", "label": "topics.biology", "icon": "fa-solid fa-dna" },
+      { "id": "engineering", "label": "topics.engineering", "icon": "fa-solid fa-gears" },
+      { "id": "mathematics", "label": "topics.mathematics", "icon": "fa-solid fa-square-root-variable" },
+      { "id": "history", "label": "topics.history", "icon": "fa-solid fa-landmark" },
+      { "id": "literature", "label": "topics.literature", "icon": "fa-solid fa-book-bookmark" },
+      { "id": "research", "label": "topics.research", "icon": "fa-solid fa-flask-vial" }
     ]
   },
   {
     "id": "culture-media",
-    "label": "Culture, Media & Literature",
+    "label": "topics.culture_media",
     "icon": "fa-solid fa-masks-theater",
     "children": [
-      {"id": "film-tv", "label": "Film & TV", "icon": "fa-solid fa-film"},
-      {"id": "music", "label": "Music", "icon": "fa-solid fa-music"},
-      {"id": "visual-arts", "label": "Visual Arts", "icon": "fa-solid fa-palette"},
-      {"id": "theater", "label": "Theater & Performance", "icon": "fa-solid fa-masks-theater"},
-      {"id": "sports", "label": "Sports & Games", "icon": "fa-solid fa-futbol"},
-      {"id": "literature-classics", "label": "Literature—Classics", "icon": "fa-solid fa-book-open"},
-      {"id": "literature-scifi", "label": "Literature—Sci‑Fi/Fantasy", "icon": "fa-solid fa-meteor"},
-      {"id": "literature-poetry", "label": "Literature—Poetry", "icon": "fa-solid fa-feather-pointed"}
+      { "id": "film-tv", "label": "topics.film_tv", "icon": "fa-solid fa-film" },
+      { "id": "music", "label": "topics.music", "icon": "fa-solid fa-music" },
+      { "id": "visual-arts", "label": "topics.visual_arts", "icon": "fa-solid fa-palette" },
+      { "id": "theater", "label": "topics.theater", "icon": "fa-solid fa-masks-theater" },
+      { "id": "sports", "label": "topics.sports", "icon": "fa-solid fa-futbol" },
+      { "id": "literature-classics", "label": "topics.literature_classics", "icon": "fa-solid fa-book-open" },
+      { "id": "literature-scifi", "label": "topics.literature_scifi", "icon": "fa-solid fa-meteor" },
+      { "id": "literature-poetry", "label": "topics.literature_poetry", "icon": "fa-solid fa-feather-pointed" }
     ]
   },
   {
     "id": "health-wellness",
-    "label": "Health & Wellness",
+    "label": "topics.health_wellness",
     "icon": "fa-solid fa-heart-pulse",
     "children": [
-      {"id": "doctor", "label": "At the Doctor", "icon": "fa-solid fa-stethoscope"},
-      {"id": "pharmacy", "label": "Pharmacy", "icon": "fa-solid fa-pills"},
-      {"id": "symptoms", "label": "Symptoms & Injuries", "icon": "fa-solid fa-head-side-cough"},
-      {"id": "fitness", "label": "Fitness & Gym", "icon": "fa-solid fa-dumbbell"},
-      {"id": "mental-health", "label": "Mental Health", "icon": "fa-solid fa-brain"},
-      {"id": "nutrition", "label": "Nutrition & Diet", "icon": "fa-solid fa-carrot"},
-      {"id": "insurance", "label": "Health Insurance", "icon": "fa-solid fa-shield-heart"}
+      { "id": "doctor", "label": "topics.doctor", "icon": "fa-solid fa-stethoscope" },
+      { "id": "pharmacy", "label": "topics.pharmacy", "icon": "fa-solid fa-pills" },
+      { "id": "symptoms", "label": "topics.symptoms", "icon": "fa-solid fa-head-side-cough" },
+      { "id": "fitness", "label": "topics.fitness", "icon": "fa-solid fa-dumbbell" },
+      { "id": "mental-health", "label": "topics.mental_health", "icon": "fa-solid fa-brain" },
+      { "id": "nutrition", "label": "topics.nutrition", "icon": "fa-solid fa-carrot" },
+      { "id": "insurance", "label": "topics.insurance", "icon": "fa-solid fa-shield-heart" }
     ]
   },
   {
     "id": "shopping-money",
-    "label": "Shopping, Money & Services",
+    "label": "topics.shopping_money",
     "icon": "fa-solid fa-shopping-bag",
     "children": [
-      {"id": "clothing", "label": "Clothing & Shoes", "icon": "fa-solid fa-shirt"},
-      {"id": "electronics", "label": "Electronics & Gadgets", "icon": "fa-solid fa-mobile-screen-button"},
-      {"id": "markets", "label": "Markets & Bargaining", "icon": "fa-solid fa-shop"},
-      {"id": "online-shopping", "label": "Online Shopping", "icon": "fa-solid fa-cart-shopping"},
-      {"id": "banking", "label": "Banking & Payments", "icon": "fa-solid fa-building-columns"},
-      {"id": "post-office", "label": "Post Office & Shipping", "icon": "fa-solid fa-envelopes-bulk"},
-      {"id": "beauty", "label": "Hair & Beauty", "icon": "fa-solid fa-scissors"},
-      {"id": "repairs-maintenance", "label": "Repairs & Maintenance", "icon": "fa-solid fa-wrench"}
+      { "id": "clothing", "label": "topics.clothing", "icon": "fa-solid fa-shirt" },
+      { "id": "electronics", "label": "topics.electronics", "icon": "fa-solid fa-mobile-screen-button" },
+      { "id": "markets", "label": "topics.markets", "icon": "fa-solid fa-shop" },
+      { "id": "online-shopping", "label": "topics.online_shopping", "icon": "fa-solid fa-cart-shopping" },
+      { "id": "banking", "label": "topics.banking", "icon": "fa-solid fa-building-columns" },
+      { "id": "post-office", "label": "topics.post_office", "icon": "fa-solid fa-envelopes-bulk" },
+      { "id": "beauty", "label": "topics.beauty", "icon": "fa-solid fa-scissors" },
+      { "id": "repairs-maintenance", "label": "topics.repairs_maintenance", "icon": "fa-solid fa-wrench" }
     ]
   },
   {
     "id": "civic-logistics",
-    "label": "Civic & Logistics",
+    "label": "topics.civic_logistics",
     "icon": "fa-solid fa-gavel",
     "children": [
-      {"id": "police", "label": "Police & Emergencies", "icon": "fa-solid fa-house-chimney-crack"},
-      {"id": "government", "label": "Government Offices", "icon": "fa-solid fa-building-flag"},
-      {"id": "visas", "label": "Visas & Residency", "icon": "fa-solid fa-user-check"},
-      {"id": "taxes", "label": "Taxes & Invoices", "icon": "fa-solid fa-file-invoice-dollar"},
-      {"id": "contracts", "label": "Renting Contracts & Utilities", "icon": "fa-solid fa-file-signature"},
-      {"id": "legal", "label": "Legal Help", "icon": "fa-solid fa-scale-balanced"},
-      {"id": "public-services", "label": "Public Services & Appointments", "icon": "fa-solid fa-calendar-check"}
+      { "id": "police", "label": "topics.police", "icon": "fa-solid fa-house-chimney-crack" },
+      { "id": "government", "label": "topics.government", "icon": "fa-solid fa-building-flag" },
+      { "id": "visas", "label": "topics.visas", "icon": "fa-solid fa-user-check" },
+      { "id": "taxes", "label": "topics.taxes", "icon": "fa-solid fa-file-invoice-dollar" },
+      { "id": "contracts", "label": "topics.contracts", "icon": "fa-solid fa-file-signature" },
+      { "id": "legal", "label": "topics.legal", "icon": "fa-solid fa-scale-balanced" },
+      { "id": "public-services", "label": "topics.public_services", "icon": "fa-solid fa-calendar-check" }
     ]
   }
 ];

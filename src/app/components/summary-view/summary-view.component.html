@@ -1,57 +1,87 @@
-<div class="min-h-[400px] flex flex-col justify-center items-center text-center animate-fade-in relative z-10">
-    @if (isSessionSuccessful()) {
-        <i class="fa-solid fa-trophy text-7xl text-amber-400"></i>
-        <h2 class="text-4xl font-bold text-slate-800 mt-4">Congratulations!</h2>
-        <p class="text-lg text-slate-600 mt-2">You've completed the scenario. Great work!</p>
-    } @else {
-        <i class="fa-solid fa-person-running text-7xl text-sky-400"></i>
-        <h2 class="text-4xl font-bold text-slate-800 mt-4">Keep Practicing!</h2>
-        <p class="text-lg text-slate-600 mt-2">You're on the right track. Every attempt is progress!</p>
-    }
+<div class="animate-fade-in">
+    <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-[var(--c-text-headings)]">{{ 'summary.title' | transloco }}</h2>
+    </div>
 
-    <div class="flex gap-8 mt-8">
-        <div class="text-center">
-            <p class="text-slate-500">Avg. Pronunciation</p>
-            <p class="text-4xl font-bold text-sky-600">{{ averagePronunciationScore() }}<span class="text-2xl text-slate-400">/100</span></p>
+    <!-- Overall Scores -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+        <div
+            class="bg-[var(--c-bg-card)] p-6 rounded-lg shadow-sm border border-[var(--c-border-card)] flex flex-col items-center justify-center text-center">
+            <h3 class="text-lg font-semibold text-[var(--c-text-headings)] mb-3">{{ 'summary.pronunciation_score' |
+                transloco }}</h3>
+            <div class="relative w-32 h-32">
+                <svg class="w-full h-full" viewBox="0 0 36 36">
+                    <path class="stroke-current text-slate-200 dark:text-slate-700" d="M18 2.0845
+                  a 15.9155 15.9155 0 0 1 0 31.831
+                  a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3" />
+                    <path [class]="getScoreRingColor(averagePronunciationScore())"
+                        [attr.stroke-dasharray]="averagePronunciationScore() + ', 100'" d="M18 2.0845
+                  a 15.9155 15.9155 0 0 1 0 31.831
+                  a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3" stroke-linecap="round" />
+                </svg>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <span class="text-3xl font-bold" [class]="getScoreColor(averagePronunciationScore())">{{
+                        averagePronunciationScore() }}</span>
+                </div>
+            </div>
         </div>
-         <div class="text-center">
-            <p class="text-slate-500">Avg. Fluency</p>
-            <p class="text-4xl font-bold text-teal-600">{{ averageFluencyScore() }}<span class="text-2xl text-slate-400">/100</span></p>
+        <div
+            class="bg-[var(--c-bg-card)] p-6 rounded-lg shadow-sm border border-[var(--c-border-card)] flex flex-col items-center justify-center text-center">
+            <h3 class="text-lg font-semibold text-[var(--c-text-headings)] mb-3">{{ 'summary.fluency_score' | transloco
+                }}</h3>
+            <div class="relative w-32 h-32">
+                <svg class="w-full h-full" viewBox="0 0 36 36">
+                    <path class="stroke-current text-slate-200 dark:text-slate-700" d="M18 2.0845
+                  a 15.9155 15.9155 0 0 1 0 31.831
+                  a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3" />
+                    <path [class]="getScoreRingColor(averageFluencyScore())"
+                        [attr.stroke-dasharray]="averageFluencyScore() + ', 100'" d="M18 2.0845
+                  a 15.9155 15.9155 0 0 1 0 31.831
+                  a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3" stroke-linecap="round" />
+                </svg>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <span class="text-3xl font-bold" [class]="getScoreColor(averageFluencyScore())">{{
+                        averageFluencyScore() }}</span>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="w-full max-w-2xl mt-8">
-        <h3 class="text-xl font-semibold text-slate-700 mb-4">Sentence Summary</h3>
-        <div class="space-y-2 max-h-60 overflow-y-auto bg-slate-50 p-3 rounded-lg border">
-            @for(sentence of scenario().sentences; track sentence.id) {
-                @if(sentenceAssessments().has(sentence.id)) {
-                    @let assessment = sentenceAssessments().get(sentence.id)!;
-                    <div class="flex items-center justify-between text-left p-2 bg-white rounded shadow-sm">
-                        <p class="text-sm text-slate-700 flex-1 mr-4">"{{ sentence.target.text.length > 50 ? sentence.target.text.substring(0, 50) + '...' : sentence.target.text }}"</p>
-                        <div class="flex items-center gap-4">
-                            <span class="text-sm font-semibold text-sky-600 w-24 text-center">
-                                <i class="fa-solid fa-microphone-lines text-xs mr-1"></i>
-                                {{ assessment.pronunciation_score }}%
-                            </span>
-                            <span class="text-sm font-semibold text-teal-600 w-24 text-center">
-                                <i class="fa-solid fa-wave-square text-xs mr-1"></i>
-                                {{ assessment.fluency_score }}%
-                            </span>
-                        </div>
-                    </div>
+    <!-- Detailed Feedback -->
+    <div class="bg-[var(--c-bg-card)] p-6 rounded-lg shadow-sm border border-[var(--c-border-card)]">
+        <h3 class="text-xl font-semibold text-[var(--c-text-headings)] mb-4">{{ 'summary.detailed_feedback' | transloco
+            }}</h3>
+        <div class="space-y-4 max-h-64 overflow-y-auto">
+            @for (item of history(); track item.id) {
+            <div class="p-4 border-b border-[var(--c-border-card)] last:border-b-0">
+                <p class="text-[var(--c-text-muted)] italic">"{{ item.target.text }}"</p>
+                @if (item.assessment) {
+                <div class="mt-3">
+                    <p class="font-semibold text-sm text-[var(--c-text-body)]">{{ item.assessment.overall_feedback }}
+                    </p>
+                    @if (item.assessment.suggestions.length > 0) {
+                    <ul class="mt-2 list-disc list-inside space-y-1 text-sm text-[var(--c-text-muted)]">
+                        @for (suggestion of item.assessment.suggestions; track $index) {
+                        <li>{{ suggestion }}</li>
+                        }
+                    </ul>
+                    }
+                </div>
                 } @else {
-                     <div class="flex items-center justify-between text-left p-2 bg-white rounded shadow-sm opacity-60">
-                        <p class="text-sm text-slate-500 flex-1 mr-4">"{{ sentence.target.text.length > 50 ? sentence.target.text.substring(0, 50) + '...' : sentence.target.text }}"</p>
-                        <span class="text-sm font-semibold text-slate-500">Not practiced</span>
-                    </div>
+                <p class="mt-2 text-sm text-yellow-600 dark:text-yellow-400">{{ 'summary.no_feedback' | transloco }}</p>
                 }
+            </div>
+            } @empty {
+            <p class="text-[var(--c-text-muted)] text-center py-4">{{ 'summary.no_attempts' | transloco }}</p>
             }
         </div>
     </div>
 
-    <div class="mt-8 pt-6 border-t border-slate-200 w-full max-w-2xl flex justify-center">
-        <button (click)="back.emit()" class="bg-sky-500 text-white font-semibold py-3 px-8 rounded-lg hover:bg-sky-600 transition-colors">
-            Back to Scenarios
+    <!-- Actions -->
+    <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <button (click)="startNewSession.emit()"
+            class="w-full sm:w-auto px-6 py-3 text-lg font-semibold rounded-md bg-sky-500 text-white hover:bg-sky-600 transition-colors shadow-md">
+            <i class="fa-solid fa-rotate-left mr-2"></i> {{ 'summary.start_new_session' | transloco }}
         </button>
     </div>
 </div>
