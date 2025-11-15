@@ -38,6 +38,19 @@ export class SettingsComponent implements OnInit {
 
   userInfo = signal<UserInfo | null>(null);
   isAdmin = signal(false);
+  isLanguageDropdownOpen = signal(false);
+
+  get availableUiLanguages() {
+    return this.languageService.availableUiLanguages;
+  }
+
+  currentUiLanguageFlag = () => {
+    return this.languageService.getLanguageFlag(this.languageService.uiLanguage());
+  };
+
+  currentUiLanguageName = () => {
+    return this.languageService.getLanguageDisplayName(this.languageService.uiLanguage());
+  };
 
   async ngOnInit(): Promise<void> {
     await this.loadUserInfo();
@@ -173,5 +186,14 @@ export class SettingsComponent implements OnInit {
     } catch (error) {
       console.error('Failed to sign out:', error);
     }
+  }
+
+  toggleLanguageDropdown(): void {
+    this.isLanguageDropdownOpen.update(v => !v);
+  }
+
+  selectUiLanguage(code: string): void {
+    this.languageService.changeLanguage(code);
+    this.isLanguageDropdownOpen.set(false);
   }
 }

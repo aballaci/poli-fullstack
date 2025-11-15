@@ -104,6 +104,8 @@
         "dashboard": "Dashboard",
         "settings": "Settings",
         "change_language_aria": "Change target language (currently {{language}})",
+        "interface_language_tooltip": "Interface Language - Change the language of menus and buttons",
+        "target_language_tooltip": "Learning Language - Change the language you're practicing (currently {{language}})",
         "theme_toggle_dark": "Switch to light theme",
         "theme_toggle_light": "Switch to dark theme"
     },
@@ -122,6 +124,15 @@
         "level_b2": "Upper-Intermediate",
         "level_c1": "Advanced",
         "level_c2": "Proficient"
+    },
+    "loading": {
+        "crafting_scenario": "Crafting your scenario...",
+        "gathering_vocabulary": "Gathering vocabulary...",
+        "translating_sentences": "Translating sentences...",
+        "building_lesson": "Building your lesson...",
+        "checking_nuances": "Checking for cultural nuances...",
+        "polishing_details": "Polishing the details...",
+        "almost_there": "Almost there..."
     },
     "dashboard": {
         "tab_topics": "From Topics",
@@ -368,6 +379,7 @@
         "change_languages": "Change Languages or Difficulty",
         "dev_only": "Dev Only",
         "difficulty_level": "Difficulty Level",
+        "interface_language": "Interface Language",
         "learning_path": "Learning Path",
         "mock_api_mode": "Mock API Mode",
         "native_language": "Native Language",

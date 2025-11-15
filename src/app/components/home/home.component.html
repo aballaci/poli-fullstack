@@ -36,7 +36,7 @@
             <p class="text-white text-5xl font-light transition-opacity duration-1000 flex items-center gap-3"
               style="font-family: 'Smooch Sans', sans-serif;">
               <span [class]="'fi fi-' + currentHeroImage().flag + ' text-4xl'"></span>
-              {{ currentHeroImage().language }}
+              {{ getLanguageName(currentHeroImage().languageKey) }}
             </p>
           </div>
         </div>
@@ -53,13 +53,13 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         <!-- Spanish -->
         <div class="language-card bg-white rounded-xl card-shadow overflow-hidden cursor-pointer"
-          (click)="navigateToLanguageWizard('Spanish')">
+          (click)="navigateToLanguageWizard('es')">
           <img src="/assets/spanish-madrid.jpg" alt="Learn Spanish - Plaza Mayor in Madrid"
             class="w-full h-48 object-cover">
           <div class="p-6 text-center">
             <h3 class="font-semibold text-xl mb-2 flex items-center justify-center space-x-2 text-gray-900">
               <span class="fi fi-es"></span>
-              <span>Spanish</span>
+              <span>{{ 'languages.spanish' | transloco }}</span>
             </h3>
             <p class="text-gray-600 text-sm mb-4">{{ 'home.lessons' | transloco: { count: '500' } }}</p>
             <div class="flex justify-center space-x-2">
@@ -73,12 +73,12 @@
 
         <!-- French -->
         <div class="language-card bg-white rounded-xl card-shadow overflow-hidden cursor-pointer"
-          (click)="navigateToLanguageWizard('French')">
+          (click)="navigateToLanguageWizard('fr')">
           <img src="/assets/paris.webp" alt="Learn French - Eiffel Tower in Paris" class="w-full h-48 object-cover">
           <div class="p-6 text-center">
             <h3 class="font-semibold text-xl mb-2 flex items-center justify-center space-x-2 text-gray-900">
               <span class="fi fi-fr"></span>
-              <span>French</span>
+              <span>{{ 'languages.french' | transloco }}</span>
             </h3>
             <p class="text-gray-600 text-sm mb-4">{{ 'home.lessons' | transloco: { count: '450' } }}</p>
             <div class="flex justify-center space-x-2">
@@ -92,13 +92,13 @@
 
         <!-- German -->
         <div class="language-card bg-white rounded-xl card-shadow overflow-hidden cursor-pointer"
-          (click)="navigateToLanguageWizard('German')">
+          (click)="navigateToLanguageWizard('de')">
           <img src="/assets/german-berlin.jpg" alt="Learn German - Brandenburg Gate in Berlin"
             class="w-full h-48 object-cover">
           <div class="p-6 text-center">
             <h3 class="font-semibold text-xl mb-2 flex items-center justify-center space-x-2 text-gray-900">
               <span class="fi fi-de"></span>
-              <span>German</span>
+              <span>{{ 'languages.german' | transloco }}</span>
             </h3>
             <p class="text-gray-600 text-sm mb-4">{{ 'home.lessons' | transloco: { count: '400' } }}</p>
             <div class="flex justify-center space-x-2">
@@ -112,12 +112,12 @@
 
         <!-- Italian -->
         <div class="language-card bg-white rounded-xl card-shadow overflow-hidden cursor-pointer"
-          (click)="navigateToLanguageWizard('Italian')">
+          (click)="navigateToLanguageWizard('it')">
           <img src="/assets/italian-rome.jpg" alt="Learn Italian - Colosseum in Rome" class="w-full h-48 object-cover">
           <div class="p-6 text-center">
             <h3 class="font-semibold text-xl mb-2 flex items-center justify-center space-x-2 text-gray-900">
               <span class="fi fi-it"></span>
-              <span>Italian</span>
+              <span>{{ 'languages.italian' | transloco }}</span>
             </h3>
             <p class="text-gray-600 text-sm mb-4">{{ 'home.lessons' | transloco: { count: '380' } }}</p>
             <div class="flex justify-center space-x-2">
@@ -131,12 +131,12 @@
 
         <!-- Japanese -->
         <div class="language-card bg-white rounded-xl card-shadow overflow-hidden cursor-pointer"
-          (click)="navigateToLanguageWizard('Japanese')">
+          (click)="navigateToLanguageWizard('ja')">
           <img src="/assets/japan.webp" alt="Learn Japanese - Temples in Tokyo" class="w-full h-48 object-cover">
           <div class="p-6 text-center">
             <h3 class="font-semibold text-xl mb-2 flex items-center justify-center space-x-2 text-gray-900">
               <span class="fi fi-jp"></span>
-              <span>Japanese</span>
+              <span>{{ 'languages.japanese' | transloco }}</span>
             </h3>
             <p class="text-gray-600 text-sm mb-4">{{ 'home.lessons' | transloco: { count: '350' } }}</p>
             <div class="flex justify-center space-x-2">
@@ -150,13 +150,13 @@
 
         <!-- Chinese -->
         <div class="language-card bg-white rounded-xl card-shadow overflow-hidden cursor-pointer"
-          (click)="navigateToLanguageWizard('Chinese')">
+          (click)="navigateToLanguageWizard('zh')">
           <img src="/assets/chinese-beijing.jpg" alt="Learn Chinese - Temple of Heaven in Beijing"
             class="w-full h-48 object-cover">
           <div class="p-6 text-center">
             <h3 class="font-semibold text-xl mb-2 flex items-center justify-center space-x-2 text-gray-900">
               <span class="fi fi-cn"></span>
-              <span>Chinese</span>
+              <span>{{ 'languages.chinese' | transloco }}</span>
             </h3>
             <p class="text-gray-600 text-sm mb-4">{{ 'home.lessons' | transloco: { count: '400' } }}</p>
             <div class="flex justify-center space-x-2">
@@ -170,13 +170,13 @@
 
         <!-- Portuguese -->
         <div class="language-card bg-white rounded-xl card-shadow overflow-hidden cursor-pointer"
-          (click)="navigateToLanguageWizard('Portuguese')">
+          (click)="navigateToLanguageWizard('pt')">
           <img src="/assets/portuguese-lisbon.jpg" alt="Learn Portuguese - Trams in Lisbon"
             class="w-full h-48 object-cover">
           <div class="p-6 text-center">
             <h3 class="font-semibold text-xl mb-2 flex items-center justify-center space-x-2 text-gray-900">
               <span class="fi fi-pt"></span>
-              <span>Portuguese</span>
+              <span>{{ 'languages.portuguese' | transloco }}</span>
             </h3>
             <p class="text-gray-600 text-sm mb-4">{{ 'home.lessons' | transloco: { count: '320' } }}</p>
             <div class="flex justify-center space-x-2">
@@ -190,13 +190,13 @@
 
         <!-- Arabic -->
         <div class="language-card bg-white rounded-xl card-shadow overflow-hidden cursor-pointer"
-          (click)="navigateToLanguageWizard('Arabic')">
+          (click)="navigateToLanguageWizard('ar')">
           <img src="/assets/arabic-cairo.jpg" alt="Learn Arabic - Pyramids of Giza in Cairo"
             class="w-full h-48 object-cover">
           <div class="p-6 text-center">
             <h3 class="font-semibold text-xl mb-2 flex items-center justify-center space-x-2 text-gray-900">
               <span class="fi fi-sa"></span>
-              <span>Arabic</span>
+              <span>{{ 'languages.arabic' | transloco }}</span>
             </h3>
             <p class="text-gray-600 text-sm mb-4">{{ 'home.lessons' | transloco: { count: '300' } }}</p>
             <div class="flex justify-center space-x-2">

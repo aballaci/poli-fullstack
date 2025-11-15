@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { GeminiService } from '../../services/gemini.service';
 import { LanguageService } from '../../services/language.service';
 import { SessionStore } from '../../state/session.store';
@@ -36,6 +36,7 @@ export class ScenarioSelectorComponent implements OnInit {
   store = inject(SessionStore);
   router = inject(Router);
   themeService = inject(ThemeService);
+  private transloco = inject(TranslocoService);
 
   state = signal<SelectorState>('idle');
   error = signal<string | null>(null);
@@ -71,16 +72,18 @@ export class ScenarioSelectorComponent implements OnInit {
 
   // Loading state
   private loadingInterval: any;
-  loadingMessages = [
-    'Crafting your scenario...',
-    'Gathering vocabulary...',
-    'Translating sentences...',
-    'Building your lesson...',
-    'Checking for cultural nuances...',
-    'Polishing the details...',
-    'Almost there...'
-  ];
-  loadingMessage = signal(this.loadingMessages[0]);
+  private get loadingMessages(): string[] {
+    return [
+      this.transloco.translate('loading.crafting_scenario'),
+      this.transloco.translate('loading.gathering_vocabulary'),
+      this.transloco.translate('loading.translating_sentences'),
+      this.transloco.translate('loading.building_lesson'),
+      this.transloco.translate('loading.checking_nuances'),
+      this.transloco.translate('loading.polishing_details'),
+      this.transloco.translate('loading.almost_there')
+    ];
+  }
+  loadingMessage = signal('');
 
   ngOnInit(): void {
     // History loading is now handled by PresentScenariosComponent

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, AfterViewInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { getCurrentUser } from 'aws-amplify/auth';
 import { SessionStore } from '../../state/session.store';
 
@@ -17,17 +17,18 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   router = inject(Router);
   route = inject(ActivatedRoute);
   store = inject(SessionStore);
+  transloco = inject(TranslocoService);
 
   // Hero image rotation
   private readonly heroImagesOriginal = [
-    { src: '/assets/spanish-madrid.jpg', alt: 'Learn Spanish - Plaza Mayor in Madrid', language: 'Spanish', flag: 'es', phrase: '¡Hola amigo!' },
-    { src: '/assets/paris.webp', alt: 'Learn French - Eiffel Tower in Paris', language: 'French', flag: 'fr', phrase: 'Bonjour!' },
-    { src: '/assets/german-berlin.jpg', alt: 'Learn German - Brandenburg Gate in Berlin', language: 'German', flag: 'de', phrase: 'Guten Tag!' },
-    { src: '/assets/italian-rome.jpg', alt: 'Learn Italian - Colosseum in Rome', language: 'Italian', flag: 'it', phrase: 'Ciao bella!' },
-    { src: '/assets/japan.webp', alt: 'Learn Japanese - Temples in Tokyo', language: 'Japanese', flag: 'jp', phrase: 'こんにちは!' },
-    { src: '/assets/chinese-beijing.jpg', alt: 'Learn Chinese - Temple of Heaven in Beijing', language: 'Chinese', flag: 'cn', phrase: '你好!' },
-    { src: '/assets/portuguese-lisbon.jpg', alt: 'Learn Portuguese - Trams in Lisbon', language: 'Portuguese', flag: 'pt', phrase: 'Olá!' },
-    { src: '/assets/arabic-cairo.jpg', alt: 'Learn Arabic - Pyramids of Giza in Cairo', language: 'Arabic', flag: 'sa', phrase: 'مرحبا!' }
+    { src: '/assets/spanish-madrid.jpg', alt: 'Learn Spanish - Plaza Mayor in Madrid', languageKey: 'languages.spanish', languageCode: 'es', flag: 'es', phrase: '¡Hola amigo!' },
+    { src: '/assets/paris.webp', alt: 'Learn French - Eiffel Tower in Paris', languageKey: 'languages.french', languageCode: 'fr', flag: 'fr', phrase: 'Bonjour!' },
+    { src: '/assets/german-berlin.jpg', alt: 'Learn German - Brandenburg Gate in Berlin', languageKey: 'languages.german', languageCode: 'de', flag: 'de', phrase: 'Guten Tag!' },
+    { src: '/assets/italian-rome.jpg', alt: 'Learn Italian - Colosseum in Rome', languageKey: 'languages.italian', languageCode: 'it', flag: 'it', phrase: 'Ciao bella!' },
+    { src: '/assets/japan.webp', alt: 'Learn Japanese - Temples in Tokyo', languageKey: 'languages.japanese', languageCode: 'ja', flag: 'jp', phrase: 'こんにちは!' },
+    { src: '/assets/chinese-beijing.jpg', alt: 'Learn Chinese - Temple of Heaven in Beijing', languageKey: 'languages.chinese', languageCode: 'zh', flag: 'cn', phrase: '你好!' },
+    { src: '/assets/portuguese-lisbon.jpg', alt: 'Learn Portuguese - Trams in Lisbon', languageKey: 'languages.portuguese', languageCode: 'pt', flag: 'pt', phrase: 'Olá!' },
+    { src: '/assets/arabic-cairo.jpg', alt: 'Learn Arabic - Pyramids of Giza in Cairo', languageKey: 'languages.arabic', languageCode: 'ar', flag: 'sa', phrase: 'مرحبا!' }
   ];
 
   private shuffledImages: typeof this.heroImagesOriginal = [];
@@ -35,15 +36,12 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   currentHeroImage = signal(this.heroImagesOriginal[0]);
   private imageRotationInterval?: number;
 
-  // Map language names to language codes (matching available languages in service)
-  private languageCodeMap: { [key: string]: string } = {
-    'Spanish': 'es',
-    'French': 'fr',
-    'German': 'de',
-    'Italian': 'it',
-    'Portuguese': 'pt'
-    // Note: Japanese, Chinese, and Arabic are not in the available languages service yet
-  };
+  /**
+   * Get translated language name from language key
+   */
+  getLanguageName(languageKey: string): string {
+    return this.transloco.translate(languageKey);
+  }
 
   async navigateToApp(): Promise<void> {
     // Check if language is configured first
@@ -65,8 +63,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  navigateToLanguageWizard(languageName: string): void {
-    const languageCode = this.languageCodeMap[languageName];
+  navigateToLanguageWizard(languageCode: string): void {
     if (languageCode) {
       this.router.navigate(['/wizard'], { queryParams: { target: languageCode } });
     } else {

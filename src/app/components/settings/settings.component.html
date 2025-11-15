@@ -89,6 +89,40 @@
             <h2 class="text-xl font-semibold mb-4 text-[var(--c-text-headings)]">{{ 'settings.application' | transloco
                 }}</h2>
             <div class="space-y-4">
+                <!-- Interface Language -->
+                <div class="flex justify-between items-center">
+                    <label class="text-[var(--c-text-muted)]">{{ 'settings.interface_language' | transloco }}</label>
+                    <div class="relative">
+                        <button (click)="toggleLanguageDropdown()" type="button"
+                            class="flex items-center gap-2 px-3 py-2 rounded-md bg-[var(--c-bg-muted)] border border-[var(--c-border-subtle)] hover:bg-[var(--c-bg-surface)] hover:border-sky-500/30 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
+                            [attr.aria-expanded]="isLanguageDropdownOpen()">
+                            <span class="fi fi-{{ currentUiLanguageFlag() }} rounded-sm"></span>
+                            <span class="text-[var(--c-text-body)] font-medium">{{ currentUiLanguageName() }}</span>
+                            <i class="fa-solid fa-chevron-down text-xs text-[var(--c-text-muted)]"></i>
+                        </button>
+
+                        @if (isLanguageDropdownOpen()) {
+                        <div
+                            class="absolute right-0 mt-2 w-56 bg-[var(--c-bg-surface)] border border-[var(--c-border-subtle)] rounded-lg shadow-lg z-50 overflow-hidden">
+                            @for (lang of availableUiLanguages; track lang.code) {
+                            <button (click)="selectUiLanguage(lang.code)" type="button"
+                                class="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-[var(--c-bg-muted)] transition-colors"
+                                [class.bg-[var(--c-bg-muted)]="languageService.uiLanguage() === lang.code">
+                                <span class="fi fi-{{ lang.flag }} text-xl"></span>
+                                <div class="flex flex-col">
+                                    <span class="text-[var(--c-text-heading)] font-medium">{{ lang.displayName }}</span>
+                                    <span class="text-[var(--c-text-muted)] text-sm">{{ lang.nativeName }}</span>
+                                </div>
+                                @if (languageService.uiLanguage() === lang.code) {
+                                <i class="fas fa-check ml-auto text-sky-600"></i>
+                                }
+                            </button>
+                            }
+                        </div>
+                        }
+                    </div>
+                </div>
+
                 <!-- Theme Toggle -->
                 <div class="flex justify-between items-center">
                     <label for="theme-toggle" class="text-[var(--c-text-muted)]">{{ 'settings.theme' | transloco

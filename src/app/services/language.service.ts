@@ -64,7 +64,8 @@ export class LanguageService {
   // Available UI languages for translation (subset of availableLanguages)
   readonly availableUiLanguages: UiLanguageDefinition[] = [
     { code: 'en', flag: 'gb', displayName: 'English', nativeName: 'English' },
-    { code: 'it', flag: 'it', displayName: 'Italian', nativeName: 'Italiano' }
+    { code: 'it', flag: 'it', displayName: 'Italian', nativeName: 'Italiano' },
+    { code: 'de', flag: 'de', displayName: 'German', nativeName: 'Deutsch' }
   ];
 
   constructor() {

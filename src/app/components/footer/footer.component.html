@@ -122,8 +122,7 @@
           </svg>
           <span class="text-xl font-bold">Poli</span>
         </div>
-        <p class="text-gray-400 mb-4 max-w-md">Our mission is to make language learning accessible, engaging, and
-          effective for everyone.</p>
+        <p class="text-gray-400 mb-4 max-w-md">{{ 'footer.mission' | transloco }}</p>
         <div class="flex space-x-4">
           <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-facebook-f"></i></a>
           <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter"></i></a>
@@ -134,31 +133,42 @@
 
       <!-- Quick Links -->
       <div>
-        <h3 class="font-semibold text-lg mb-4">Quick Links</h3>
+        <h3 class="font-semibold text-lg mb-4">{{ 'footer.quick_links' | transloco }}</h3>
         <ul class="space-y-2">
-          <li><a routerLink="/intro" class="text-gray-400 hover:text-white transition">About Us</a></li>
-          <li><a routerLink="/intro" class="text-gray-400 hover:text-white transition">How It Works</a></li>
-          <li><a [routerLink]="['/home']" fragment="pricing"
-              class="text-gray-400 hover:text-white transition">Pricing</a></li>
-          <li><a routerLink="/home" class="text-gray-400 hover:text-white transition">Home</a></li>
+          <li><a routerLink="/intro" class="text-gray-400 hover:text-white transition">{{ 'footer.about_us' | transloco
+              }}</a></li>
+          <li><a routerLink="/intro" class="text-gray-400 hover:text-white transition">{{ 'footer.how_it_works' |
+              transloco }}</a></li>
+          <li><a [routerLink]="['/home']" fragment="pricing" class="text-gray-400 hover:text-white transition">{{
+              'footer.pricing' | transloco }}</a></li>
+          <li><a routerLink="/home" class="text-gray-400 hover:text-white transition">{{ 'footer.home' | transloco
+              }}</a></li>
         </ul>
       </div>
 
       <!-- Support -->
       <div>
-        <h3 class="font-semibold text-lg mb-4">Support</h3>
+        <h3 class="font-semibold text-lg mb-4">{{ 'footer.support' | transloco }}</h3>
         <ul class="space-y-2">
-          <li><a href="/help-center" (click)="scrollToTop('/help-center', $event)" class="text-gray-400 hover:text-white transition cursor-pointer">Help Center</a></li>
-          <li><a href="/contact-us" (click)="scrollToTop('/contact-us', $event)" class="text-gray-400 hover:text-white transition cursor-pointer">Contact Us</a></li>
-          <li><a href="/privacy-policy" (click)="scrollToTop('/privacy-policy', $event)" class="text-gray-400 hover:text-white transition cursor-pointer">Privacy Policy</a></li>
-          <li><a href="/terms-of-service" (click)="scrollToTop('/terms-of-service', $event)" class="text-gray-400 hover:text-white transition cursor-pointer">Terms of Service</a>
+          <li><a href="/help-center" (click)="scrollToTop('/help-center', $event)"
+              class="text-gray-400 hover:text-white transition cursor-pointer">{{ 'footer.help_center' | transloco
+              }}</a></li>
+          <li><a href="/contact-us" (click)="scrollToTop('/contact-us', $event)"
+              class="text-gray-400 hover:text-white transition cursor-pointer">{{ 'footer.contact_us' | transloco }}</a>
+          </li>
+          <li><a href="/privacy-policy" (click)="scrollToTop('/privacy-policy', $event)"
+              class="text-gray-400 hover:text-white transition cursor-pointer">{{ 'footer.privacy_policy' | transloco
+              }}</a></li>
+          <li><a href="/terms-of-service" (click)="scrollToTop('/terms-of-service', $event)"
+              class="text-gray-400 hover:text-white transition cursor-pointer">{{ 'footer.terms_of_service' | transloco
+              }}</a>
           </li>
         </ul>
       </div>
     </div>
 
     <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-      <p>&copy; 2025 Poli. All rights reserved.</p>
+      <p>&copy; 2025 Poli. {{ 'footer.all_rights_reserved' | transloco }}</p>
     </div>
   </div>
 </footer>

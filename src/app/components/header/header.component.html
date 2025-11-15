@@ -49,12 +49,13 @@
       @if (targetLanguage(); as lang) {
       <button (click)="navigateToLanguageWizard()" type="button"
         class="flex items-center justify-center w-8 h-8 rounded-md bg-[var(--c-bg-muted)] border border-[var(--c-border-subtle)] hover:bg-[var(--c-bg-surface)] hover:border-[var(--color-primary)]/30 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-        [attr.aria-label]="('header.change_language_aria' | transloco: { language: lang.display_name })">
+        [attr.aria-label]="('header.change_language_aria' | transloco: { language: lang.display_name })"
+        [attr.title]="('header.target_language_tooltip' | transloco: { language: lang.display_name })">
         <span class="fi fi-{{ lang.flag }} rounded-sm text-lg"></span>
       </button>
       }
       <!-- Language Switcher -->
-      <app-language-switcher></app-language-switcher>
+      <app-language-switcher [tooltip]="'header.interface_language_tooltip' | transloco"></app-language-switcher>
       <!-- Theme Toggle Icon -->
       <button (click)="toggleTheme()" type="button"
         class="p-2 rounded-md text-[var(--c-text-body)] hover:bg-[var(--c-bg-muted)] transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"

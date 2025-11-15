@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, HostListener } from '@angular/core';
+import { Component, inject, signal, computed, HostListener, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LanguageService } from '../../services/language.service';
@@ -12,6 +12,7 @@ import { LanguageService } from '../../services/language.service';
 })
 export class LanguageSwitcherComponent {
     languageService = inject(LanguageService);
+    tooltip = input<string>('');  // Optional tooltip text
 
     isOpen = signal(false);
 

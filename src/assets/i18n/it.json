@@ -101,9 +101,11 @@
         "about": "Chi Siamo",
         "login": "Accedi",
         "signup": "Iscriviti Gratis",
-        "dashboard": "Dashboard",
+        "dashboard": "Pannello",
         "settings": "Impostazioni",
         "change_language_aria": "Cambia lingua di destinazione (attualmente {{language}})",
+        "interface_language_tooltip": "Lingua Interfaccia - Cambia la lingua dei menu e dei pulsanti",
+        "target_language_tooltip": "Lingua di Apprendimento - Cambia la lingua che stai praticando (attualmente {{language}})",
         "theme_toggle_dark": "Passa al tema chiaro",
         "theme_toggle_light": "Passa al tema scuro"
     },
@@ -122,6 +124,15 @@
         "level_b2": "Intermedio Superiore",
         "level_c1": "Avanzato",
         "level_c2": "Competente"
+    },
+    "loading": {
+        "crafting_scenario": "Creazione dello scenario...",
+        "gathering_vocabulary": "Raccolta del vocabolario...",
+        "translating_sentences": "Traduzione delle frasi...",
+        "building_lesson": "Costruzione della lezione...",
+        "checking_nuances": "Verifica delle sfumature culturali...",
+        "polishing_details": "Rifinitura dei dettagli...",
+        "almost_there": "Quasi fatto..."
     },
     "dashboard": {
         "tab_topics": "Da Argomenti",
@@ -368,6 +379,7 @@
         "change_languages": "Cambia Lingue o Difficoltà",
         "dev_only": "Solo Dev",
         "difficulty_level": "Livello di Difficoltà",
+        "interface_language": "Lingua Interfaccia",
         "learning_path": "Percorso di Apprendimento",
         "mock_api_mode": "Modalità API Mock",
         "native_language": "Lingua Madre",
