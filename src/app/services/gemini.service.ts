@@ -91,8 +91,8 @@ export class GeminiService {
         variables: {
           topic: topic,
           difficulty: difficulty,
-          sourceLang: sourceLang.display_name,
-          targetLang: targetLang.display_name,
+          sourceLang: sourceLang.code,
+          targetLang: targetLang.code,
         }
       });
 
@@ -124,8 +124,8 @@ export class GeminiService {
         {
           topic,
           difficulty,
-          sourceLang: sourceLang.display_name,
-          targetLang: targetLang.display_name,
+          sourceLang: sourceLang.code,
+          targetLang: targetLang.code,
         },
         'generateScenario'
       );
@@ -171,8 +171,8 @@ export class GeminiService {
           text,
           textLanguage,
           difficulty,
-          sourceLang: sourceLang.display_name,
-          targetLang: targetLang.display_name,
+          sourceLang: sourceLang.code,
+          targetLang: targetLang.code,
         }
       });
 
@@ -206,8 +206,8 @@ export class GeminiService {
         {
           textLanguage,
           difficulty,
-          sourceLang: sourceLang.display_name,
-          targetLang: targetLang.display_name,
+          sourceLang: sourceLang.code,
+          targetLang: targetLang.code,
           textLength: text.length,
         },
         'processCustomText'
@@ -408,8 +408,8 @@ export class GeminiService {
       const response = await this.client.graphql({
         query: baseListQuery,
         variables: {
-          sourceLanguage: sourceLang.display_name,
-          targetLanguage: targetLang.display_name,
+          sourceLanguage: sourceLang.code,
+          targetLanguage: targetLang.code,
           difficulty,
         },
       });
@@ -435,8 +435,8 @@ export class GeminiService {
       this.handleError(
         error,
         {
-          sourceLang: sourceLang.display_name,
-          targetLang: targetLang.display_name,
+          sourceLang: sourceLang.code,
+          targetLang: targetLang.code,
           difficulty,
           topic,
         },
@@ -486,8 +486,8 @@ export class GeminiService {
       const response = await this.client.graphql({
         query: baseListQuery,
         variables: {
-          sourceLanguage: sourceLang.display_name,
-          targetLanguage: targetLang.display_name,
+          sourceLanguage: sourceLang.code,
+          targetLanguage: targetLang.code,
           difficulty,
         },
       });
@@ -523,8 +523,8 @@ export class GeminiService {
       this.handleError(
         error,
         {
-          sourceLang: sourceLang.display_name,
-          targetLang: targetLang.display_name,
+          sourceLang: sourceLang.code,
+          targetLang: targetLang.code,
           difficulty,
           topics,
         },

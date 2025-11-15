@@ -67,7 +67,9 @@ export class LanguageService {
     { code: 'it', flag: 'it', displayName: 'Italian', nativeName: 'Italiano' },
     { code: 'de', flag: 'de', displayName: 'German', nativeName: 'Deutsch' },
     { code: 'fr', flag: 'fr', displayName: 'French', nativeName: 'Français' },
-    { code: 'es', flag: 'es', displayName: 'Spanish', nativeName: 'Español' }
+    { code: 'es', flag: 'es', displayName: 'Spanish', nativeName: 'Español' },
+    { code: 'pt', flag: 'pt', displayName: 'Portuguese', nativeName: 'Português' },
+    { code: 'ja', flag: 'jp', displayName: 'Japanese', nativeName: '日本語' }
   ];
 
   constructor() {
