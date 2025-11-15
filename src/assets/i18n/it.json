@@ -103,6 +103,7 @@
         "signup": "Iscriviti Gratis",
         "dashboard": "Pannello",
         "settings": "Impostazioni",
+        "learning": "Apprendimento",
         "change_language_aria": "Cambia lingua di destinazione (attualmente {{language}})",
         "interface_language_tooltip": "Lingua Interfaccia - Cambia la lingua dei menu e dei pulsanti",
         "target_language_tooltip": "Lingua di Apprendimento - Cambia la lingua che stai praticando (attualmente {{language}})",

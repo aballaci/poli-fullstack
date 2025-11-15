@@ -1,8 +1,10 @@
 <div class="language-switcher relative">
     <button (click)="toggleDropdown()" type="button"
-        class="flex items-center justify-center w-10 h-10 rounded-md bg-[var(--c-bg-muted)] border border-[var(--c-border-subtle)] hover:bg-[var(--c-bg-surface)] hover:border-[var(--color-primary)]/30 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+        class="flex items-center space-x-2 px-3 py-2 rounded-md bg-[var(--c-bg-muted)] hover:bg-[var(--c-bg-surface)] transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
         [attr.aria-label]="'language.select' | transloco" [attr.aria-expanded]="isOpen()" [attr.title]="tooltip()">
-        <span class="fi fi-{{ currentLanguageFlag() }} rounded-sm text-lg"></span>
+        <i class="fa-solid fa-language text-lg text-[var(--c-text-body)]"></i>
+        <span class="text-sm font-medium text-[var(--c-text-body)]">{{ currentLanguageName() }}</span>
+        <i class="fa-solid fa-chevron-down text-xs text-[var(--c-text-muted)]"></i>
     </button>
 
     @if (isOpen()) {

@@ -105,14 +105,20 @@ export class ScenarioCatalogComponent implements OnInit, OnDestroy {
     async loadCatalog(): Promise<void> {
         const sourceLang = this.store.sourceLanguage();
         const targetLang = this.store.targetLanguage();
+        console.log('[ScenarioCatalog] Loading catalog for:', { sourceLang: sourceLang?.display_name, targetLang: targetLang?.display_name });
         if (!sourceLang || !targetLang) {
             // Cannot load catalog without languages set.
+            console.warn('[ScenarioCatalog] Cannot load catalog: languages not set');
             return;
         }
         this.error.set(null);
         try {
             const scenarios = await this.geminiService.listPracticeScenarios(sourceLang, targetLang);
+            console.log('[ScenarioCatalog] Loaded scenarios:', scenarios.length);
             this.scenarios.set(scenarios);
+            if (scenarios.length === 0) {
+                console.warn('[ScenarioCatalog] No scenarios found. Check if Mock API mode is enabled or if database is empty.');
+            }
         } catch (e: any) {
             console.error('[ScenarioCatalog] Failed to load catalog', e);
             this.error.set(`Could not load scenario catalog: ${e.message}`);

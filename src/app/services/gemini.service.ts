@@ -327,8 +327,8 @@ export class GeminiService {
         return this.client.graphql({
           query: listScenariosQuery,
           variables: {
-            sourceLanguage: sourceLang.display_name,
-            targetLanguage: targetLang.display_name,
+            sourceLanguage: sourceLang.code,
+            targetLanguage: targetLang.code,
             difficulty: level
           }
         });

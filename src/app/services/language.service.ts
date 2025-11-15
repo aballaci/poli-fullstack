@@ -22,7 +22,7 @@ export interface UiLanguageDefinition {
 export class LanguageService {
   // Properties for backward compatibility with gemini service
   readonly isDevMode = false; // Set based on environment
-  readonly difficultyLevels = ['beginner', 'intermediate', 'advanced'];
+  readonly difficultyLevels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
   private readonly STORAGE_KEY = 'language_preferences';
   private readonly UNDO_DURATION = 5000;
@@ -65,7 +65,9 @@ export class LanguageService {
   readonly availableUiLanguages: UiLanguageDefinition[] = [
     { code: 'en', flag: 'gb', displayName: 'English', nativeName: 'English' },
     { code: 'it', flag: 'it', displayName: 'Italian', nativeName: 'Italiano' },
-    { code: 'de', flag: 'de', displayName: 'German', nativeName: 'Deutsch' }
+    { code: 'de', flag: 'de', displayName: 'German', nativeName: 'Deutsch' },
+    { code: 'fr', flag: 'fr', displayName: 'French', nativeName: 'Français' },
+    { code: 'es', flag: 'es', displayName: 'Spanish', nativeName: 'Español' }
   ];
 
   constructor() {
@@ -94,7 +96,9 @@ export class LanguageService {
     } else {
       // Detect system language
       const systemLang = this.detectSystemLanguage();
-      console.log(`[LanguageService] Detected system language: ${systemLang}`);
+      console.log(`[LanguageService] No stored preference found. Detected system language: ${systemLang}`);
+      console.log(`[LanguageService] Browser language: ${navigator.language}`);
+      console.log(`[LanguageService] Available UI languages: ${this.availableUiLanguages.map(l => l.code).join(', ')}`);
       this.uiLanguage.set(systemLang);
       this.transloco.setActiveLang(systemLang);
 

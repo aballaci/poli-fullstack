@@ -103,6 +103,7 @@
         "signup": "Kostenlos registrieren",
         "dashboard": "Dashboard",
         "settings": "Einstellungen",
+        "learning": "Lernen",
         "change_language_aria": "Zielsprache ändern (aktuell {{language}})",
         "interface_language_tooltip": "Oberflächensprache - Ändere die Sprache der Menüs und Schaltflächen",
         "target_language_tooltip": "Lernsprache - Ändere die Sprache, die du übst (aktuell {{language}})",
