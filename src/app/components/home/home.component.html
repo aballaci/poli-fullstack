@@ -4,9 +4,12 @@
     <div class="container mx-auto px-4 flex flex-col md:flex-row items-center">
       <div class="md:w-1/2 mb-10 md:mb-0 animate-fade-in">
         <h1 class="text-4xl md:text-5xl font-bold mb-4 text-gradient">Speak a New Language with Confidence</h1>
-        <p class="text-lg text-gray-700 mb-8 max-w-lg">Join millions of learners on Poli. Our interactive lessons and real conversations help you speak fluently, faster.</p>
+        <p class="text-lg text-gray-700 mb-8 max-w-lg">Join millions of learners on Poli. Our interactive lessons and
+          real conversations help you speak fluently, faster.</p>
         <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-          <button (click)="navigateToApp()" class="bg-purple-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-purple-700 transition shadow-lg hover:shadow-xl">Start Your Free Trial</button>
+          <button (click)="navigateToApp()"
+            class="bg-purple-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-purple-700 transition shadow-lg hover:shadow-xl">Start
+            Your Free Trial</button>
         </div>
         <div class="mt-8 flex items-center space-x-4 text-gray-700">
           <div class="flex items-center">
@@ -19,8 +22,25 @@
           </div>
         </div>
       </div>
-      <div class="md:w-1/2 flex justify-center animate-fade-in" style="animation-delay: 0.2s">
-        <img src="/assets/hero-person-learning.jpg" alt="Happy person learning a new language" class="rounded-2xl shadow-2xl w-full max-w-lg object-cover" style="aspect-ratio: 4/3;">
+      <div class="md:w-1/2 flex justify-center animate-fade-in relative" style="animation-delay: 0.2s">
+        <div class="relative w-full max-w-lg">
+          <img [src]="currentHeroImage().src" [alt]="currentHeroImage().alt"
+            class="rounded-2xl shadow-2xl w-full object-cover transition-opacity duration-1000"
+            style="aspect-ratio: 4/3;">
+          <!-- Playful phrase overlay -->
+          <div class="absolute top-6 right-6 text-white text-3xl italic transition-opacity duration-1000"
+            style="font-family: 'Dancing Script', cursive; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
+            {{ currentHeroImage().phrase }}
+          </div>
+          <!-- Language name with flag -->
+          <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent rounded-b-2xl p-6">
+            <p class="text-white text-5xl font-light transition-opacity duration-1000 flex items-center gap-3"
+              style="font-family: 'Smooch Sans', sans-serif;">
+              <span [class]="'fi fi-' + currentHeroImage().flag + ' text-4xl'"></span>
+              {{ currentHeroImage().language }}
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -29,12 +49,15 @@
   <section id="languages" class="py-20 bg-white">
     <div class="container mx-auto px-4">
       <h2 class="text-3xl font-bold text-center mb-4 text-gray-900">Start Your Journey</h2>
-      <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">From Spanish to Japanese, find the path that inspires you. Our courses are built by experts and loved by learners.</p>
-      
+      <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">From Spanish to Japanese, find the path that inspires
+        you. Our courses are built by experts and loved by learners.</p>
+
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         <!-- Spanish -->
-        <div class="language-card bg-white rounded-xl card-shadow overflow-hidden cursor-pointer" (click)="navigateToLanguageWizard('Spanish')">
-          <img src="/assets/spanish-madrid.jpg" alt="Learn Spanish - Plaza Mayor in Madrid" class="w-full h-48 object-cover">
+        <div class="language-card bg-white rounded-xl card-shadow overflow-hidden cursor-pointer"
+          (click)="navigateToLanguageWizard('Spanish')">
+          <img src="/assets/spanish-madrid.jpg" alt="Learn Spanish - Plaza Mayor in Madrid"
+            class="w-full h-48 object-cover">
           <div class="p-6 text-center">
             <h3 class="font-semibold text-xl mb-2 flex items-center justify-center space-x-2 text-gray-900">
               <span class="fi fi-es"></span>
@@ -47,10 +70,12 @@
             </div>
           </div>
         </div>
-        
+
         <!-- French -->
-        <div class="language-card bg-white rounded-xl card-shadow overflow-hidden cursor-pointer" (click)="navigateToLanguageWizard('French')">
-          <img src="/assets/french-paris.jpg" alt="Learn French - Eiffel Tower in Paris" class="w-full h-48 object-cover">
+        <div class="language-card bg-white rounded-xl card-shadow overflow-hidden cursor-pointer"
+          (click)="navigateToLanguageWizard('French')">
+          <img src="/assets/paris.webp" alt="Learn French - Eiffel Tower in Paris"
+            class="w-full h-48 object-cover">
           <div class="p-6 text-center">
             <h3 class="font-semibold text-xl mb-2 flex items-center justify-center space-x-2 text-gray-900">
               <span class="fi fi-fr"></span>
@@ -63,10 +88,12 @@
             </div>
           </div>
         </div>
-        
+
         <!-- German -->
-        <div class="language-card bg-white rounded-xl card-shadow overflow-hidden cursor-pointer" (click)="navigateToLanguageWizard('German')">
-          <img src="/assets/german-berlin.jpg" alt="Learn German - Brandenburg Gate in Berlin" class="w-full h-48 object-cover">
+        <div class="language-card bg-white rounded-xl card-shadow overflow-hidden cursor-pointer"
+          (click)="navigateToLanguageWizard('German')">
+          <img src="/assets/german-berlin.jpg" alt="Learn German - Brandenburg Gate in Berlin"
+            class="w-full h-48 object-cover">
           <div class="p-6 text-center">
             <h3 class="font-semibold text-xl mb-2 flex items-center justify-center space-x-2 text-gray-900">
               <span class="fi fi-de"></span>
@@ -79,9 +106,10 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Italian -->
-        <div class="language-card bg-white rounded-xl card-shadow overflow-hidden cursor-pointer" (click)="navigateToLanguageWizard('Italian')">
+        <div class="language-card bg-white rounded-xl card-shadow overflow-hidden cursor-pointer"
+          (click)="navigateToLanguageWizard('Italian')">
           <img src="/assets/italian-rome.jpg" alt="Learn Italian - Colosseum in Rome" class="w-full h-48 object-cover">
           <div class="p-6 text-center">
             <h3 class="font-semibold text-xl mb-2 flex items-center justify-center space-x-2 text-gray-900">
@@ -95,10 +123,11 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Japanese -->
-        <div class="language-card bg-white rounded-xl card-shadow overflow-hidden cursor-pointer" (click)="navigateToLanguageWizard('Japanese')">
-          <img src="/assets/japanese-tokyo.jpg" alt="Learn Japanese - Temples in Tokyo" class="w-full h-48 object-cover">
+        <div class="language-card bg-white rounded-xl card-shadow overflow-hidden cursor-pointer"
+          (click)="navigateToLanguageWizard('Japanese')">
+          <img src="/assets/japan.webp" alt="Learn Japanese - Temples in Tokyo" class="w-full h-48 object-cover">
           <div class="p-6 text-center">
             <h3 class="font-semibold text-xl mb-2 flex items-center justify-center space-x-2 text-gray-900">
               <span class="fi fi-jp"></span>
@@ -111,10 +140,12 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Chinese -->
-        <div class="language-card bg-white rounded-xl card-shadow overflow-hidden cursor-pointer" (click)="navigateToLanguageWizard('Chinese')">
-          <img src="/assets/chinese-beijing.jpg" alt="Learn Chinese - Temple of Heaven in Beijing" class="w-full h-48 object-cover">
+        <div class="language-card bg-white rounded-xl card-shadow overflow-hidden cursor-pointer"
+          (click)="navigateToLanguageWizard('Chinese')">
+          <img src="/assets/chinese-beijing.jpg" alt="Learn Chinese - Temple of Heaven in Beijing"
+            class="w-full h-48 object-cover">
           <div class="p-6 text-center">
             <h3 class="font-semibold text-xl mb-2 flex items-center justify-center space-x-2 text-gray-900">
               <span class="fi fi-cn"></span>
@@ -127,10 +158,12 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Portuguese -->
-        <div class="language-card bg-white rounded-xl card-shadow overflow-hidden cursor-pointer" (click)="navigateToLanguageWizard('Portuguese')">
-          <img src="/assets/portuguese-lisbon.jpg" alt="Learn Portuguese - Trams in Lisbon" class="w-full h-48 object-cover">
+        <div class="language-card bg-white rounded-xl card-shadow overflow-hidden cursor-pointer"
+          (click)="navigateToLanguageWizard('Portuguese')">
+          <img src="/assets/portuguese-lisbon.jpg" alt="Learn Portuguese - Trams in Lisbon"
+            class="w-full h-48 object-cover">
           <div class="p-6 text-center">
             <h3 class="font-semibold text-xl mb-2 flex items-center justify-center space-x-2 text-gray-900">
               <span class="fi fi-pt"></span>
@@ -143,10 +176,12 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Arabic -->
-        <div class="language-card bg-white rounded-xl card-shadow overflow-hidden cursor-pointer" (click)="navigateToLanguageWizard('Arabic')">
-          <img src="/assets/arabic-cairo.jpg" alt="Learn Arabic - Pyramids of Giza in Cairo" class="w-full h-48 object-cover">
+        <div class="language-card bg-white rounded-xl card-shadow overflow-hidden cursor-pointer"
+          (click)="navigateToLanguageWizard('Arabic')">
+          <img src="/assets/arabic-cairo.jpg" alt="Learn Arabic - Pyramids of Giza in Cairo"
+            class="w-full h-48 object-cover">
           <div class="p-6 text-center">
             <h3 class="font-semibold text-xl mb-2 flex items-center justify-center space-x-2 text-gray-900">
               <span class="fi fi-sa"></span>
@@ -167,8 +202,9 @@
   <section id="features" class="py-20 bg-gray-50">
     <div class="container mx-auto px-4">
       <h2 class="text-3xl font-bold text-center mb-4 text-gray-900">A Better Way to Learn</h2>
-      <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">We blend proven teaching methods with smart technology to create an experience you'll actually enjoy.</p>
-      
+      <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">We blend proven teaching methods with smart
+        technology to create an experience you'll actually enjoy.</p>
+
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <!-- Feature 1 -->
         <div class="bg-white rounded-xl p-6 card-shadow hover-lift">
@@ -178,7 +214,7 @@
           <h3 class="font-semibold text-lg mb-2 text-gray-900">Real Conversations</h3>
           <p class="text-gray-600">Practice with native speakers through video calls and our AI-powered chat.</p>
         </div>
-        
+
         <!-- Feature 2 -->
         <div class="bg-white rounded-xl p-6 card-shadow hover-lift">
           <div class="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mb-4">
@@ -187,7 +223,7 @@
           <h3 class="font-semibold text-lg mb-2 text-gray-900">Adaptive Learning</h3>
           <p class="text-gray-600">Our AI adjusts lessons based on your personal progress and learning style.</p>
         </div>
-        
+
         <!-- Feature 3 -->
         <div class="bg-white rounded-xl p-6 card-shadow hover-lift">
           <div class="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mb-4">
@@ -196,7 +232,7 @@
           <h3 class="font-semibold text-lg mb-2 text-gray-900">Fun, Game-like Lessons</h3>
           <p class="text-gray-600">Earn points, badges, and rewards as you progress. Learning feels like playing!</p>
         </div>
-        
+
         <!-- Feature 4 -->
         <div class="bg-white rounded-xl p-6 card-shadow hover-lift">
           <div class="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mb-4">
@@ -205,7 +241,7 @@
           <h3 class="font-semibold text-lg mb-2 text-gray-900">Cultural Immersion</h3>
           <p class="text-gray-600">Learn about culture, traditions, and customs alongside the language.</p>
         </div>
-        
+
         <!-- Feature 5 -->
         <div class="bg-white rounded-xl p-6 card-shadow hover-lift">
           <div class="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mb-4">
@@ -214,7 +250,7 @@
           <h3 class="font-semibold text-lg mb-2 text-gray-900">Progress Tracking</h3>
           <p class="text-gray-600">Monitor your improvement with detailed analytics and personalized reports.</p>
         </div>
-        
+
         <!-- Feature 6 -->
         <div class="bg-white rounded-xl p-6 card-shadow hover-lift">
           <div class="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mb-4">
@@ -231,40 +267,45 @@
   <section class="py-20 bg-white">
     <div class="container mx-auto px-4">
       <h2 class="text-3xl font-bold text-center mb-4 text-gray-900">How It Works</h2>
-      <p class="text-center text-gray-600 mb-16 max-w-2xl mx-auto">Getting started is simple. You'll be speaking your first words in minutes.</p>
-      
-      <div class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-12 md:space-y-0 md:space-x-8">
+      <p class="text-center text-gray-600 mb-16 max-w-2xl mx-auto">Getting started is simple. You'll be speaking your
+        first words in minutes.</p>
+
+      <div
+        class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-12 md:space-y-0 md:space-x-8">
         <!-- Step 1 -->
         <div class="flex flex-col items-center text-center md:w-1/3 animate-fade-in">
-          <div class="w-20 h-20 rounded-full bg-purple-100 flex items-center justify-center mb-4 text-purple-600 text-3xl">
+          <div
+            class="w-20 h-20 rounded-full bg-purple-100 flex items-center justify-center mb-4 text-purple-600 text-3xl">
             <i class="fas fa-flag"></i>
           </div>
           <h3 class="font-semibold text-lg mb-2 text-gray-900">1. Choose Your Language</h3>
           <p class="text-gray-600 max-w-xs">Select from 8+ languages and set your current proficiency level.</p>
         </div>
-        
+
         <!-- Arrow -->
         <div class="hidden md:block text-purple-300 text-3xl flex-shrink-0">
           <i class="fas fa-arrow-right"></i>
         </div>
-        
+
         <!-- Step 2 -->
         <div class="flex flex-col items-center text-center md:w-1/3 animate-fade-in" style="animation-delay: 0.2s">
-          <div class="w-20 h-20 rounded-full bg-purple-100 flex items-center justify-center mb-4 text-purple-600 text-3xl">
+          <div
+            class="w-20 h-20 rounded-full bg-purple-100 flex items-center justify-center mb-4 text-purple-600 text-3xl">
             <i class="fas fa-lightbulb"></i>
           </div>
           <h3 class="font-semibold text-lg mb-2 text-gray-900">2. Start Learning</h3>
           <p class="text-gray-600 max-w-xs">Follow personalized lessons and practice with interactive exercises.</p>
         </div>
-        
+
         <!-- Arrow -->
         <div class="hidden md:block text-purple-300 text-3xl flex-shrink-0">
           <i class="fas fa-arrow-right"></i>
         </div>
-        
+
         <!-- Step 3 -->
         <div class="flex flex-col items-center text-center md:w-1/3 animate-fade-in" style="animation-delay: 0.4s">
-          <div class="w-20 h-20 rounded-full bg-purple-100 flex items-center justify-center mb-4 text-purple-600 text-3xl">
+          <div
+            class="w-20 h-20 rounded-full bg-purple-100 flex items-center justify-center mb-4 text-purple-600 text-3xl">
             <i class="fas fa-comments"></i>
           </div>
           <h3 class="font-semibold text-lg mb-2 text-gray-900">3. Achieve Fluency</h3>
@@ -278,19 +319,22 @@
   <section class="py-20 bg-gray-50">
     <div class="container mx-auto px-4">
       <h2 class="text-3xl font-bold text-center mb-4 text-gray-900">What Our Users Say</h2>
-      <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">See what real learners have to say about their progress with Poli.</p>
-      
+      <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">See what real learners have to say about their
+        progress with Poli.</p>
+
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <!-- Testimonial 1 -->
         <div class="bg-white rounded-xl p-8 card-shadow">
           <div class="flex items-center mb-4">
-            <img src="/assets/testimonial-emma.jpg" alt="User" class="w-12 h-12 rounded-full mr-4 border-2 border-purple-100">
+            <img src="/assets/testimonial-emma.jpg" alt="User"
+              class="w-12 h-12 rounded-full mr-4 border-2 border-purple-100">
             <div>
               <h4 class="font-semibold text-gray-900">Emma Thompson</h4>
               <p class="text-gray-600 text-sm">Spanish Learner</p>
             </div>
           </div>
-          <p class="text-gray-700 mb-4">"Poli made learning Spanish fun and effective. I can now have conversations with confidence!"</p>
+          <p class="text-gray-700 mb-4">"Poli made learning Spanish fun and effective. I can now have conversations with
+            confidence!"</p>
           <div class="flex text-yellow-400">
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
@@ -299,17 +343,19 @@
             <i class="fas fa-star"></i>
           </div>
         </div>
-        
+
         <!-- Testimonial 2 -->
         <div class="bg-white rounded-xl p-8 card-shadow">
           <div class="flex items-center mb-4">
-            <img src="/assets/testimonial-james.jpg" alt="User" class="w-12 h-12 rounded-full mr-4 border-2 border-purple-100">
+            <img src="/assets/testimonial-james.jpg" alt="User"
+              class="w-12 h-12 rounded-full mr-4 border-2 border-purple-100">
             <div>
               <h4 class="font-semibold text-gray-900">James Wilson</h4>
               <p class="text-gray-600 text-sm">Japanese Learner</p>
             </div>
           </div>
-          <p class="text-gray-700 mb-4">"The adaptive learning system helped me progress faster than any other method I've tried."</p>
+          <p class="text-gray-700 mb-4">"The adaptive learning system helped me progress faster than any other method
+            I've tried."</p>
           <div class="flex text-yellow-400">
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
@@ -318,17 +364,19 @@
             <i class="fas fa-star"></i>
           </div>
         </div>
-        
+
         <!-- Testimonial 3 -->
         <div class="bg-white rounded-xl p-8 card-shadow">
           <div class="flex items-center mb-4">
-            <img src="/assets/testimonial-sophia.jpg" alt="User" class="w-12 h-12 rounded-full mr-4 border-2 border-purple-100">
+            <img src="/assets/testimonial-sophia.jpg" alt="User"
+              class="w-12 h-12 rounded-full mr-4 border-2 border-purple-100">
             <div>
               <h4 class="font-semibold text-gray-900">Sophia Chen</h4>
               <p class="text-gray-600 text-sm">French Learner</p>
             </div>
           </div>
-          <p class="text-gray-700 mb-4">"The cultural immersion aspect of Poli made learning French so much more meaningful."</p>
+          <p class="text-gray-700 mb-4">"The cultural immersion aspect of Poli made learning French so much more
+            meaningful."</p>
           <div class="flex text-yellow-400">
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
@@ -345,8 +393,9 @@
   <section id="pricing" class="py-20 bg-white">
     <div class="container mx-auto px-4">
       <h2 class="text-3xl font-bold text-center mb-4 text-gray-900">Choose Your Plan</h2>
-      <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Simple, transparent pricing. Choose the plan that's right for your goals.</p>
-      
+      <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Simple, transparent pricing. Choose the plan that's
+        right for your goals.</p>
+
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto items-center">
         <!-- Basic Plan -->
         <div class="bg-gray-50 rounded-xl p-8 card-shadow hover-lift">
@@ -357,18 +406,26 @@
             <span class="text-gray-600">/month</span>
           </div>
           <ul class="mb-8 space-y-3">
-            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Access to core lessons</span></li>
-            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Basic progress tracking</span></li>
-            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Mobile app access</span></li>
-            <li class="flex items-center text-gray-400"><i class="fas fa-times text-gray-400 mr-2"></i><span>Live conversations</span></li>
-            <li class="flex items-center text-gray-400"><i class="fas fa-times text-gray-400 mr-2"></i><span>Cultural content</span></li>
+            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Access to core
+                lessons</span></li>
+            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Basic progress
+                tracking</span></li>
+            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Mobile app access</span>
+            </li>
+            <li class="flex items-center text-gray-400"><i class="fas fa-times text-gray-400 mr-2"></i><span>Live
+                conversations</span></li>
+            <li class="flex items-center text-gray-400"><i class="fas fa-times text-gray-400 mr-2"></i><span>Cultural
+                content</span></li>
           </ul>
-          <button (click)="navigateToApp()" class="w-full bg-white text-purple-600 border border-purple-200 py-3 rounded-full font-semibold hover:bg-purple-50 transition">Get Started</button>
+          <button (click)="navigateToApp()"
+            class="w-full bg-white text-purple-600 border border-purple-200 py-3 rounded-full font-semibold hover:bg-purple-50 transition">Get
+            Started</button>
         </div>
-        
+
         <!-- Premium Plan -->
         <div class="bg-purple-600 text-white rounded-xl p-10 card-shadow transform md:scale-105 relative">
-          <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-purple-800 px-4 py-1 rounded-full text-sm font-semibold">
+          <div
+            class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-purple-800 px-4 py-1 rounded-full text-sm font-semibold">
             MOST POPULAR
           </div>
           <h3 class="text-xl font-bold mb-2 text-white">Premium</h3>
@@ -378,15 +435,19 @@
             <span class="text-purple-200">/month</span>
           </div>
           <ul class="mb-8 space-y-3">
-            <li class="flex items-center"><i class="fas fa-check text-white mr-2"></i><span>Everything in Basic</span></li>
-            <li class="flex items-center"><i class="fas fa-check text-white mr-2"></i><span>Live conversations</span></li>
+            <li class="flex items-center"><i class="fas fa-check text-white mr-2"></i><span>Everything in Basic</span>
+            </li>
+            <li class="flex items-center"><i class="fas fa-check text-white mr-2"></i><span>Live conversations</span>
+            </li>
             <li class="flex items-center"><i class="fas fa-check text-white mr-2"></i><span>Cultural content</span></li>
             <li class="flex items-center"><i class="fas fa-check text-white mr-2"></i><span>Advanced lessons</span></li>
             <li class="flex items-center"><i class="fas fa-check text-white mr-2"></i><span>Priority support</span></li>
           </ul>
-          <button (click)="navigateToApp()" class="w-full bg-yellow-400 text-purple-800 py-3 rounded-full font-semibold hover:bg-yellow-300 transition">Get Started</button>
+          <button (click)="navigateToApp()"
+            class="w-full bg-yellow-400 text-purple-800 py-3 rounded-full font-semibold hover:bg-yellow-300 transition">Get
+            Started</button>
         </div>
-        
+
         <!-- Pro Plan -->
         <div class="bg-gray-50 rounded-xl p-8 card-shadow hover-lift">
           <h3 class="text-xl font-bold mb-2 text-gray-900">Pro</h3>
@@ -396,13 +457,20 @@
             <span class="text-gray-600">/month</span>
           </div>
           <ul class="mb-8 space-y-3">
-            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Everything in Premium</span></li>
-            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>1-on-1 tutoring sessions</span></li>
-            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Custom learning paths</span></li>
-            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Industry-specific content</span></li>
-            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Certification prep</span></li>
+            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Everything in
+                Premium</span></li>
+            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>1-on-1 tutoring
+                sessions</span></li>
+            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Custom learning
+                paths</span></li>
+            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Industry-specific
+                content</span></li>
+            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Certification
+                prep</span></li>
           </ul>
-          <button (click)="navigateToApp()" class="w-full bg-purple-600 text-white py-3 rounded-full font-semibold hover:bg-purple-700 transition">Get Started</button>
+          <button (click)="navigateToApp()"
+            class="w-full bg-purple-600 text-white py-3 rounded-full font-semibold hover:bg-purple-700 transition">Get
+            Started</button>
         </div>
       </div>
     </div>
@@ -414,8 +482,12 @@
       <h2 class="text-3xl font-bold mb-4 text-white">Ready to Start Your Language Journey?</h2>
       <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">Join Poli today and unlock a world of new opportunities.</p>
       <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-        <button (click)="navigateToApp()" class="bg-yellow-400 text-purple-800 px-8 py-3 rounded-full font-semibold hover:bg-yellow-300 transition shadow-lg hover:shadow-xl">Start Your Free Trial</button>
-        <button (click)="navigateToApp()" class="bg-transparent border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-purple-800 transition">Explore Pro Plans</button>
+        <button (click)="navigateToApp()"
+          class="bg-yellow-400 text-purple-800 px-8 py-3 rounded-full font-semibold hover:bg-yellow-300 transition shadow-lg hover:shadow-xl">Start
+          Your Free Trial</button>
+        <button (click)="navigateToApp()"
+          class="bg-transparent border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-purple-800 transition">Explore
+          Pro Plans</button>
       </div>
     </div>
   </section>
