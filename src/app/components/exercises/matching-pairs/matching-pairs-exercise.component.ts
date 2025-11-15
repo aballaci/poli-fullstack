@@ -3,7 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ExerciseService } from '../../../services/exercise.service';
 import { SessionStore } from '../../../state/session.store';
-import { SentenceItem, MatchingPairsExercise } from '../../../models/exercise.models';
+import { WordItem, MatchingPairsExercise } from '../../../models/exercise.models';
+
+interface SelectedCard {
+    id: string;
+    side: 'source' | 'target';
+}
 
 interface Match {
     sourceId: string;
@@ -22,35 +27,50 @@ export class MatchingPairsExerciseComponent implements OnInit {
     private router = inject(Router);
 
     // Exercise data
-    readonly sourceSentences = signal<SentenceItem[]>([]);
-    readonly targetSentences = signal<SentenceItem[]>([]);
-    readonly userMatches = signal<Match[]>([]);
+    readonly sourceWords = signal<WordItem[]>([]);
+    readonly targetWords = signal<WordItem[]>([]);
     readonly correctPairs = signal<Match[]>([]);
-    readonly showAnswer = signal<boolean>(false);
     readonly isLoading = signal<boolean>(true);
     readonly errorMessage = signal<string | null>(null);
 
-    // Drag state
-    readonly draggedItemId = signal<string | null>(null);
-    readonly draggedFromSource = signal<boolean>(false);
-
-    // Touch state for mobile
-    private touchStartX = 0;
-    private touchStartY = 0;
+    // Game state
+    readonly selectedCard = signal<SelectedCard | null>(null);
+    readonly hearts = signal<boolean[]>([true, true, true, true]);
+    readonly matchedIds = signal<Set<string>>(new Set());
+    readonly successAnimationIds = signal<Set<string>>(new Set());
 
     readonly scenarioId = computed(() => this.sessionStore.activeScenario()?.id);
+    readonly sourceLanguage = computed(() => this.sessionStore.sourceLanguage());
+    readonly targetLanguage = computed(() => this.sessionStore.targetLanguage());
 
-    readonly allMatched = computed(() => {
-        return this.userMatches().length === this.sourceSentences().length;
-    });
+    /**
+     * Get flag code for language (handle special case for English)
+     */
+    getFlagCode(languageCode: string | undefined): string {
+        if (!languageCode) return '';
+        return languageCode === 'en' ? 'gb' : languageCode;
+    }
 
-    readonly allCorrect = computed(() => {
-        return this.userMatches().every(m => this.isCorrectMatch(m.sourceId, m.targetId));
-    });
+    // Computed states
+    readonly visibleSourceWords = computed(() =>
+        this.sourceWords().filter(w => !this.matchedIds().has(w.id))
+    );
 
-    readonly someIncorrect = computed(() => {
-        return !this.allCorrect();
-    });
+    readonly visibleTargetWords = computed(() =>
+        this.targetWords().filter(w => !this.matchedIds().has(w.id))
+    );
+
+    readonly remainingHearts = computed(() =>
+        this.hearts().filter(h => h).length
+    );
+
+    readonly exerciseFailed = computed(() =>
+        this.remainingHearts() === 0 && this.visibleSourceWords().length > 0
+    );
+
+    readonly exerciseComplete = computed(() =>
+        this.visibleSourceWords().length === 0
+    );
 
     ngOnInit(): void {
         this.loadExercise();
@@ -70,10 +90,14 @@ export class MatchingPairsExerciseComponent implements OnInit {
 
         this.exerciseService.getExercise(currentScenarioId, 'matchingPairs').subscribe({
             next: (data) => {
-                if (data && 'sourceSentences' in data) {
+                if (data && 'sourceWords' in data) {
                     const matchingData = data as MatchingPairsExercise;
-                    this.sourceSentences.set(matchingData.sourceSentences);
-                    this.targetSentences.set(matchingData.targetSentences);
+                    this.sourceWords.set(matchingData.sourceWords);
+
+                    // Randomize target words order
+                    const shuffledTargets = [...matchingData.targetWords].sort(() => Math.random() - 0.5);
+                    this.targetWords.set(shuffledTargets);
+
                     this.correctPairs.set(matchingData.correctPairs.map(p => ({
                         sourceId: p.sourceId,
                         targetId: p.targetId
@@ -93,159 +117,130 @@ export class MatchingPairsExerciseComponent implements OnInit {
     }
 
     /**
-     * Handle drag start event
+     * Handle card selection
      */
-    onDragStart(event: DragEvent, itemId: string, isSource: boolean): void {
-        if (this.showAnswer()) return;
+    selectCard(cardId: string, side: 'source' | 'target'): void {
+        // Don't allow selection if exercise is over
+        if (this.exerciseFailed() || this.exerciseComplete()) return;
 
-        this.draggedItemId.set(itemId);
-        this.draggedFromSource.set(isSource);
+        const currentSelection = this.selectedCard();
 
-        if (event.dataTransfer) {
-            event.dataTransfer.effectAllowed = 'move';
-            event.dataTransfer.setData('text/plain', itemId);
+        // If no card is selected, select this one
+        if (!currentSelection) {
+            this.selectedCard.set({ id: cardId, side });
+            return;
         }
+
+        // If clicking the same card, deselect it
+        if (currentSelection.id === cardId && currentSelection.side === side) {
+            this.selectedCard.set(null);
+            return;
+        }
+
+        // If clicking a card from the same side, switch selection
+        if (currentSelection.side === side) {
+            this.selectedCard.set({ id: cardId, side });
+            return;
+        }
+
+        // Clicking a card from the opposite side - attempt match
+        const sourceId = side === 'source' ? cardId : currentSelection.id;
+        const targetId = side === 'target' ? cardId : currentSelection.id;
+
+        this.attemptMatch(sourceId, targetId);
     }
 
     /**
-     * Handle drag over event
+     * Attempt to match two cards
      */
-    onDragOver(event: DragEvent): void {
-        if (this.showAnswer()) return;
-        event.preventDefault();
-        if (event.dataTransfer) {
-            event.dataTransfer.dropEffect = 'move';
-        }
-    }
-
-    /**
-     * Handle drop event
-     */
-    onDrop(event: DragEvent, targetId: string, isTargetSource: boolean): void {
-        if (this.showAnswer()) return;
-        event.preventDefault();
-
-        const draggedId = this.draggedItemId();
-        const fromSource = this.draggedFromSource();
-
-        if (!draggedId) return;
-
-        // Only allow matching source to target or target to source
-        if (fromSource === isTargetSource) return;
-
-        // Create the match
-        const sourceId = fromSource ? draggedId : targetId;
-        const targetIdMatch = fromSource ? targetId : draggedId;
-
-        // Remove any existing matches with these IDs
-        this.userMatches.update(matches =>
-            matches.filter(m => m.sourceId !== sourceId && m.targetId !== targetIdMatch)
+    private attemptMatch(sourceId: string, targetId: string): void {
+        const isCorrect = this.correctPairs().some(
+            p => p.sourceId === sourceId && p.targetId === targetId
         );
 
-        // Add new match
-        this.userMatches.update(matches => [
-            ...matches,
-            { sourceId, targetId: targetIdMatch }
-        ]);
+        if (isCorrect) {
+            // Show success animation
+            this.successAnimationIds.update(ids => {
+                const newIds = new Set(ids);
+                newIds.add(sourceId);
+                newIds.add(targetId);
+                return newIds;
+            });
 
-        this.draggedItemId.set(null);
-        this.draggedFromSource.set(false);
+            // After animation, remove both cards
+            setTimeout(() => {
+                this.matchedIds.update(ids => {
+                    const newIds = new Set(ids);
+                    newIds.add(sourceId);
+                    newIds.add(targetId);
+                    return newIds;
+                });
+
+                // Clear success animation
+                this.successAnimationIds.update(ids => {
+                    const newIds = new Set(ids);
+                    newIds.delete(sourceId);
+                    newIds.delete(targetId);
+                    return newIds;
+                });
+            }, 600);
+        } else {
+            // Incorrect match - remove a heart
+            this.removeHeart();
+        }
+
+        // Clear selection
+        this.selectedCard.set(null);
     }
 
     /**
-     * Handle touch start for mobile
+     * Remove one heart
      */
-    onTouchStart(event: TouchEvent, itemId: string, isSource: boolean): void {
-        if (this.showAnswer()) return;
-
-        const touch = event.touches[0];
-        this.touchStartX = touch.clientX;
-        this.touchStartY = touch.clientY;
-
-        this.draggedItemId.set(itemId);
-        this.draggedFromSource.set(isSource);
+    private removeHeart(): void {
+        this.hearts.update(hearts => {
+            const newHearts = [...hearts];
+            const firstTrueIndex = newHearts.findIndex(h => h);
+            if (firstTrueIndex !== -1) {
+                newHearts[firstTrueIndex] = false;
+            }
+            return newHearts;
+        });
     }
 
     /**
-     * Handle touch end for mobile
+     * Check if a card is selected
      */
-    onTouchEnd(event: TouchEvent, targetId: string, isTargetSource: boolean): void {
-        if (this.showAnswer()) return;
-
-        const draggedId = this.draggedItemId();
-        const fromSource = this.draggedFromSource();
-
-        if (!draggedId) return;
-
-        // Only allow matching source to target or target to source
-        if (fromSource === isTargetSource) return;
-
-        // Create the match
-        const sourceId = fromSource ? draggedId : targetId;
-        const targetIdMatch = fromSource ? targetId : draggedId;
-
-        // Remove any existing matches with these IDs
-        this.userMatches.update(matches =>
-            matches.filter(m => m.sourceId !== sourceId && m.targetId !== targetIdMatch)
-        );
-
-        // Add new match
-        this.userMatches.update(matches => [
-            ...matches,
-            { sourceId, targetId: targetIdMatch }
-        ]);
-
-        this.draggedItemId.set(null);
-        this.draggedFromSource.set(false);
+    isCardSelected(cardId: string, side: 'source' | 'target'): boolean {
+        const selected = this.selectedCard();
+        return selected !== null && selected.id === cardId && selected.side === side;
     }
 
     /**
-     * Check if an item is matched
+     * Check if a card is showing success animation
      */
-    isMatched(itemId: string): boolean {
-        return this.userMatches().some(m => m.sourceId === itemId || m.targetId === itemId);
+    isSuccessAnimating(cardId: string): boolean {
+        return this.successAnimationIds().has(cardId);
     }
 
     /**
-     * Get the match for a source item
+     * Retry the exercise
      */
-    getMatchForSource(sourceId: string): string | null {
-        const match = this.userMatches().find(m => m.sourceId === sourceId);
-        return match ? match.targetId : null;
-    }
+    retry(): void {
+        // Reset hearts
+        this.hearts.set([true, true, true, true]);
 
-    /**
-     * Get the target sentence text for a matched source
-     */
-    getMatchedTargetText(sourceId: string): string {
-        const targetId = this.getMatchForSource(sourceId);
-        if (!targetId) return '';
-        const target = this.targetSentences().find(t => t.id === targetId);
-        return target ? target.text : '';
-    }
+        // Reset matched IDs
+        this.matchedIds.set(new Set());
 
-    /**
-     * Check if a match is correct
-     */
-    isCorrectMatch(sourceId: string, targetId: string): boolean {
-        return this.correctPairs().some(p => p.sourceId === sourceId && p.targetId === targetId);
-    }
+        // Clear success animation
+        this.successAnimationIds.set(new Set());
 
-    /**
-     * Check if a source item has a correct match
-     */
-    hasCorrectMatch(sourceId: string): boolean {
-        const userMatch = this.userMatches().find(m => m.sourceId === sourceId);
-        if (!userMatch) return false;
-        return this.isCorrectMatch(sourceId, userMatch.targetId);
-    }
+        // Clear selection
+        this.selectedCard.set(null);
 
-    /**
-     * Validate all matches
-     */
-    checkMatches(): void {
-        if (!this.allMatched()) return;
-        this.showAnswer.set(true);
+        // Re-randomize target words
+        const shuffledTargets = [...this.targetWords()].sort(() => Math.random() - 0.5);
+        this.targetWords.set(shuffledTargets);
     }
 
     /**
@@ -260,14 +255,8 @@ export class MatchingPairsExerciseComponent implements OnInit {
      * Navigate back to the main exercise view
      */
     goBack(): void {
-        this.router.navigate(['/conversation']);
-    }
-
-    /**
-     * Remove a match
-     */
-    removeMatch(sourceId: string): void {
-        if (this.showAnswer()) return;
-        this.userMatches.update(matches => matches.filter(m => m.sourceId !== sourceId));
+        this.router.navigate(['/conversation'], {
+            state: { step: 'Exercises' }
+        });
     }
 }

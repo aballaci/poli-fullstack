@@ -78,6 +78,13 @@ export class ConversationViewComponent implements OnDestroy {
       this.router.navigate(['/selector']);
       return;
     }
+
+    // Check if we're navigating back from an exercise with a specific step
+    const navigation = this.router.getCurrentNavigation();
+    const state = navigation?.extras?.state as { step?: ConversationStep };
+    if (state?.step) {
+      this.currentStep.set(state.step);
+    }
   }
 
   ngOnDestroy(): void {

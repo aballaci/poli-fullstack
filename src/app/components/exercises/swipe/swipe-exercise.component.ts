@@ -199,7 +199,9 @@ export class SwipeExerciseComponent implements OnInit {
      * Navigate back to the main exercise view
      */
     goBack(): void {
-        this.router.navigate(['/conversation']);
+        this.router.navigate(['/conversation'], {
+            state: { step: 'Exercises' }
+        });
     }
 }
 

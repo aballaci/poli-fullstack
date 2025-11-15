@@ -19,12 +19,15 @@ export class SentenceScrambleExerciseComponent implements OnInit {
     // Exercise data
     readonly exercises = signal<SentenceScrambleExercise[]>([]);
     readonly currentIndex = signal<number>(0);
-    readonly userOrder = signal<string[]>([]);
+    readonly availableWords = signal<string[]>([]);
+    readonly targetWords = signal<string[]>([]);
     readonly showAnswer = signal<boolean>(false);
     readonly isLoading = signal<boolean>(true);
     readonly errorMessage = signal<string | null>(null);
 
     // Drag state
+    readonly draggedWord = signal<string | null>(null);
+    readonly draggedFrom = signal<'available' | 'target' | null>(null);
     readonly draggedIndex = signal<number | null>(null);
 
     // Computed properties
@@ -83,20 +86,23 @@ export class SentenceScrambleExerciseComponent implements OnInit {
     }
 
     /**
-     * Initialize user order with scrambled words
+     * Initialize available words with scrambled words and empty target
      */
     private initializeUserOrder(): void {
         const exercise = this.currentExercise();
         if (exercise) {
-            this.userOrder.set([...exercise.scrambledWords]);
+            this.availableWords.set([...exercise.scrambledWords]);
+            this.targetWords.set([]);
         }
     }
 
     /**
      * Handle drag start event
      */
-    onDragStart(event: DragEvent, index: number): void {
+    onDragStart(event: DragEvent, word: string, from: 'available' | 'target', index: number): void {
         if (this.showAnswer()) return;
+        this.draggedWord.set(word);
+        this.draggedFrom.set(from);
         this.draggedIndex.set(index);
         if (event.dataTransfer) {
             event.dataTransfer.effectAllowed = 'move';
@@ -115,53 +121,72 @@ export class SentenceScrambleExerciseComponent implements OnInit {
     }
 
     /**
-     * Handle drop event
+     * Handle drop on target area
      */
-    onDrop(event: DragEvent, dropIndex: number): void {
+    onDropToTarget(event: DragEvent, dropIndex?: number): void {
         if (this.showAnswer()) return;
         event.preventDefault();
 
+        const word = this.draggedWord();
+        const from = this.draggedFrom();
         const dragIndex = this.draggedIndex();
-        if (dragIndex === null || dragIndex === dropIndex) return;
 
-        // Swap the words
-        this.userOrder.update(order => {
-            const newOrder = [...order];
-            const temp = newOrder[dragIndex];
-            newOrder[dragIndex] = newOrder[dropIndex];
-            newOrder[dropIndex] = temp;
-            return newOrder;
-        });
+        if (!word || !from) return;
 
-        this.draggedIndex.set(null);
+        if (from === 'available') {
+            // Move from available to target
+            this.availableWords.update(words => words.filter((_, i) => i !== dragIndex));
+
+            if (dropIndex !== undefined) {
+                // Insert at specific position
+                this.targetWords.update(words => {
+                    const newWords = [...words];
+                    newWords.splice(dropIndex, 0, word);
+                    return newWords;
+                });
+            } else {
+                // Add to end
+                this.targetWords.update(words => [...words, word]);
+            }
+        } else if (from === 'target' && dropIndex !== undefined && dropIndex !== dragIndex) {
+            // Reorder within target
+            this.targetWords.update(words => {
+                const newWords = [...words];
+                newWords.splice(dragIndex!, 1);
+                newWords.splice(dropIndex, 0, word);
+                return newWords;
+            });
+        }
+
+        this.clearDragState();
     }
 
     /**
-     * Handle touch start for mobile
+     * Handle drop back to available area
      */
-    onTouchStart(event: TouchEvent, index: number): void {
+    onDropToAvailable(event: DragEvent): void {
         if (this.showAnswer()) return;
-        this.draggedIndex.set(index);
+        event.preventDefault();
+
+        const word = this.draggedWord();
+        const from = this.draggedFrom();
+        const dragIndex = this.draggedIndex();
+
+        if (!word || from !== 'target') return;
+
+        // Move from target back to available
+        this.targetWords.update(words => words.filter((_, i) => i !== dragIndex));
+        this.availableWords.update(words => [...words, word]);
+
+        this.clearDragState();
     }
 
     /**
-     * Handle touch end for mobile
+     * Clear drag state
      */
-    onTouchEnd(event: TouchEvent, dropIndex: number): void {
-        if (this.showAnswer()) return;
-
-        const dragIndex = this.draggedIndex();
-        if (dragIndex === null || dragIndex === dropIndex) return;
-
-        // Swap the words
-        this.userOrder.update(order => {
-            const newOrder = [...order];
-            const temp = newOrder[dragIndex];
-            newOrder[dragIndex] = newOrder[dropIndex];
-            newOrder[dropIndex] = temp;
-            return newOrder;
-        });
-
+    private clearDragState(): void {
+        this.draggedWord.set(null);
+        this.draggedFrom.set(null);
         this.draggedIndex.set(null);
     }
 
@@ -172,9 +197,18 @@ export class SentenceScrambleExerciseComponent implements OnInit {
         const exercise = this.currentExercise();
         if (!exercise) return false;
 
-        const userWord = this.userOrder()[index];
+        const userWord = this.targetWords()[index];
         const correctWord = exercise.scrambledWords[exercise.correctOrder[index]];
         return userWord === correctWord;
+    }
+
+    /**
+     * Check if all words are placed in target
+     */
+    allWordsPlaced(): boolean {
+        const exercise = this.currentExercise();
+        if (!exercise) return false;
+        return this.targetWords().length === exercise.scrambledWords.length;
     }
 
     /**
@@ -207,7 +241,9 @@ export class SentenceScrambleExerciseComponent implements OnInit {
      * Navigate back to the main exercise view
      */
     goBack(): void {
-        this.router.navigate(['/conversation']);
+        this.router.navigate(['/conversation'], {
+            state: { step: 'Exercises' }
+        });
     }
 }
 

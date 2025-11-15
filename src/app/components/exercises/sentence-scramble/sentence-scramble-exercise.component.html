@@ -58,29 +58,50 @@
 
                 <!-- Instructions -->
                 <p class="text-center text-[var(--c-text-secondary)] mb-4">
-                    Drag and drop the words to form the correct sentence
+                    Drag words from the word bank to the answer area below to form the correct sentence
                 </p>
 
-                <!-- Scrambled Words -->
-                <div class="flex flex-wrap gap-3 justify-center min-h-[100px]">
-                    <div *ngFor="let word of userOrder(); let i = index"
-                        class="px-4 py-3 rounded-lg border-2 font-medium cursor-move transition-all duration-200 gpu-accelerated interactive-hover"
-                        [class.pulse]="showAnswer() && isCorrectPosition(i)"
-                        [class.shake]="showAnswer() && !isCorrectPosition(i)" [class.border-slate-300]="!showAnswer()"
-                        [class.dark:border-slate-600]="!showAnswer()" [class.bg-[var(--c-bg-surface)]="!showAnswer()"
-                        [class.text-[var(--c-text-primary)]="!showAnswer()" [class.hover:border-sky-500]="!showAnswer()"
-                        [class.hover:shadow-md]="!showAnswer()"
-                        [class.border-emerald-500]="showAnswer() && isCorrectPosition(i)"
-                        [class.bg-emerald-50]="showAnswer() && isCorrectPosition(i)"
-                        [class.dark:bg-emerald-950]="showAnswer() && isCorrectPosition(i)"
-                        [class.text-emerald-600]="showAnswer() && isCorrectPosition(i)"
-                        [class.border-red-500]="showAnswer() && !isCorrectPosition(i)"
-                        [class.bg-red-50]="showAnswer() && !isCorrectPosition(i)"
-                        [class.dark:bg-red-950]="showAnswer() && !isCorrectPosition(i)"
-                        [class.text-red-600]="showAnswer() && !isCorrectPosition(i)" draggable="true"
-                        (dragstart)="onDragStart($event, i)" (drop)="onDrop($event, i)" (dragover)="onDragOver($event)"
-                        (touchstart)="onTouchStart($event, i)" (touchend)="onTouchEnd($event, i)">
-                        {{ word }}
+                <!-- Available Words (Word Bank) -->
+                <div class="mb-6">
+                    <p class="text-sm font-semibold text-[var(--c-text-secondary)] mb-3">Word Bank:</p>
+                    <div class="flex flex-wrap gap-3 p-4 rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 min-h-[80px]"
+                        (drop)="onDropToAvailable($event)" (dragover)="onDragOver($event)">
+                        <div *ngFor="let word of availableWords(); let i = index"
+                            class="px-4 py-2 rounded-lg border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 font-medium cursor-move transition-all duration-200 hover:border-sky-500 hover:shadow-md"
+                            draggable="true" (dragstart)="onDragStart($event, word, 'available', i)">
+                            {{ word }}
+                        </div>
+                        <div *ngIf="availableWords().length === 0"
+                            class="w-full text-center text-slate-400 dark:text-slate-500 py-4">
+                            All words used
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Target Area (Answer) -->
+                <div class="mb-6">
+                    <p class="text-sm font-semibold text-[var(--c-text-secondary)] mb-3">Your Answer:</p>
+                    <div class="flex flex-wrap gap-3 p-4 rounded-lg border-2 border-dashed border-sky-300 dark:border-sky-600 bg-sky-50 dark:bg-sky-950 min-h-[80px]"
+                        (drop)="onDropToTarget($event)" (dragover)="onDragOver($event)">
+                        <div *ngFor="let word of targetWords(); let i = index"
+                            class="px-4 py-2 rounded-lg border-2 font-medium cursor-move transition-all duration-200"
+                            [class.border-slate-300]="!showAnswer()" [class.dark:border-slate-600]="!showAnswer()"
+                            [class.bg-white]="!showAnswer()" [class.dark:bg-slate-700]="!showAnswer()"
+                            [class.hover:border-sky-500]="!showAnswer()"
+                            [class.border-emerald-500]="showAnswer() && isCorrectPosition(i)"
+                            [class.bg-emerald-100]="showAnswer() && isCorrectPosition(i)"
+                            [class.text-emerald-700]="showAnswer() && isCorrectPosition(i)"
+                            [class.border-red-500]="showAnswer() && !isCorrectPosition(i)"
+                            [class.bg-red-100]="showAnswer() && !isCorrectPosition(i)"
+                            [class.text-red-700]="showAnswer() && !isCorrectPosition(i)" draggable="true"
+                            (dragstart)="onDragStart($event, word, 'target', i)" (drop)="onDropToTarget($event, i)"
+                            (dragover)="onDragOver($event)">
+                            {{ word }}
+                        </div>
+                        <div *ngIf="targetWords().length === 0"
+                            class="w-full text-center text-slate-400 dark:text-slate-500 py-4">
+                            Drag words here
+                        </div>
                     </div>
                 </div>
 
@@ -93,8 +114,8 @@
 
             <!-- Action Buttons -->
             <div class="flex justify-center gap-4">
-                <button *ngIf="!showAnswer()" (click)="checkOrder()"
-                    class="px-8 py-3 font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors">
+                <button *ngIf="!showAnswer()" (click)="checkOrder()" [disabled]="!allWordsPlaced()"
+                    class="px-8 py-3 font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                     Check Order
                 </button>
 

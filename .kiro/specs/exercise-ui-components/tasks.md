@@ -87,36 +87,38 @@
 
 - [x] 4. Create Matching Pairs Exercise component
 
+
+
+
   - [x] 4.1 Generate matching-pairs-exercise component
-
-
     - Create `src/app/components/exercises/matching-pairs/matching-pairs-exercise.component.ts`
     - Create `src/app/components/exercises/matching-pairs/matching-pairs-exercise.component.html`
     - Set up component as standalone with necessary imports
     - _Requirements: 4.1_
   
-
-  - [x] 4.2 Implement matching-pairs component logic
-
+  - [ ] 4.2 Implement matching-pairs component logic with click-based selection
     - Fetch exercise data using ExerciseService on component init
-    - Create signals for source/target sentences, user matches, correct pairs, and answer reveal state
-    - Implement drag-and-drop event handlers (dragstart, drop, dragover)
-    - Implement touch event handlers for mobile support
-    - Implement match validation logic
+    - Create signals for source/target words, correct pairs, selected card, hearts, and completion states
+    - Randomize target words order on initialization
+    - Implement click handler for card selection
+    - Implement match validation logic (check if selected cards form correct pair)
+    - Implement heart removal on incorrect match
+    - Implement card removal on correct match with order preservation
+    - Implement retry functionality
     - Implement back to main view navigation
-    - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 7.2, 9.2_
+    - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 7.2_
   
-
-  - [x] 4.3 Create matching-pairs component template
-
-    - Create two-column layout for source and target sentences
-    - Add draggable attributes and event bindings
-    - Add visual connections between matched pairs
-    - Add visual feedback for correct/incorrect matches
-    - Add "Check Matches" and "Finish" buttons
-    - Add "Back to Exercises" button
+  - [ ] 4.3 Create matching-pairs component template with hearts display
+    - Create two-column layout for source and target word cards
+    - Add click event bindings to word cards
+    - Add hearts display in top right corner (4 hearts)
+    - Add visual feedback for selected cards
+    - Add visual feedback for incorrect matches (brief animation)
+    - Add success message when all pairs matched
+    - Add failure message when hearts depleted
+    - Add "Retry", "Finish", and "Back to Exercises" buttons
     - Implement responsive layout that stacks on mobile
-    - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 7.2, 9.1, 9.2_
+    - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 7.2, 9.1_
 
 
 - [ ] 5. Create Sentence Scramble Exercise component

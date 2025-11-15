@@ -167,69 +167,81 @@ showAnswer = signal(false)
 
 **Location**: `src/app/components/exercises/matching-pairs/matching-pairs-exercise.component.ts`
 
-**Purpose**: Drag-and-drop matching of source and target language sentences
+**Purpose**: Click-based matching of source and target language words with lives system
 
 **Template Structure**:
 ```html
 <div class="exercise-container">
   <header>
     <h3>Match the Pairs</h3>
+    <div class="hearts-display">
+      <i *ngFor="let heart of hearts()" 
+         class="fa-solid fa-heart"
+         [class.lost]="!heart"></i>
+    </div>
     <button (click)="goBack()">Back to Exercises</button>
   </header>
   
   <div class="matching-grid">
     <div class="source-column">
-      <div *ngFor="let source of sourceSentences"
-           [attr.data-id]="source.id"
-           class="sentence-card"
-           [class.matched]="isMatched(source.id)">
+      <div *ngFor="let source of visibleSourceWords()"
+           class="word-card"
+           (click)="selectCard(source.id, 'source')"
+           [class.selected]="selectedCard()?.id === source.id">
         {{ source.text }}
       </div>
     </div>
     
     <div class="target-column">
-      <div *ngFor="let target of targetSentences"
-           [attr.data-id]="target.id"
-           class="sentence-card draggable"
-           draggable="true"
-           (dragstart)="onDragStart($event, target.id)"
-           (drop)="onDrop($event, target.id)"
-           (dragover)="onDragOver($event)"
-           [class.matched]="isMatched(target.id)"
-           [class.correct]="showAnswer && isCorrectMatch(target.id)"
-           [class.incorrect]="showAnswer && !isCorrectMatch(target.id)">
+      <div *ngFor="let target of visibleTargetWords()"
+           class="word-card"
+           (click)="selectCard(target.id, 'target')"
+           [class.selected]="selectedCard()?.id === target.id">
         {{ target.text }}
       </div>
     </div>
   </div>
   
-  <footer>
-    <button *ngIf="!showAnswer" (click)="checkMatches()" [disabled]="!allMatched()">
-      Check Matches
-    </button>
-    <button *ngIf="showAnswer" (click)="finish()">
-      Finish
-    </button>
+  <footer *ngIf="exerciseFailed() || exerciseComplete()">
+    <div *ngIf="exerciseFailed()" class="failure-message">
+      <p>Out of hearts! Try again.</p>
+      <button (click)="retry()">Retry</button>
+    </div>
+    <div *ngIf="exerciseComplete()" class="success-message">
+      <p>All pairs matched!</p>
+      <button (click)="finish()">Finish</button>
+    </div>
+    <button (click)="goBack()">Back to Exercises</button>
   </footer>
 </div>
 ```
 
 **State**:
 ```typescript
-sourceSentences = signal<SentenceItem[]>([])
-targetSentences = signal<SentenceItem[]>([])
-userMatches = signal<Map<string, string>>(new Map())
+sourceWords = signal<WordItem[]>([])
+targetWords = signal<WordItem[]>([])
+visibleSourceWords = computed(() => this.sourceWords().filter(w => !w.matched))
+visibleTargetWords = computed(() => this.targetWords().filter(w => !w.matched))
 correctPairs = signal<Map<string, string>>(new Map())
-showAnswer = signal(false)
-draggedItemId = signal<string | null>(null)
+selectedCard = signal<{id: string, side: 'source' | 'target'} | null>(null)
+hearts = signal<boolean[]>([true, true, true, true])
+remainingHearts = computed(() => this.hearts().filter(h => h).length)
+exerciseFailed = computed(() => this.remainingHearts() === 0 && this.visibleSourceWords().length > 0)
+exerciseComplete = computed(() => this.visibleSourceWords().length === 0)
 ```
 
-**Drag-and-Drop Logic**:
-- Use HTML5 Drag and Drop API
-- Support touch events for mobile (using touch event polyfill)
-- Visual feedback during drag (opacity, cursor)
-- Connect lines between matched pairs
-- Validate all matches on submit
+**Click-Based Matching Logic**:
+1. User clicks first card (source or target) - card becomes selected
+2. User clicks second card (must be from opposite side) - attempt match
+3. If correct match:
+   - Mark both cards as matched
+   - Remove from visible lists (preserve order of remaining)
+   - Clear selection
+4. If incorrect match:
+   - Remove one heart
+   - Clear selection
+   - Show brief error feedback
+5. Check win/lose conditions after each attempt
 
 ### 5. Sentence Scramble Exercise Component
 
@@ -409,14 +421,15 @@ export interface FillInBlankExercises {
 
 ### Matching Pairs Models
 ```typescript
-export interface SentenceItem {
+export interface WordItem {
   id: string;
   text: string;
+  matched: boolean;
 }
 
 export interface MatchingPairsExercise {
-  sourceSentences: SentenceItem[];
-  targetSentences: SentenceItem[];
+  sourceWords: WordItem[];
+  targetWords: WordItem[];
   correctPairs: Array<{ sourceId: string; targetId: string }>;
 }
 ```

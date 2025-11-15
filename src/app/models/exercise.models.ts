@@ -23,14 +23,14 @@ export interface FillInBlankExercises {
 }
 
 // Matching Pairs Exercise Models
-export interface SentenceItem {
+export interface WordItem {
     id: string;
-    text: string;
+    word: string;
 }
 
 export interface MatchingPairsExercise {
-    sourceSentences: SentenceItem[];
-    targetSentences: SentenceItem[];
+    sourceWords: WordItem[];
+    targetWords: WordItem[];
     correctPairs: Array<{ sourceId: string; targetId: string }>;
 }
 

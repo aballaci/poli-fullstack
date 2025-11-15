@@ -1,10 +1,21 @@
 <div class="min-h-screen bg-[var(--c-bg-primary)] p-4 md:p-6 lg:p-8">
     <div class="max-w-6xl mx-auto">
         <!-- Header -->
-        <header class="mb-8 flex items-center justify-between">
-            <h2 class="text-2xl md:text-3xl font-bold text-[var(--c-text-primary)]">
-                Match the Pairs
-            </h2>
+        <header class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl md:text-3xl font-bold text-[var(--c-text-primary)]">
+                    Match the Pairs
+                </h2>
+
+                <!-- Hearts Display -->
+                <div class="flex items-center gap-2">
+                    <div *ngFor="let heart of hearts()" class="text-2xl transition-all duration-300">
+                        <span *ngIf="heart" class="text-red-500">❤️</span>
+                        <span *ngIf="!heart" class="text-gray-300 dark:text-gray-600">🤍</span>
+                    </div>
+                </div>
+            </div>
+
             <button (click)="goBack()"
                 class="px-4 py-2 font-semibold rounded-md bg-slate-200 text-slate-700 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 transition-colors">
                 Back to Exercises
@@ -40,102 +51,111 @@
             <!-- Instructions -->
             <div class="text-center mb-6">
                 <p class="text-[var(--c-text-secondary)]">
-                    Drag and drop to match the sentences in both languages
+                    Click one word from each column to match them. Match all pairs before running out of hearts!
                 </p>
             </div>
 
             <!-- Matching Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Source Column -->
-                <div class="space-y-4">
-                    <h3 class="text-lg font-semibold text-[var(--c-text-primary)] mb-4">Source Language</h3>
-                    <div *ngFor="let source of sourceSentences()"
-                        class="rounded-xl shadow-md border-2 p-4 transition-all duration-200 gpu-accelerated"
-                        [class.pulse]="showAnswer() && hasCorrectMatch(source.id)"
-                        [class.shake]="showAnswer() && isMatched(source.id) && !hasCorrectMatch(source.id)"
-                        [class.border-slate-300]="!isMatched(source.id) && !showAnswer()"
-                        [class.dark:border-slate-600]="!isMatched(source.id) && !showAnswer()"
-                        [class.bg-[var(--c-bg-surface)]="!showAnswer()"
-                        [class.border-sky-500]="isMatched(source.id) && !showAnswer()"
-                        [class.bg-sky-50]="isMatched(source.id) && !showAnswer()"
-                        [class.dark:bg-sky-950]="isMatched(source.id) && !showAnswer()"
-                        [class.border-emerald-500]="showAnswer() && hasCorrectMatch(source.id)"
-                        [class.bg-emerald-50]="showAnswer() && hasCorrectMatch(source.id)"
-                        [class.dark:bg-emerald-950]="showAnswer() && hasCorrectMatch(source.id)"
-                        [class.border-red-500]="showAnswer() && isMatched(source.id) && !hasCorrectMatch(source.id)"
-                        [class.bg-red-50]="showAnswer() && isMatched(source.id) && !hasCorrectMatch(source.id)"
-                        [class.dark:bg-red-950]="showAnswer() && isMatched(source.id) && !hasCorrectMatch(source.id)"
-                        draggable="true" (dragstart)="onDragStart($event, source.id, true)"
-                        (drop)="onDrop($event, source.id, true)" (dragover)="onDragOver($event)"
-                        (touchstart)="onTouchStart($event, source.id, true)"
-                        (touchend)="onTouchEnd($event, source.id, true)">
-                        <div class="flex items-center justify-between">
-                            <p class="text-[var(--c-text-primary)] flex-1">{{ source.text }}</p>
-                            <div class="flex items-center gap-2 ml-4">
-                                <span *ngIf="showAnswer() && hasCorrectMatch(source.id)"
-                                    class="text-emerald-500 text-2xl">✓</span>
-                                <span *ngIf="showAnswer() && isMatched(source.id) && !hasCorrectMatch(source.id)"
-                                    class="text-red-500 text-2xl">✗</span>
-                                <button *ngIf="isMatched(source.id) && !showAnswer()" (click)="removeMatch(source.id)"
-                                    class="text-slate-400 hover:text-red-500 transition-colors">
-                                    ✕
-                                </button>
-                            </div>
-                        </div>
-                        <div *ngIf="isMatched(source.id)"
-                            class="mt-2 pt-2 border-t border-slate-200 dark:border-slate-700">
-                            <p class="text-sm text-[var(--c-text-secondary)]">
-                                Matched with: {{ getMatchedTargetText(source.id) }}
-                            </p>
-                        </div>
+                <div class="flex flex-col items-end space-y-2">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span [class]="'fi fi-' + getFlagCode(sourceLanguage()?.code) + ' rounded-sm text-lg'"></span>
+                        <h3 class="text-base font-semibold text-[var(--c-text-primary)]">{{
+                            sourceLanguage()?.display_name }}</h3>
+                    </div>
+                    <div *ngFor="let source of visibleSourceWords()" (click)="selectCard(source.id, 'source')"
+                        class="rounded-lg shadow-sm border px-3 py-2 transition-all duration-200 cursor-pointer gpu-accelerated interactive-hover text-right"
+                        [class.border-slate-200]="!isCardSelected(source.id, 'source') && !isSuccessAnimating(source.id)"
+                        [class.dark:border-slate-700]="!isCardSelected(source.id, 'source') && !isSuccessAnimating(source.id)"
+                        [class.bg-[var(--c-bg-surface)]]="!isCardSelected(source.id, 'source') && !isSuccessAnimating(source.id)"
+                        [class.border-sky-400]="isCardSelected(source.id, 'source') && !isSuccessAnimating(source.id)"
+                        [class.bg-sky-100]="isCardSelected(source.id, 'source') && !isSuccessAnimating(source.id)"
+                        [class.dark:bg-sky-950]="isCardSelected(source.id, 'source') && !isSuccessAnimating(source.id)"
+                        [class.ring-1]="isCardSelected(source.id, 'source') && !isSuccessAnimating(source.id)"
+                        [class.ring-sky-300]="isCardSelected(source.id, 'source') && !isSuccessAnimating(source.id)"
+                        [class.border-emerald-500]="isSuccessAnimating(source.id)"
+                        [class.bg-emerald-100]="isSuccessAnimating(source.id)"
+                        [class.dark:bg-emerald-950]="isSuccessAnimating(source.id)"
+                        [class.ring-2]="isSuccessAnimating(source.id)"
+                        [class.ring-emerald-300]="isSuccessAnimating(source.id)"
+                        [class.scale-105]="isSuccessAnimating(source.id)"
+                        [class.animate-pulse]="isSuccessAnimating(source.id)">
+                        <p class="text-[var(--c-text-primary)] font-medium flex items-center justify-between gap-2">
+                            <span *ngIf="isSuccessAnimating(source.id)"
+                                class="text-xl text-emerald-500 animate-bounce">✓</span>
+                            <span>{{ source.word }}</span>
+                        </p>
                     </div>
                 </div>
 
                 <!-- Target Column -->
-                <div class="space-y-4">
-                    <h3 class="text-lg font-semibold text-[var(--c-text-primary)] mb-4">Target Language</h3>
-                    <div *ngFor="let target of targetSentences()"
-                        class="rounded-xl shadow-md border-2 p-4 transition-all duration-200 cursor-move gpu-accelerated interactive-hover"
-                        [class.border-slate-300]="!isMatched(target.id) && !showAnswer()"
-                        [class.dark:border-slate-600]="!isMatched(target.id) && !showAnswer()"
-                        [class.bg-[var(--c-bg-surface)]="!showAnswer()"
-                        [class.border-sky-500]="isMatched(target.id) && !showAnswer()"
-                        [class.bg-sky-50]="isMatched(target.id) && !showAnswer()"
-                        [class.dark:bg-sky-950]="isMatched(target.id) && !showAnswer()"
-                        [class.opacity-50]="isMatched(target.id)" draggable="true"
-                        (dragstart)="onDragStart($event, target.id, false)" (drop)="onDrop($event, target.id, false)"
-                        (dragover)="onDragOver($event)" (touchstart)="onTouchStart($event, target.id, false)"
-                        (touchend)="onTouchEnd($event, target.id, false)">
-                        <p class="text-[var(--c-text-primary)]">{{ target.text }}</p>
+                <div class="flex flex-col items-start space-y-2">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span [class]="'fi fi-' + getFlagCode(targetLanguage()?.code) + ' rounded-sm text-lg'"></span>
+                        <h3 class="text-base font-semibold text-[var(--c-text-primary)]">{{
+                            targetLanguage()?.display_name }}</h3>
+                    </div>
+                    <div *ngFor="let target of visibleTargetWords()" (click)="selectCard(target.id, 'target')"
+                        class="rounded-lg shadow-sm border px-3 py-2 transition-all duration-200 cursor-pointer gpu-accelerated interactive-hover"
+                        [class.border-slate-200]="!isCardSelected(target.id, 'target') && !isSuccessAnimating(target.id)"
+                        [class.dark:border-slate-700]="!isCardSelected(target.id, 'target') && !isSuccessAnimating(target.id)"
+                        [class.bg-[var(--c-bg-surface)]]="!isCardSelected(target.id, 'target') && !isSuccessAnimating(target.id)"
+                        [class.border-sky-400]="isCardSelected(target.id, 'target') && !isSuccessAnimating(target.id)"
+                        [class.bg-sky-100]="isCardSelected(target.id, 'target') && !isSuccessAnimating(target.id)"
+                        [class.dark:bg-sky-950]="isCardSelected(target.id, 'target') && !isSuccessAnimating(target.id)"
+                        [class.ring-1]="isCardSelected(target.id, 'target') && !isSuccessAnimating(target.id)"
+                        [class.ring-sky-300]="isCardSelected(target.id, 'target') && !isSuccessAnimating(target.id)"
+                        [class.border-emerald-500]="isSuccessAnimating(target.id)"
+                        [class.bg-emerald-100]="isSuccessAnimating(target.id)"
+                        [class.dark:bg-emerald-950]="isSuccessAnimating(target.id)"
+                        [class.ring-2]="isSuccessAnimating(target.id)"
+                        [class.ring-emerald-300]="isSuccessAnimating(target.id)"
+                        [class.scale-105]="isSuccessAnimating(target.id)"
+                        [class.animate-pulse]="isSuccessAnimating(target.id)">
+                        <p class="text-[var(--c-text-primary)] font-medium flex items-center justify-between gap-2">
+                            <span>{{ target.word }}</span>
+                            <span *ngIf="isSuccessAnimating(target.id)"
+                                class="text-xl text-emerald-500 animate-bounce">✓</span>
+                        </p>
                     </div>
                 </div>
             </div>
 
-            <!-- Action Buttons -->
-            <div class="flex justify-center gap-4 mt-8">
-                <button *ngIf="!showAnswer()" (click)="checkMatches()" [disabled]="!allMatched()"
-                    class="px-8 py-3 font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                    Check Matches
-                </button>
-
-                <button *ngIf="showAnswer()" (click)="finish()"
+            <!-- Success Message -->
+            <div *ngIf="exerciseComplete()" class="mt-8 p-6 rounded-lg bg-emerald-100 text-center">
+                <div class="text-5xl mb-4">🎉</div>
+                <h3 class="text-xl font-semibold text-emerald-700 mb-2">
+                    Perfect! All pairs matched!
+                </h3>
+                <p class="text-emerald-700 mb-4">
+                    You completed the exercise with {{ remainingHearts() }} heart(s) remaining.
+                </p>
+                <button (click)="finish()"
                     class="px-8 py-3 font-semibold rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition-colors">
                     Finish
                 </button>
             </div>
 
-            <!-- Feedback Message -->
-            <div *ngIf="showAnswer()" class="mt-6 p-4 rounded-lg text-center" [class.bg-emerald-50]="allCorrect()"
-                [class.dark:bg-emerald-950]="allCorrect()" [class.bg-amber-50]="someIncorrect()"
-                [class.dark:bg-amber-950]="someIncorrect()">
-                <p class="font-medium" [class.text-emerald-600]="allCorrect()" [class.text-amber-600]="someIncorrect()">
-                    <span *ngIf="allCorrect()">
-                        🎉 Perfect! All matches are correct!
-                    </span>
-                    <span *ngIf="someIncorrect()">
-                        Some matches need correction. Review the highlighted pairs.
-                    </span>
+            <!-- Failure Message -->
+            <div *ngIf="exerciseFailed()" class="mt-8 p-6 rounded-lg bg-red-100 text-center">
+                <div class="text-5xl mb-4">💔</div>
+                <h3 class="text-xl font-semibold text-red-700 mb-2">
+                    Out of hearts!
+                </h3>
+                <p class="text-red-700 mb-4">
+                    Don't worry, you can try again!
                 </p>
+                <div class="flex justify-center gap-4">
+                    <button (click)="retry()"
+                        class="px-8 py-3 font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors">
+                        Retry
+                    </button>
+                    <button (click)="goBack()"
+                        class="px-8 py-3 font-semibold rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 transition-colors">
+                        Back to Exercises
+                    </button>
+                </div>
             </div>
         </div>
     </div>

@@ -58,15 +58,17 @@ This feature creates interactive, visually compelling frontend components for di
 
 ### Requirement 4
 
-**User Story:** As a language learner, I want to complete matching pairs exercises using drag-and-drop, so that I can practice connecting source and target language sentences
+**User Story:** As a language learner, I want to complete matching pairs exercises using click-based selection, so that I can practice connecting source and target language sentences
 
 #### Acceptance Criteria
 
-1. THE Matching Pairs Component SHALL display source language sentences in one column and target language sentences in another column
-2. THE Matching Pairs Component SHALL support drag-and-drop interaction to match source sentences with target sentences
-3. WHEN a user creates a match, THE Matching Pairs Component SHALL visually connect the paired items
-4. WHEN a user completes all matches, THE Matching Pairs Component SHALL validate the matches and provide visual feedback for correct and incorrect pairs
-5. AFTER validation, THE Matching Pairs Component SHALL reveal all correct pairings and provide a button to return to the Main Exercise View
+1. THE Matching Pairs Component SHALL display source language words in styled cards on the left side and target language words in styled cards on the right side in random order
+2. THE Matching Pairs Component SHALL support click-based interaction where the user clicks one word card and then clicks a second word card to create a match
+3. WHEN a user creates a correct match, THE Matching Pairs Component SHALL remove both matched cards from the display and preserve the order of remaining cards
+4. WHEN a user creates an incorrect match, THE Matching Pairs Component SHALL remove one heart from the hearts display and deselect both cards
+5. THE Matching Pairs Component SHALL display four hearts at the top right of the exercise area
+6. WHEN all hearts are consumed, THE Matching Pairs Component SHALL mark the exercise as failed and provide a button to retry or return to the Main Exercise View
+7. WHEN all word pairs are successfully matched, THE Matching Pairs Component SHALL mark the exercise as complete and provide a button to return to the Main Exercise View
 
 ### Requirement 5
 

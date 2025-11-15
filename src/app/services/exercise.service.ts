@@ -109,11 +109,11 @@ export class ExerciseService {
     private validateMatchingPairsExercise(data: any): data is MatchingPairsExercise {
         return (
             data &&
-            Array.isArray(data.sourceSentences) &&
-            Array.isArray(data.targetSentences) &&
+            Array.isArray(data.sourceWords) &&
+            Array.isArray(data.targetWords) &&
             Array.isArray(data.correctPairs) &&
-            data.sourceSentences.every((s: any) => typeof s.id === 'string' && typeof s.text === 'string') &&
-            data.targetSentences.every((t: any) => typeof t.id === 'string' && typeof t.text === 'string')
+            data.sourceWords.every((s: any) => typeof s.id === 'string' && typeof s.word === 'string') &&
+            data.targetWords.every((t: any) => typeof t.id === 'string' && typeof t.word === 'string')
         );
     }
 
