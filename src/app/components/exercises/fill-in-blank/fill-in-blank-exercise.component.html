@@ -5,8 +5,10 @@
             <h2 class="text-2xl md:text-3xl font-bold text-[var(--c-text-primary)]">
                 Fill in the Blank
             </h2>
-            <button (click)="goBack()"
-                class="px-4 py-2 font-semibold rounded-md bg-slate-200 text-slate-700 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 transition-colors">
+            <button (click)="goBack()" class="px-4 py-2 font-semibold rounded-md transition-colors" [ngClass]="{
+                    'bg-slate-200 text-slate-700 hover:bg-slate-300': themeService.theme() === 'light',
+                    'bg-slate-700 text-slate-200 hover:bg-slate-600': themeService.theme() === 'dark'
+                }">
                 Back to Exercises
             </button>
         </header>
@@ -43,8 +45,11 @@
                 <span>Question {{ currentIndex() + 1 }} of {{ exercises().length }}</span>
                 <div class="flex gap-2">
                     <div *ngFor="let ex of exercises(); let i = index" class="w-2 h-2 rounded-full transition-colors"
-                        [class.bg-sky-500]="i === currentIndex()" [class.bg-slate-300]="i !== currentIndex()"
-                        [class.dark:bg-slate-600]="i !== currentIndex()"></div>
+                        [ngClass]="{
+                            'bg-sky-500': i === currentIndex(),
+                            'bg-slate-300': i !== currentIndex() && themeService.theme() === 'light',
+                            'bg-slate-600': i !== currentIndex() && themeService.theme() === 'dark'
+                        }"></div>
                 </div>
             </div>
 
@@ -66,29 +71,22 @@
                         [attr.aria-pressed]="selectedOption() === option"
                         [attr.aria-describedby]="showAnswer() && isCorrectAnswer(option) ? 'correct-feedback' : (showAnswer() && isIncorrectAnswer(option) ? 'incorrect-feedback' : null)"
                         class="px-6 py-4 text-lg font-medium rounded-lg border-2 transition-all duration-200 interactive-hover button-press"
-                        [class.pulse]="showAnswer() && isCorrectAnswer(option)"
-                        [class.shake]="showAnswer() && isIncorrectAnswer(option)"
-                        [class.border-slate-300]="!showAnswer() && selectedOption() !== option"
-                        [class.dark:border-slate-600]="!showAnswer() && selectedOption() !== option"
-                        [class.bg-[var(--c-bg-surface)]="!showAnswer() && selectedOption() !== option"
-                        [class.text-[var(--c-text-primary)]="!showAnswer() && selectedOption() !== option"
-                        [class.hover:border-sky-500]="!showAnswer() && selectedOption() !== option"
-                        [class.hover:bg-sky-50]="!showAnswer() && selectedOption() !== option"
-                        [class.dark:hover:bg-sky-950]="!showAnswer() && selectedOption() !== option"
-                        [class.border-sky-500]="!showAnswer() && selectedOption() === option"
-                        [class.bg-sky-50]="!showAnswer() && selectedOption() === option"
-                        [class.dark:bg-sky-950]="!showAnswer() && selectedOption() === option"
-                        [class.text-sky-600]="!showAnswer() && selectedOption() === option"
-                        [class.border-emerald-500]="showAnswer() && isCorrectAnswer(option)"
-                        [class.bg-emerald-50]="showAnswer() && isCorrectAnswer(option)"
-                        [class.dark:bg-emerald-950]="showAnswer() && isCorrectAnswer(option)"
-                        [class.text-emerald-600]="showAnswer() && isCorrectAnswer(option)"
-                        [class.border-red-500]="showAnswer() && isIncorrectAnswer(option)"
-                        [class.bg-red-50]="showAnswer() && isIncorrectAnswer(option)"
-                        [class.dark:bg-red-950]="showAnswer() && isIncorrectAnswer(option)"
-                        [class.text-red-600]="showAnswer() && isIncorrectAnswer(option)"
-                        [class.cursor-not-allowed]="showAnswer()"
-                        [class.opacity-50]="showAnswer() && !isCorrectAnswer(option) && !isIncorrectAnswer(option)">
+                        [ngClass]="{
+                            'pulse': showAnswer() && isCorrectAnswer(option),
+                            'shake': showAnswer() && isIncorrectAnswer(option),
+                            'border-slate-300 bg-white text-slate-700 hover:border-sky-500 hover:bg-sky-50/30': !showAnswer() && selectedOption() !== option && themeService.theme() === 'light',
+                            'border-slate-600 bg-slate-800 text-slate-200 hover:border-sky-500 hover:bg-sky-900/30': !showAnswer() && selectedOption() !== option && themeService.theme() === 'dark',
+                            'border-sky-500 bg-sky-50/30 text-sky-600': !showAnswer() && selectedOption() === option && themeService.theme() === 'light',
+                            'border-sky-500 bg-sky-900/30 text-sky-300': !showAnswer() && selectedOption() === option && themeService.theme() === 'dark',
+                            'border-emerald-500 text-emerald-700': showAnswer() && isCorrectAnswer(option),
+                            'bg-emerald-100': showAnswer() && isCorrectAnswer(option) && themeService.theme() === 'light',
+                            'bg-emerald-900/30': showAnswer() && isCorrectAnswer(option) && themeService.theme() === 'dark',
+                            'border-red-500 text-red-700': showAnswer() && isIncorrectAnswer(option),
+                            'bg-red-100': showAnswer() && isIncorrectAnswer(option) && themeService.theme() === 'light',
+                            'bg-red-900/30': showAnswer() && isIncorrectAnswer(option) && themeService.theme() === 'dark',
+                            'cursor-not-allowed': showAnswer(),
+                            'opacity-50': showAnswer() && !isCorrectAnswer(option) && !isIncorrectAnswer(option)
+                        }">
                         <span class="flex items-center justify-between">
                             <span>{{ option }}</span>
                             <span *ngIf="showAnswer() && isCorrectAnswer(option)" class="text-2xl">✓</span>
@@ -98,13 +96,14 @@
                 </div>
 
                 <!-- Feedback Message -->
-                <div *ngIf="showAnswer()" class="mt-6 p-4 rounded-lg" role="alert" aria-live="polite"
-                    [class.bg-emerald-50]="isCorrectAnswer(selectedOption()!)"
-                    [class.dark:bg-emerald-950]="isCorrectAnswer(selectedOption()!)"
-                    [class.bg-red-50]="!isCorrectAnswer(selectedOption()!)"
-                    [class.dark:bg-red-950]="!isCorrectAnswer(selectedOption()!)">
-                    <p class="text-center font-medium" [class.text-emerald-600]="isCorrectAnswer(selectedOption()!)"
-                        [class.text-red-600]="!isCorrectAnswer(selectedOption()!)">
+                <div *ngIf="showAnswer()" class="mt-6 p-4 rounded-lg" role="alert" aria-live="polite" [ngClass]="{
+                        'bg-emerald-100': isCorrectAnswer(selectedOption()!) && themeService.theme() === 'light',
+                        'bg-emerald-900/30': isCorrectAnswer(selectedOption()!) && themeService.theme() === 'dark',
+                        'bg-red-100': !isCorrectAnswer(selectedOption()!) && themeService.theme() === 'light',
+                        'bg-red-900/30': !isCorrectAnswer(selectedOption()!) && themeService.theme() === 'dark'
+                    }">
+                    <p class="text-center font-medium" [class.text-emerald-700]="isCorrectAnswer(selectedOption()!)"
+                        [class.text-red-700]="!isCorrectAnswer(selectedOption()!)">
                         <span *ngIf="isCorrectAnswer(selectedOption()!)" id="correct-feedback">🎉 Correct! Well
                             done!</span>
                         <span *ngIf="!isCorrectAnswer(selectedOption()!)" id="incorrect-feedback">

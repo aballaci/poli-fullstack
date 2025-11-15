@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ExerciseService } from '../../../services/exercise.service';
 import { SessionStore } from '../../../state/session.store';
+import { ThemeService } from '../../../services/theme.service';
 import { SwipeCard, SwipeExercise } from '../../../models/exercise.models';
 
 @Component({
@@ -15,6 +16,7 @@ export class SwipeExerciseComponent implements OnInit {
     private exerciseService = inject(ExerciseService);
     private sessionStore = inject(SessionStore);
     private router = inject(Router);
+    readonly themeService = inject(ThemeService);
 
     // Exercise data
     readonly cards = signal<SwipeCard[]>([]);

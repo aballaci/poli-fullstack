@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ExerciseService } from '../../../services/exercise.service';
 import { SessionStore } from '../../../state/session.store';
+import { ThemeService } from '../../../services/theme.service';
 import { FillInBlankExercise, FillInBlankExercises } from '../../../models/exercise.models';
 
 @Component({
@@ -16,6 +17,7 @@ export class FillInBlankExerciseComponent implements OnInit {
     private sessionStore = inject(SessionStore);
     private router = inject(Router);
     private route = inject(ActivatedRoute);
+    readonly themeService = inject(ThemeService);
 
     // Exercise data
     readonly exercises = signal<FillInBlankExercise[]>([]);
