@@ -57,7 +57,6 @@
                 class="rounded-xl shadow-lg border border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)] p-6 md:p-8">
                 <!-- Reference Sentence -->
                 <div class="mb-6 p-4 rounded-lg bg-[var(--c-bg-muted)]">
-                    <p class="text-sm font-semibold text-[var(--c-text-secondary)] mb-2">Source:</p>
                     <p class="text-lg text-[var(--c-text-primary)]">{{ currentExercise().sourceText }}</p>
                 </div>
 
@@ -66,24 +65,7 @@
                     Drag words from the word bank to the answer area below to form the correct sentence
                 </p>
 
-                <!-- Available Words (Word Bank) -->
-                <div class="mb-6">
-                    <p class="text-sm font-semibold text-[var(--c-text-secondary)] mb-3">Word Bank:</p>
-                    <div class="flex flex-wrap gap-3 p-4 rounded-lg border-2 border-dashed border-[var(--c-border-subtle)] bg-[var(--c-bg-muted)] min-h-[80px]"
-                        (drop)="onDropToAvailable($event)" (dragover)="onDragOver($event)">
-                        <div *ngFor="let word of availableWords(); let i = index"
-                            class="px-4 py-2 rounded-lg border-2 border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)] font-medium cursor-move transition-all duration-200 hover:border-sky-500 hover:shadow-md"
-                            draggable="true" (dragstart)="onDragStart($event, word, 'available', i)">
-                            {{ word }}
-                        </div>
-                        <div *ngIf="availableWords().length === 0"
-                            class="w-full text-center text-[var(--c-text-muted)] py-4">
-                            All words used
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Target Area (Answer) -->
+                             <!-- Target Area (Answer) -->
                 <div class="mb-6">
                     <p class="text-sm font-semibold text-[var(--c-text-secondary)] mb-3">Your Answer:</p>
                     <div class="flex flex-wrap gap-3 p-4 rounded-lg border-2 border-dashed min-h-[80px]" [ngClass]="{
@@ -110,6 +92,25 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Available Words (Word Bank) -->
+                <div class="mb-6">
+                    <p class="text-sm font-semibold text-[var(--c-text-secondary)] mb-3">Word Bank:</p>
+                    <div class="flex flex-wrap gap-3 p-4 rounded-lg border-2 border-dashed border-[var(--c-border-subtle)] bg-[var(--c-bg-muted)] min-h-[80px]"
+                        (drop)="onDropToAvailable($event)" (dragover)="onDragOver($event)">
+                        <div *ngFor="let word of availableWords(); let i = index"
+                            class="px-4 py-2 rounded-lg border-2 border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)] font-medium cursor-move transition-all duration-200 hover:border-sky-500 hover:shadow-md"
+                            draggable="true" (dragstart)="onDragStart($event, word, 'available', i)">
+                            {{ word }}
+                        </div>
+                        <div *ngIf="availableWords().length === 0"
+                            class="w-full text-center text-[var(--c-text-muted)] py-4">
+                            All words used
+                        </div>
+                    </div>
+                </div>
+
+   
 
                 <!-- Correct Answer Display -->
                 <div *ngIf="showAnswer()" class="mt-6 p-4 rounded-lg text-emerald-700" [ngClass]="{
