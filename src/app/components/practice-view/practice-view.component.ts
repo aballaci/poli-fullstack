@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { TranslocoModule } from '@jsverse/transloco';
 import { SessionStore } from '../../state/session.store';
 import { GeminiService } from '../../services/gemini.service';
+import { SoundService } from '../../services/sound.service';
 import { Language, Sentence, SentencePart, SpeechAssessment } from '../../models';
 
 type PracticeStep = 'initial' | 'prompting' | 'result';
@@ -77,6 +78,7 @@ export class PracticeViewComponent implements OnDestroy {
   // Injected services
   store = inject(SessionStore);
   gemini = inject(GeminiService);
+  soundService = inject(SoundService);
   cdr = inject(ChangeDetectorRef);
   zone = inject(NgZone);
 
@@ -407,11 +409,11 @@ export class PracticeViewComponent implements OnDestroy {
   }
 
   private playResultSound(isSuccess: boolean): void {
-    const fileName = isSuccess ? 'chime-success.mp3' : 'chime-failure.mp3';
-    const baseUrl = this.store.s3BaseUrl();
-    if (!baseUrl || typeof window === 'undefined') return;
-    const audio = new Audio(`${baseUrl}${fileName}`);
-    audio.play().catch(e => console.error(`[Audio] Failed to play ${fileName}`, e));
+    if (isSuccess) {
+      this.soundService.playSuccess();
+    } else {
+      this.soundService.playFailure();
+    }
   }
 
   private calculateStringSimilarity(str1: string, str2: string): number {

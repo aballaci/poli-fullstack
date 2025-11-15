@@ -22,10 +22,10 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   // Hero image rotation
   private readonly heroImagesOriginal = [
     { src: '/assets/spanish-madrid.jpg', alt: 'Learn Spanish - Plaza Mayor in Madrid', languageKey: 'languages.spanish', languageCode: 'es', flag: 'es', phrase: '¡Hola amigo!' },
-    { src: '/assets/paris.webp', alt: 'Learn French - Eiffel Tower in Paris', languageKey: 'languages.french', languageCode: 'fr', flag: 'fr', phrase: 'Bonjour!' },
+    { src: '/assets/paris.jpg', alt: 'Learn French - Eiffel Tower in Paris', languageKey: 'languages.french', languageCode: 'fr', flag: 'fr', phrase: 'Bonjour!' },
     { src: '/assets/german-berlin.jpg', alt: 'Learn German - Brandenburg Gate in Berlin', languageKey: 'languages.german', languageCode: 'de', flag: 'de', phrase: 'Guten Tag!' },
     { src: '/assets/italian-rome.jpg', alt: 'Learn Italian - Colosseum in Rome', languageKey: 'languages.italian', languageCode: 'it', flag: 'it', phrase: 'Ciao bella!' },
-    { src: '/assets/japan.webp', alt: 'Learn Japanese - Temples in Tokyo', languageKey: 'languages.japanese', languageCode: 'ja', flag: 'jp', phrase: 'こんにちは!' },
+    { src: '/assets/japan.jpg', alt: 'Learn Japanese - Temples in Tokyo', languageKey: 'languages.japanese', languageCode: 'ja', flag: 'jp', phrase: 'こんにちは!' },
     { src: '/assets/chinese-beijing.jpg', alt: 'Learn Chinese - Temple of Heaven in Beijing', languageKey: 'languages.chinese', languageCode: 'zh', flag: 'cn', phrase: '你好!' },
     { src: '/assets/portuguese-lisbon.jpg', alt: 'Learn Portuguese - Trams in Lisbon', languageKey: 'languages.portuguese', languageCode: 'pt', flag: 'pt', phrase: 'Olá!' },
     { src: '/assets/arabic-cairo.jpg', alt: 'Learn Arabic - Pyramids of Giza in Cairo', languageKey: 'languages.arabic', languageCode: 'ar', flag: 'sa', phrase: 'مرحبا!' }

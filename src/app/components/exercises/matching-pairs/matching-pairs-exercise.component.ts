@@ -5,6 +5,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { ExerciseService } from '../../../services/exercise.service';
 import { SessionStore } from '../../../state/session.store';
 import { ThemeService } from '../../../services/theme.service';
+import { SoundService } from '../../../services/sound.service';
 import { WordItem, MatchingPairsExercise } from '../../../models/exercise.models';
 
 interface SelectedCard {
@@ -28,6 +29,7 @@ export class MatchingPairsExerciseComponent implements OnInit {
     private sessionStore = inject(SessionStore);
     private router = inject(Router);
     readonly themeService = inject(ThemeService);
+    private soundService = inject(SoundService);
 
     // Exercise data
     readonly sourceWords = signal<WordItem[]>([]);
@@ -162,6 +164,9 @@ export class MatchingPairsExerciseComponent implements OnInit {
         );
 
         if (isCorrect) {
+            // Play success sound
+            this.soundService.playSuccess();
+
             // Show success animation
             this.successAnimationIds.update(ids => {
                 const newIds = new Set(ids);
@@ -188,6 +193,9 @@ export class MatchingPairsExerciseComponent implements OnInit {
                 });
             }, 600);
         } else {
+            // Play failure sound
+            this.soundService.playFailure();
+
             // Incorrect match - remove a heart
             this.removeHeart();
         }

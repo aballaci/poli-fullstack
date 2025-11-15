@@ -27,3 +27,31 @@ span[class*="text-xs"] {
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
 }
+
+/* Center Amplify authenticator login form vertically */
+amplify-authenticator.auth-wrapper [data-amplify-container] {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+/* Set min-width for the router (login form) */
+amplify-authenticator.auth-wrapper [data-amplify-router] {
+    width: 100%;
+    min-width: 320px;
+    /* Minimum for small mobile devices */
+    max-width: 460px;
+    /* Maximum width for normal devices */
+}
+
+/* For tablets and larger screens, use fixed width */
+@media (min-width: 640px) {
+    amplify-authenticator.auth-wrapper [data-amplify-router] {
+        min-width: 460px;
+    }
+}
+
+/* The [data-amplify-container] element only exists during login/signup */
+/* After authentication, it's replaced with the authenticated content */

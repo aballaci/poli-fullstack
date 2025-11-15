@@ -1,21 +1,31 @@
 @if (needsAuth()) {
-<amplify-authenticator>
-  <ng-template amplifySlot="authenticated" let-user="user" let-signOut="signOut">
-    <div class="bg-[var(--c-bg-body)] text-[var(--c-text-body)] min-h-screen font-sans flex flex-col">
-      <app-header></app-header>
+<div class="auth-background">
+  <!-- Decorative background logos using favicon -->
+  <img src="/assets/favicon.svg" alt="" class="auth-logo auth-logo-1" />
+  <img src="/assets/favicon.svg" alt="" class="auth-logo auth-logo-2" />
+  <img src="/assets/favicon.svg" alt="" class="auth-logo auth-logo-3" />
+  <img src="/assets/favicon.svg" alt="" class="auth-logo auth-logo-4" />
+  <img src="/assets/favicon.svg" alt="" class="auth-logo auth-logo-5" />
+  <img src="/assets/favicon.svg" alt="" class="auth-logo auth-logo-6" />
 
-      <!-- Main Content -->
-      <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow overflow-y-auto">
-        <router-outlet></router-outlet>
-      </main>
+  <amplify-authenticator class="auth-wrapper bg-[var(--c-bg-body)]">
+    <ng-template amplifySlot="authenticated" let-user="user" let-signOut="signOut">
+      <div class="bg-[var(--c-bg-body)] text-[var(--c-text-body)] min-h-screen font-sans flex flex-col">
+        <app-header></app-header>
 
-      <app-footer></app-footer>
+        <!-- Main Content -->
+        <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow overflow-y-auto">
+          <router-outlet></router-outlet>
+        </main>
 
-      <!-- Undo Notification -->
-      <app-undo-notification></app-undo-notification>
-    </div>
-  </ng-template>
-</amplify-authenticator>
+        <app-footer></app-footer>
+
+        <!-- Undo Notification -->
+        <app-undo-notification></app-undo-notification>
+      </div>
+    </ng-template>
+  </amplify-authenticator>
+</div>
 } @else {
 <!-- Public routes (home, intro, help-center, contact-us, privacy-policy, terms-of-service) don't require authentication -->
 <div class="bg-[var(--c-bg-body)] text-[var(--c-text-body)] min-h-screen font-sans flex flex-col">

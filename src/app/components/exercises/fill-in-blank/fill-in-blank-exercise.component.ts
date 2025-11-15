@@ -5,6 +5,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { ExerciseService } from '../../../services/exercise.service';
 import { SessionStore } from '../../../state/session.store';
 import { ThemeService } from '../../../services/theme.service';
+import { SoundService } from '../../../services/sound.service';
 import { FillInBlankExercise, FillInBlankExercises } from '../../../models/exercise.models';
 
 @Component({
@@ -19,6 +20,7 @@ export class FillInBlankExerciseComponent implements OnInit {
     private router = inject(Router);
     private route = inject(ActivatedRoute);
     readonly themeService = inject(ThemeService);
+    private soundService = inject(SoundService);
 
     // Exercise data
     readonly exercises = signal<FillInBlankExercise[]>([]);
@@ -118,6 +120,17 @@ export class FillInBlankExerciseComponent implements OnInit {
         this.selectedOption.set(option);
         // Automatically show the answer when an option is selected
         this.showAnswer.set(true);
+
+        // Play sound based on correctness
+        const exercise = this.currentExercise();
+        if (exercise) {
+            const isCorrect = option === exercise.correctAnswer;
+            if (isCorrect) {
+                this.soundService.playSuccess();
+            } else {
+                this.soundService.playFailure();
+            }
+        }
     }
 
     /**

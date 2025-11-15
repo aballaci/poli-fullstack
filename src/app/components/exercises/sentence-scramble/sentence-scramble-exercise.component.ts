@@ -5,6 +5,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { ExerciseService } from '../../../services/exercise.service';
 import { SessionStore } from '../../../state/session.store';
 import { ThemeService } from '../../../services/theme.service';
+import { SoundService } from '../../../services/sound.service';
 import { SentenceScrambleExercise, SentenceScrambleExercises } from '../../../models/exercise.models';
 
 @Component({
@@ -18,6 +19,7 @@ export class SentenceScrambleExerciseComponent implements OnInit {
     private sessionStore = inject(SessionStore);
     private router = inject(Router);
     readonly themeService = inject(ThemeService);
+    private soundService = inject(SoundService);
 
     // Exercise data
     readonly exercises = signal<SentenceScrambleExercise[]>([]);
@@ -219,6 +221,22 @@ export class SentenceScrambleExerciseComponent implements OnInit {
      */
     checkOrder(): void {
         this.showAnswer.set(true);
+
+        // Check if all words are in correct positions
+        const exercise = this.currentExercise();
+        if (!exercise) return;
+
+        const allCorrect = this.targetWords().every((word, index) => {
+            const correctWord = exercise.scrambledWords[exercise.correctOrder[index]];
+            return word === correctWord;
+        });
+
+        // Play appropriate sound
+        if (allCorrect) {
+            this.soundService.playSuccess();
+        } else {
+            this.soundService.playFailure();
+        }
     }
 
     /**

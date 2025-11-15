@@ -5,6 +5,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { ExerciseService } from '../../../services/exercise.service';
 import { SessionStore } from '../../../state/session.store';
 import { ThemeService } from '../../../services/theme.service';
+import { SoundService } from '../../../services/sound.service';
 import { SwipeCard, SwipeExercise } from '../../../models/exercise.models';
 
 @Component({
@@ -18,6 +19,7 @@ export class SwipeExerciseComponent implements OnInit {
     private sessionStore = inject(SessionStore);
     private router = inject(Router);
     readonly themeService = inject(ThemeService);
+    private soundService = inject(SoundService);
 
     // Exercise data
     readonly cards = signal<SwipeCard[]>([]);
@@ -178,6 +180,13 @@ export class SwipeExerciseComponent implements OnInit {
     private showFeedbackAnimation(isCorrect: boolean): void {
         this.feedbackCorrect.set(isCorrect);
         this.showFeedback.set(true);
+
+        // Play sound
+        if (isCorrect) {
+            this.soundService.playSuccess();
+        } else {
+            this.soundService.playFailure();
+        }
 
         setTimeout(() => {
             this.showFeedback.set(false);
