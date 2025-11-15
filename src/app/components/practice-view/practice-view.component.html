@@ -125,26 +125,18 @@
       <div class="animate-fade-in">
         <!-- Prompt Sentence -->
         <div>
-          <p class="text-sm font-medium text-[var(--c-text-muted)] flex items-center justify-center gap-2">
-            <span class="fi fi-{{ prompt().lang.flag }}"></span>
-            {{ prompt().lang.display_name }} (Prompt)
-          </p>
-          <p class="text-lg sm:text-xl text-[var(--c-text-body)] mt-2 text-center">{{ prompt().part.text }}</p>
+          <p class="text-lg sm:text-xl text-[var(--c-text-body)] mt-2 text-left">{{ prompt().part.text }}</p>
         </div>
         <!-- Divider -->
-        <div class="my-4 flex items-center justify-center text-sm text-[var(--c-text-muted)]">
+        <div class="my-4 flex items-center justify-left text-sm text-[var(--c-text-muted)]">
           <div class="flex-grow border-t border-dashed border-[var(--c-border-subtle)]"></div>
           <i class="fa-solid fa-arrow-down mx-4"></i>
           <div class="flex-grow border-t border-dashed border-[var(--c-border-subtle)]"></div>
         </div>
         <!-- Challenge Sentence -->
         <div>
-          <p class="text-sm font-medium text-[var(--c-text-muted)] flex items-center justify-center gap-2">
-            <span class="fi fi-{{ challenge().lang.flag }}"></span>
-            {{ challenge().lang.display_name }} (Challenge)
-          </p>
-          <div class="relative min-h-[3rem] flex items-center justify-center mt-2">
-            <p class="text-lg sm:text-xl font-semibold text-[var(--c-text-headings)] transition-opacity duration-300 text-center"
+          <div class="relative min-h-[3rem] flex items-center justify-start mt-2">
+            <p class="text-lg sm:text-xl font-semibold text-[var(--c-text-headings)] transition-opacity duration-300 text-left"
               [class.opacity-0]="!isChallengeVisible()">{{ challenge().part.text }}</p>
             @if(!isChallengeVisible()) {
             <div class="absolute inset-0 flex items-center justify-center">

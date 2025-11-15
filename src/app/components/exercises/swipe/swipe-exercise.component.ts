@@ -27,7 +27,7 @@ export class SwipeExerciseComponent implements OnInit {
     readonly errorMessage = signal<string | null>(null);
 
     // Swipe state
-    readonly cardTransform = signal<string>('translate(0, 0) rotate(0deg)');
+    readonly cardTransform = signal<string>('translate(0, 0) rotateY(0deg) rotateX(0deg)');
     readonly showFeedback = signal<boolean>(false);
     readonly feedbackCorrect = signal<boolean>(false);
     private touchStartX = 0;
@@ -102,9 +102,12 @@ export class SwipeExerciseComponent implements OnInit {
         const touch = event.touches[0];
         const deltaX = touch.clientX - this.touchStartX;
         const deltaY = touch.clientY - this.touchStartY;
-        const rotation = deltaX / 20;
 
-        this.cardTransform.set(`translate(${deltaX}px, ${deltaY}px) rotate(${rotation}deg)`);
+        // Calculate rotation angles based on movement
+        const rotateY = deltaX / 10; // Horizontal rotation
+        const rotateX = -deltaY / 10; // Vertical rotation (negative for natural feel)
+
+        this.cardTransform.set(`translate(${deltaX}px, ${deltaY}px) rotateY(${rotateY}deg) rotateX(${rotateX}deg)`);
     }
 
     /**
@@ -123,7 +126,7 @@ export class SwipeExerciseComponent implements OnInit {
             }
         } else {
             // Reset card position
-            this.cardTransform.set('translate(0, 0) rotate(0deg)');
+            this.cardTransform.set('translate(0, 0) rotateY(0deg) rotateX(0deg)');
         }
     }
 
@@ -134,6 +137,9 @@ export class SwipeExerciseComponent implements OnInit {
         if (this.showSummary()) return;
         const card = this.currentCard();
         if (!card) return;
+
+        // Animate card exit with rotation
+        this.cardTransform.set('translate(400px, 0) rotateY(30deg)');
 
         const isCorrect = card.isCorrect;
         this.recordAnswer(isCorrect);
@@ -148,6 +154,9 @@ export class SwipeExerciseComponent implements OnInit {
         if (this.showSummary()) return;
         const card = this.currentCard();
         if (!card) return;
+
+        // Animate card exit with rotation
+        this.cardTransform.set('translate(-400px, 0) rotateY(-30deg)');
 
         const isCorrect = !card.isCorrect;
         this.recordAnswer(isCorrect);
@@ -179,10 +188,10 @@ export class SwipeExerciseComponent implements OnInit {
      */
     private advanceToNextCard(): void {
         setTimeout(() => {
-            this.cardTransform.set('translate(0, 0) rotate(0deg)');
-
             if (this.currentCardIndex() < this.totalCards() - 1) {
                 this.currentCardIndex.update(index => index + 1);
+                // Immediately reset transform for the new card (no animation)
+                this.cardTransform.set('translate(0, 0) rotateY(0deg) rotateX(0deg)');
             } else {
                 this.showSummary.set(true);
             }

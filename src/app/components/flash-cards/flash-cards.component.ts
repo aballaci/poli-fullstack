@@ -21,7 +21,6 @@ import { HighlightedWord } from '../../models';
     /* Different flip animations triggered by parent class */
     .flip-y .flashcard.is-flipped { transform: rotateY(180deg); }
     .flip-x .flashcard.is-flipped { transform: rotateX(180deg); }
-    .flip-diag .flashcard.is-flipped { transform: rotate3d(1, 1, 0, 180deg); }
 
 
     .flashcard-face {
@@ -50,7 +49,7 @@ export class FlashCardsComponent {
   isCardFlipped = signal(false);
 
   // New animation logic
-  private readonly flipAnimations = ['flip-y', 'flip-x', 'flip-diag'];
+  private readonly flipAnimations = ['flip-y', 'flip-x'];
   currentAnimation = signal(this.flipAnimations[0]);
 
   currentFlashcard = computed(() => {

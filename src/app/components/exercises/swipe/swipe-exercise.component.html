@@ -65,9 +65,10 @@
 
                 <!-- Swipe Card -->
                 <div *ngIf="currentCard()"
-                    class="relative w-full max-w-md h-80 rounded-2xl shadow-2xl border-2 border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)] p-8 flex flex-col items-center justify-center transition-transform duration-200 gpu-accelerated scale-up"
-                    [style.transform]="cardTransform()" (touchstart)="onTouchStart($event)"
-                    (touchmove)="onTouchMove($event)" (touchend)="onTouchEnd($event)">
+                    class="relative w-full max-w-md h-80 rounded-2xl shadow-2xl border-2 border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)] p-8 flex flex-col items-center justify-center transition-transform duration-200 gpu-accelerated"
+                    style="transform-style: preserve-3d; perspective: 1000px;" [style.transform]="cardTransform()"
+                    (touchstart)="onTouchStart($event)" (touchmove)="onTouchMove($event)"
+                    (touchend)="onTouchEnd($event)">
 
                     <!-- Feedback Overlay -->
                     <div *ngIf="showFeedback()"
@@ -93,18 +94,18 @@
             <!-- Button Controls -->
             <div class="flex justify-center gap-8 mt-8">
                 <button (click)="swipeLeft()"
-                    class="w-16 h-16 rounded-full bg-red-500 text-white hover:bg-red-600 transition-all hover:scale-110 shadow-lg flex items-center justify-center button-press">
+                    class="w-16 h-16 rounded-full bg-red-500 text-white hover:bg-red-600 transition-colors shadow-lg flex items-center justify-center">
                     <span class="text-3xl">✗</span>
                 </button>
                 <button (click)="swipeRight()"
-                    class="w-16 h-16 rounded-full bg-emerald-500 text-white hover:bg-emerald-600 transition-all hover:scale-110 shadow-lg flex items-center justify-center button-press">
+                    class="w-16 h-16 rounded-full bg-emerald-500 text-white hover:bg-emerald-600 transition-colors shadow-lg flex items-center justify-center">
                     <span class="text-3xl">✓</span>
                 </button>
             </div>
         </div>
 
         <!-- Summary -->
-        <div *ngIf="showSummary()" class="space-y-6 scale-up">
+        <div *ngIf="showSummary()" class="space-y-6">
             <div
                 class="rounded-xl shadow-lg border border-[var(--c-border-subtle)] bg-[var(--c-bg-surface)] p-8 text-center">
                 <div class="text-6xl mb-6">🎉</div>
