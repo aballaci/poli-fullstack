@@ -29,6 +29,8 @@ export class CacheManagementService {
      * Get comprehensive cache statistics
      */
     async getCacheStats(): Promise<CacheStats> {
+        console.log('[CacheManagement] Calculating cache statistics...');
+
         const [indexedDBStats, swStats] = await Promise.all([
             this.getIndexedDBStats(),
             this.getServiceWorkerCacheStats()
@@ -36,7 +38,7 @@ export class CacheManagementService {
 
         const totalSize = indexedDBStats.size + swStats.size;
 
-        return {
+        const stats = {
             indexedDB: indexedDBStats,
             serviceWorker: swStats,
             total: {
@@ -44,6 +46,16 @@ export class CacheManagementService {
                 sizeFormatted: this.formatBytes(totalSize)
             }
         };
+
+        console.log('[CacheManagement] Cache stats:', {
+            totalSize: stats.total.sizeFormatted,
+            indexedDB: this.formatBytes(indexedDBStats.size),
+            serviceWorker: this.formatBytes(swStats.size),
+            scenarios: indexedDBStats.scenarioCount,
+            exercises: indexedDBStats.exerciseCount
+        });
+
+        return stats;
     }
 
     private async getIndexedDBStats() {
@@ -104,11 +116,14 @@ export class CacheManagementService {
      * Clear all caches (both IndexedDB and Service Worker)
      */
     async clearAllCaches(): Promise<void> {
+        console.log('[CacheManagement] Clearing all caches (IndexedDB + Service Worker)...');
+
         await Promise.all([
             this.clearIndexedDBCache(),
             this.clearServiceWorkerCache()
         ]);
-        console.log('[CacheManagement] All caches cleared');
+
+        console.log('[CacheManagement] ✓ All caches cleared successfully');
     }
 
     /**
@@ -116,18 +131,26 @@ export class CacheManagementService {
      */
     async clearServiceWorkerCache(): Promise<void> {
         if (!('caches' in window)) {
-            console.log('[CacheManagement] Cache API not available');
+            console.log('[CacheManagement] Cache API not available in this browser');
             return;
         }
 
+        console.log('[CacheManagement] Clearing Service Worker cache...');
+
         try {
             const cacheNames = await caches.keys();
+            console.log(`[CacheManagement] Found ${cacheNames.length} cache(s):`, cacheNames);
+
             await Promise.all(
-                cacheNames.map(cacheName => caches.delete(cacheName))
+                cacheNames.map(cacheName => {
+                    console.log(`[CacheManagement] Deleting cache: ${cacheName}`);
+                    return caches.delete(cacheName);
+                })
             );
-            console.log('[CacheManagement] Service Worker cache cleared');
+
+            console.log('[CacheManagement] ✓ Service Worker cache cleared');
         } catch (error) {
-            console.error('[CacheManagement] Error clearing service worker cache:', error);
+            console.error('[CacheManagement] ✗ Error clearing service worker cache:', error);
             throw error;
         }
     }
@@ -136,11 +159,13 @@ export class CacheManagementService {
      * Clear only IndexedDB cache
      */
     async clearIndexedDBCache(): Promise<void> {
+        console.log('[CacheManagement] Clearing IndexedDB cache...');
+
         try {
             await this.offlineStorage.clearCache();
-            console.log('[CacheManagement] IndexedDB cache cleared');
+            console.log('[CacheManagement] ✓ IndexedDB cache cleared');
         } catch (error) {
-            console.error('[CacheManagement] Error clearing IndexedDB cache:', error);
+            console.error('[CacheManagement] ✗ Error clearing IndexedDB cache:', error);
             throw error;
         }
     }

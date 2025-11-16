@@ -87,6 +87,11 @@ export class OfflineStorageService {
     private readonly DB_NAME = 'poli-offline-db';
     private readonly DB_VERSION = 1;
 
+    // Cache size limits
+    private readonly MAX_CACHE_SIZE_BYTES = 50 * 1024 * 1024; // 50MB
+    private readonly MIN_SCENARIOS_TO_KEEP = 10;
+    private readonly CACHE_CHECK_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
+
     // Signals for reactive state
     private isOfflineSignal = signal<boolean>(!navigator.onLine);
     private savedScenariosSignal = signal<OfflineScenarioMetadata[]>([]);
@@ -106,10 +111,14 @@ export class OfflineStorageService {
     // Debounce timer for session state saves
     private sessionStateSaveTimer: any = null;
 
+    // Cache monitoring timer
+    private cacheMonitoringTimer: any = null;
+
     constructor() {
         this.initializeDatabase();
         this.setupNetworkListeners();
         this.loadSavedScenarios();
+        this.startCacheMonitoring();
     }
 
     // Database initialization
@@ -174,9 +183,87 @@ export class OfflineStorageService {
         }
     }
 
+    // Cache monitoring
+    private startCacheMonitoring(): void {
+        // Initial check after a short delay
+        setTimeout(() => this.checkAndPruneCache(), 10000);
+
+        // Periodic monitoring
+        this.cacheMonitoringTimer = setInterval(() => {
+            this.checkAndPruneCache();
+        }, this.CACHE_CHECK_INTERVAL_MS);
+    }
+
+    private async checkAndPruneCache(): Promise<void> {
+        try {
+            const usage = await this.calculateStorageUsage();
+
+            console.log(`[OfflineStorage] Cache monitoring: ${(usage.used / (1024 * 1024)).toFixed(2)}MB used (${usage.percentage.toFixed(1)}%)`);
+
+            // Check if cache exceeds limit
+            if (usage.used > this.MAX_CACHE_SIZE_BYTES) {
+                console.warn(`[OfflineStorage] Cache size (${(usage.used / (1024 * 1024)).toFixed(2)}MB) exceeds limit (${this.MAX_CACHE_SIZE_BYTES / (1024 * 1024)}MB). Starting automatic pruning...`);
+                await this.performAutomaticPruning();
+            }
+        } catch (error) {
+            console.error('[OfflineStorage] Error during cache monitoring:', error);
+        }
+    }
+
+    private async performAutomaticPruning(): Promise<void> {
+        if (!this.db) return;
+
+        try {
+            const scenarios = await this.db.getAll('scenarios');
+
+            // Sort by lastModified (oldest first) - LRU strategy
+            const sortedScenarios = scenarios
+                .map(s => ({
+                    ...s,
+                    lastModifiedTime: new Date(s.lastModified).getTime(),
+                    size: new Blob([JSON.stringify(s)]).size
+                }))
+                .sort((a, b) => a.lastModifiedTime - b.lastModifiedTime);
+
+            // Keep at least MIN_SCENARIOS_TO_KEEP most recent scenarios
+            const scenariosToKeep = sortedScenarios.slice(-this.MIN_SCENARIOS_TO_KEEP);
+            const scenariosToConsiderForPruning = sortedScenarios.slice(0, -this.MIN_SCENARIOS_TO_KEEP);
+
+            let currentSize = await this.getCacheSize();
+            let prunedCount = 0;
+
+            console.log(`[OfflineStorage] Pruning: ${scenariosToConsiderForPruning.length} scenarios eligible for removal, ${scenariosToKeep.length} will be kept`);
+
+            // Remove oldest scenarios until we're under the limit
+            for (const scenario of scenariosToConsiderForPruning) {
+                if (currentSize <= this.MAX_CACHE_SIZE_BYTES) {
+                    break;
+                }
+
+                console.log(`[OfflineStorage] Pruning scenario: ${scenario.id} (${scenario.name}) - Last modified: ${new Date(scenario.lastModified).toLocaleDateString()}, Size: ${(scenario.size / 1024).toFixed(2)}KB`);
+
+                await this.removeScenarioFromOffline(scenario.id);
+                currentSize -= scenario.size;
+                prunedCount++;
+            }
+
+            if (prunedCount > 0) {
+                console.log(`[OfflineStorage] ✓ Automatic pruning complete: ${prunedCount} scenario(s) removed, cache size now: ${(currentSize / (1024 * 1024)).toFixed(2)}MB`);
+                await this.loadSavedScenarios();
+                await this.calculateStorageUsage();
+            } else {
+                console.log('[OfflineStorage] No scenarios pruned - all scenarios are within the minimum keep threshold');
+            }
+        } catch (error) {
+            console.error('[OfflineStorage] Error during automatic pruning:', error);
+        }
+    }
+
     // Scenario management
     async saveScenarioForOffline(scenario: ConversationScenario): Promise<void> {
         if (!this.db) throw new Error('Database not initialized');
+
+        console.log(`[OfflineStorage] Saving scenario for offline: ${scenario.id} (${scenario.name})`);
 
         try {
             const offlineData: OfflineScenarioData = {
@@ -194,16 +281,50 @@ export class OfflineStorageService {
             // Reload metadata
             await this.loadSavedScenarios();
             await this.calculateStorageUsage();
+
+            // Check if we need to prune after adding
+            const usage = await this.calculateStorageUsage();
+            if (usage.used > this.MAX_CACHE_SIZE_BYTES) {
+                console.log('[OfflineStorage] Cache limit exceeded after save, triggering automatic pruning...');
+                await this.performAutomaticPruning();
+            }
+
+            console.log(`[OfflineStorage] ✓ Scenario saved successfully: ${scenario.id}`);
         } catch (error: any) {
             if (error.name === 'QuotaExceededError') {
-                throw new Error('Storage quota exceeded. Please remove some offline scenarios.');
+                console.error('[OfflineStorage] ✗ Storage quota exceeded - attempting automatic pruning...');
+
+                // Try to prune and retry
+                await this.performAutomaticPruning();
+
+                // Retry the save
+                try {
+                    const offlineData: OfflineScenarioData = {
+                        ...scenario,
+                        savedAt: new Date().toISOString(),
+                        lastModified: new Date().toISOString(),
+                        exercises: {}
+                    };
+                    await this.db!.put('scenarios', offlineData);
+                    this.scenarioCache.set(scenario.id, offlineData);
+                    await this.loadSavedScenarios();
+                    await this.calculateStorageUsage();
+                    console.log(`[OfflineStorage] ✓ Scenario saved successfully after pruning: ${scenario.id}`);
+                } catch (retryError) {
+                    console.error('[OfflineStorage] ✗ Failed to save scenario even after pruning');
+                    throw new Error('Storage quota exceeded. Please manually remove some offline scenarios.');
+                }
+            } else {
+                console.error('[OfflineStorage] ✗ Failed to save scenario:', error);
+                throw error;
             }
-            throw error;
         }
     }
 
     async removeScenarioFromOffline(scenarioId: string): Promise<void> {
         if (!this.db) throw new Error('Database not initialized');
+
+        console.log(`[OfflineStorage] Removing scenario from offline storage: ${scenarioId}`);
 
         try {
             // Remove scenario
@@ -223,8 +344,10 @@ export class OfflineStorageService {
             // Reload metadata
             await this.loadSavedScenarios();
             await this.calculateStorageUsage();
+
+            console.log(`[OfflineStorage] ✓ Scenario removed successfully: ${scenarioId}`);
         } catch (error) {
-            console.error('Error removing scenario from offline storage:', error);
+            console.error('[OfflineStorage] ✗ Error removing scenario from offline storage:', error);
             throw error;
         }
     }
@@ -234,27 +357,51 @@ export class OfflineStorageService {
 
         // Check memory cache first
         if (this.scenarioCache.has(scenarioId)) {
+            console.log(`[OfflineStorage] ✓ Scenario retrieved from memory cache: ${scenarioId}`);
+
+            // Update lastModified timestamp for LRU tracking
+            try {
+                const data = await this.db.get('scenarios', scenarioId);
+                if (data) {
+                    data.lastModified = new Date().toISOString();
+                    await this.db.put('scenarios', data);
+                }
+            } catch (error) {
+                console.error('[OfflineStorage] Error updating lastModified timestamp:', error);
+            }
+
             return this.scenarioCache.get(scenarioId)!;
         }
 
         try {
             const data = await this.db.get('scenarios', scenarioId);
 
-            if (!data) return null;
+            if (!data) {
+                if (this.isOffline()) {
+                    console.warn(`[OfflineStorage] ⚠ Scenario not available offline: ${scenarioId}`);
+                }
+                return null;
+            }
 
             // Validate data structure
             if (!this.validateScenarioData(data)) {
-                console.error('Corrupted scenario data, removing from storage');
+                console.error('[OfflineStorage] ✗ Corrupted scenario data detected, removing from storage');
                 await this.removeScenarioFromOffline(scenarioId);
                 return null;
             }
 
+            // Update lastModified timestamp for LRU tracking
+            data.lastModified = new Date().toISOString();
+            await this.db.put('scenarios', data);
+
             // Add to memory cache
             this.addToMemoryCache(scenarioId, data);
 
+            console.log(`[OfflineStorage] ✓ Scenario retrieved from IndexedDB: ${scenarioId}`);
+
             return data;
         } catch (error) {
-            console.error('Error reading offline scenario:', error);
+            console.error('[OfflineStorage] ✗ Error reading offline scenario:', error);
             return null;
         }
     }
@@ -293,6 +440,8 @@ export class OfflineStorageService {
     async cacheExercise(scenarioId: string, exerciseType: ExerciseType, data: any): Promise<void> {
         if (!this.db) throw new Error('Database not initialized');
 
+        console.log(`[OfflineStorage] Caching exercise: ${scenarioId} - ${exerciseType}`);
+
         try {
             await this.db.put('exercises', {
                 scenarioId,
@@ -300,17 +449,42 @@ export class OfflineStorageService {
                 data
             });
 
-            // Update scenario's hasExercises flag
+            // Update scenario's hasExercises flag and lastModified timestamp
             const scenario = await this.db.get('scenarios', scenarioId);
             if (scenario) {
                 scenario.exercises[exerciseType] = data;
+                scenario.lastModified = new Date().toISOString(); // Update access time for LRU
                 await this.db.put('scenarios', scenario);
             }
 
             await this.loadSavedScenarios();
-        } catch (error) {
-            console.error('Error caching exercise:', error);
-            throw error;
+            await this.calculateStorageUsage();
+
+            console.log(`[OfflineStorage] ✓ Exercise cached successfully: ${scenarioId} - ${exerciseType}`);
+        } catch (error: any) {
+            if (error.name === 'QuotaExceededError') {
+                console.error('[OfflineStorage] ✗ Storage quota exceeded while caching exercise - attempting automatic pruning...');
+                await this.performAutomaticPruning();
+
+                // Retry
+                try {
+                    await this.db!.put('exercises', { scenarioId, exerciseType, data });
+                    const scenario = await this.db!.get('scenarios', scenarioId);
+                    if (scenario) {
+                        scenario.exercises[exerciseType] = data;
+                        scenario.lastModified = new Date().toISOString();
+                        await this.db!.put('scenarios', scenario);
+                    }
+                    await this.loadSavedScenarios();
+                    console.log(`[OfflineStorage] ✓ Exercise cached successfully after pruning: ${scenarioId} - ${exerciseType}`);
+                } catch (retryError) {
+                    console.error('[OfflineStorage] ✗ Failed to cache exercise even after pruning');
+                    throw new Error('Storage quota exceeded. Please manually remove some offline scenarios.');
+                }
+            } else {
+                console.error('[OfflineStorage] ✗ Error caching exercise:', error);
+                throw error;
+            }
         }
     }
 
@@ -319,9 +493,14 @@ export class OfflineStorageService {
 
         try {
             const entry = await this.db.get('exercises', [scenarioId, exerciseType]);
+            if (entry) {
+                console.log(`[OfflineStorage] ✓ Exercise retrieved from cache: ${scenarioId} - ${exerciseType}`);
+            } else if (this.isOffline()) {
+                console.warn(`[OfflineStorage] ⚠ Exercise not available offline: ${scenarioId} - ${exerciseType}`);
+            }
             return entry?.data || null;
         } catch (error) {
-            console.error('Error retrieving cached exercise:', error);
+            console.error('[OfflineStorage] ✗ Error retrieving cached exercise:', error);
             return null;
         }
     }
@@ -453,6 +632,8 @@ export class OfflineStorageService {
     async clearAllOfflineData(): Promise<void> {
         if (!this.db) return;
 
+        console.log('[OfflineStorage] Clearing all offline data...');
+
         try {
             // Clear all stores
             await this.db.clear('scenarios');
@@ -465,8 +646,10 @@ export class OfflineStorageService {
             // Update state
             this.savedScenariosSignal.set([]);
             await this.calculateStorageUsage();
+
+            console.log('[OfflineStorage] ✓ All offline data cleared successfully');
         } catch (error) {
-            console.error('Error clearing offline data:', error);
+            console.error('[OfflineStorage] ✗ Error clearing offline data:', error);
             throw error;
         }
     }
@@ -545,31 +728,111 @@ export class OfflineStorageService {
     async pruneOldCache(maxAgeMs: number = 7 * 24 * 60 * 60 * 1000): Promise<number> {
         if (!this.db) return 0;
 
+        console.log(`[OfflineStorage] Pruning scenarios older than ${Math.floor(maxAgeMs / (24 * 60 * 60 * 1000))} days...`);
+
         try {
             const scenarios = await this.db.getAll('scenarios');
             const now = Date.now();
             let prunedCount = 0;
 
-            for (const scenario of scenarios) {
-                const lastModified = new Date(scenario.lastModified).getTime();
-                const age = now - lastModified;
+            // Sort by lastModified to ensure we keep the most recent ones
+            const sortedScenarios = scenarios
+                .map(s => ({
+                    ...s,
+                    lastModifiedTime: new Date(s.lastModified).getTime()
+                }))
+                .sort((a, b) => b.lastModifiedTime - a.lastModifiedTime);
+
+            // Always keep at least MIN_SCENARIOS_TO_KEEP most recent scenarios
+            const scenariosToKeep = sortedScenarios.slice(0, this.MIN_SCENARIOS_TO_KEEP);
+            const scenariosToCheck = sortedScenarios.slice(this.MIN_SCENARIOS_TO_KEEP);
+
+            for (const scenario of scenariosToCheck) {
+                const age = now - scenario.lastModifiedTime;
 
                 if (age > maxAgeMs) {
                     await this.removeScenarioFromOffline(scenario.id);
                     prunedCount++;
-                    console.log(`[OfflineStorage] Pruned old scenario: ${scenario.id} (age: ${Math.floor(age / (24 * 60 * 60 * 1000))} days)`);
+                    console.log(`[OfflineStorage] Pruned old scenario: ${scenario.id} (${scenario.name}) - Age: ${Math.floor(age / (24 * 60 * 60 * 1000))} days`);
                 }
             }
 
             if (prunedCount > 0) {
+                console.log(`[OfflineStorage] ✓ Age-based pruning complete: ${prunedCount} scenario(s) removed`);
                 await this.loadSavedScenarios();
                 await this.calculateStorageUsage();
+            } else {
+                console.log('[OfflineStorage] No old scenarios to prune');
             }
 
             return prunedCount;
         } catch (error) {
-            console.error('Error pruning old cache:', error);
+            console.error('[OfflineStorage] Error pruning old cache:', error);
             return 0;
+        }
+    }
+
+    /**
+     * Manually trigger cache size check and pruning if needed
+     */
+    async checkCacheSizeAndPrune(): Promise<void> {
+        await this.checkAndPruneCache();
+    }
+
+    /**
+     * Get cache statistics for monitoring
+     */
+    async getCacheStatistics(): Promise<{
+        totalSize: number;
+        scenarioCount: number;
+        exerciseCount: number;
+        oldestScenario: Date | null;
+        newestScenario: Date | null;
+        isOverLimit: boolean;
+    }> {
+        if (!this.db) {
+            return {
+                totalSize: 0,
+                scenarioCount: 0,
+                exerciseCount: 0,
+                oldestScenario: null,
+                newestScenario: null,
+                isOverLimit: false
+            };
+        }
+
+        try {
+            const scenarios = await this.db.getAll('scenarios');
+            const exercises = await this.db.getAll('exercises');
+            const usage = await this.calculateStorageUsage();
+
+            let oldestDate: Date | null = null;
+            let newestDate: Date | null = null;
+
+            if (scenarios.length > 0) {
+                const dates = scenarios.map(s => new Date(s.lastModified));
+                oldestDate = new Date(Math.min(...dates.map(d => d.getTime())));
+                newestDate = new Date(Math.max(...dates.map(d => d.getTime())));
+            }
+
+            return {
+                totalSize: usage.used,
+                scenarioCount: scenarios.length,
+                exerciseCount: exercises.length,
+                oldestScenario: oldestDate,
+                newestScenario: newestDate,
+                isOverLimit: usage.used > this.MAX_CACHE_SIZE_BYTES
+            };
+        } catch (error) {
+            console.error('[OfflineStorage] Error getting cache statistics:', error);
+            return {
+                totalSize: 0,
+                scenarioCount: 0,
+                exerciseCount: 0,
+                oldestScenario: null,
+                newestScenario: null,
+                isOverLimit: false
+            };
         }
     }
 
@@ -585,5 +848,17 @@ export class OfflineStorageService {
 
     setSaveForOfflineEnabled(enabled: boolean): void {
         localStorage.setItem('saveForOfflineEnabled', enabled.toString());
+    }
+
+    /**
+     * Cleanup method - should be called when service is destroyed
+     */
+    ngOnDestroy(): void {
+        if (this.cacheMonitoringTimer) {
+            clearInterval(this.cacheMonitoringTimer);
+        }
+        if (this.sessionStateSaveTimer) {
+            clearTimeout(this.sessionStateSaveTimer);
+        }
     }
 }

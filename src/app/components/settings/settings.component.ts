@@ -6,6 +6,7 @@ import { SessionStore } from '../../state/session.store';
 import { ThemeService } from '../../services/theme.service';
 import { LanguageService } from '../../services/language.service';
 import { OfflineStorageService } from '../../services/offline-storage.service';
+import { CacheSettingsComponent } from '../cache-settings/cache-settings.component';
 import { getCurrentUser, fetchUserAttributes, fetchAuthSession, signOut } from 'aws-amplify/auth';
 
 interface UserInfo {
@@ -18,7 +19,7 @@ interface UserInfo {
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [CommonModule, RouterLink, TranslocoModule],
+  imports: [CommonModule, RouterLink, TranslocoModule, CacheSettingsComponent],
   templateUrl: './settings.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -46,6 +47,7 @@ export class SettingsComponent implements OnInit {
   userInfo = signal<UserInfo | null>(null);
   isAdmin = signal(false);
   isLanguageDropdownOpen = signal(false);
+  showCacheSettings = signal(false);
 
   get availableUiLanguages() {
     return this.languageService.availableUiLanguages;
@@ -229,5 +231,9 @@ export class SettingsComponent implements OnInit {
     const sizes = ['B', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+  }
+
+  toggleCacheSettings(): void {
+    this.showCacheSettings.update(v => !v);
   }
 }

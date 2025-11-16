@@ -5,12 +5,16 @@ import { LanguageService } from './language.service';
 import { SessionStore } from '../state/session.store';
 import { MOCK_ASSESSMENT, MOCK_SCENARIOS } from './mock-scenarios.data';
 import { getCurrentUser } from 'aws-amplify/auth';
+import { OfflineStatusService } from './offline-status.service';
+import { BackgroundSyncService } from './background-sync.service';
 
 @Injectable({ providedIn: 'root' })
 export class GeminiService {
   private client = generateClient();
   private store = inject(SessionStore);
   private languageService = inject(LanguageService);
+  private offlineStatusService = inject(OfflineStatusService);
+  private backgroundSyncService = inject(BackgroundSyncService);
 
   private getRandomScenario(): ConversationScenario {
     const randomIndex = Math.floor(Math.random() * MOCK_SCENARIOS.length);
@@ -607,6 +611,34 @@ export class GeminiService {
         return;
       }
 
+      const now = new Date().toISOString();
+      const historyData = {
+        userId,
+        scenarioId: scenario.id,
+        name: scenario.name,
+        category: category || undefined,
+        topic: topic || undefined,
+        description: scenario.description,
+        difficulty: scenario.difficulty_level,
+        createdAt: now,
+      };
+
+      // If offline, queue for sync
+      if (!this.offlineStatusService.isOnline()) {
+        console.warn('[GeminiService] Device is offline - queueing history save for background sync');
+        await this.backgroundSyncService.queueForSync({
+          type: 'saveHistory',
+          data: {
+            scenario,
+            category,
+            topic,
+            historyData
+          }
+        });
+        return;
+      }
+
+      // If online, save immediately
       const createHistoryMutation = /* GraphQL */ `
         mutation CreateHistory(
           $input: CreateHistoryInput!
@@ -621,21 +653,10 @@ export class GeminiService {
         }
       `;
 
-      const now = new Date().toISOString();
-
       const response = await this.client.graphql({
         query: createHistoryMutation,
         variables: {
-          input: {
-            userId,
-            scenarioId: scenario.id,
-            name: scenario.name,
-            category: category || undefined,
-            topic: topic || undefined,
-            description: scenario.description,
-            difficulty: scenario.difficulty_level,
-            createdAt: now,
-          }
+          input: historyData
         }
       });
 
@@ -650,6 +671,34 @@ export class GeminiService {
       console.log('[GeminiService] Scenario saved to history successfully');
     } catch (error) {
       console.error('[GeminiService:saveToHistory] Error saving to history:', error);
+
+      // If it's a network error, queue for sync
+      if (error instanceof Error && (error.message.includes('network') || error.message.includes('fetch'))) {
+        console.warn('[GeminiService] Network error detected - queueing for background sync');
+        try {
+          const user = await getCurrentUser();
+          await this.backgroundSyncService.queueForSync({
+            type: 'saveHistory',
+            data: {
+              scenario,
+              category,
+              topic,
+              historyData: {
+                userId: user.userId,
+                scenarioId: scenario.id,
+                name: scenario.name,
+                category: category || undefined,
+                topic: topic || undefined,
+                description: scenario.description,
+                difficulty: scenario.difficulty_level,
+                createdAt: new Date().toISOString(),
+              }
+            }
+          });
+        } catch (queueError) {
+          console.error('[GeminiService] Failed to queue for sync:', queueError);
+        }
+      }
       // Don't throw - history saving is non-critical
     }
   }

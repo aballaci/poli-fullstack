@@ -5,6 +5,7 @@ import { GeminiService } from '../../services/gemini.service';
 import { SessionStore } from '../../state/session.store';
 import { HistoryItem } from '../../models';
 import { TranslocoModule } from '@jsverse/transloco';
+import { OfflineStorageService } from '../../services/offline-storage.service';
 
 @Component({
   selector: 'app-scenario-history',
@@ -17,6 +18,7 @@ export class ScenarioHistoryComponent implements OnInit, OnDestroy {
   geminiService = inject(GeminiService);
   store = inject(SessionStore);
   router = inject(Router);
+  offlineService = inject(OfflineStorageService);
 
   // History state
   historyItems = signal<HistoryItem[]>([]);
@@ -168,6 +170,11 @@ export class ScenarioHistoryComponent implements OnInit, OnDestroy {
     } else {
       return date.toLocaleDateString();
     }
+  }
+
+  isScenarioOffline(scenarioId: string): boolean {
+    const savedScenarios = this.offlineService.savedScenarios();
+    return savedScenarios.some(s => s.id === scenarioId);
   }
 
   ngOnDestroy(): void {

@@ -82,7 +82,12 @@
   - Implement conflict resolution for sync operations (most recent timestamp wins)
   - _Requirements: 7.1, 7.2, 7.3, 7.4_
 
-- [ ] 12. Integrate background sync with user actions
+- [x] 12. Integrate background sync with user actions
+
+
+
+
+
   - Update GeminiService.saveToHistory() to queue for sync when offline
   - Add sync queue integration for progress tracking operations
   - Implement automatic sync trigger when connectivity is restored
@@ -125,33 +130,55 @@
   - Show success/error messages after cache operations
   - _Requirements: 8.3, 8.4_
 
-- [ ] 18. Add cache settings to application settings/menu
+- [x] 18. Add cache settings to application settings/menu
+
+
+
+
+
   - Integrate cache-settings component into application settings page or menu
   - Add navigation route if needed
   - Ensure settings are accessible to users
   - _Requirements: 8.3, 8.4_
 
-- [ ] 19. Update scenario components to show offline availability
+- [x] 19. Update scenario components to show offline availability
+
+
+
+
   - Add visual indicators to scenario lists showing which scenarios are cached
   - Display offline-available badge or icon on cached scenarios
   - Update scenario-catalog component to show offline status
   - Update scenario-history component to show offline status
   - _Requirements: 3.5_
 
-- [ ] 20. Disable online-only features when offline
+- [x] 20. Disable online-only features when offline
+
+
+
+
+
   - Update scenario generation UI to disable when offline
   - Show informative messages for unavailable features
   - Disable custom text processing when offline
   - Update pronunciation assessment to show offline message
   - _Requirements: 5.4, 5.5_
 
-- [ ] 21. Add translation file precaching
+- [x] 21. Add translation file precaching
+
+
+
+
   - Update ngsw-config.json to precache all translation JSON files
   - Ensure translation files are available offline immediately after installation
   - Verify translation loading works offline
   - _Requirements: 4.1, 4.2, 4.5_
 
-- [ ] 22. Implement cache size monitoring and automatic pruning
+- [x] 22. Implement cache size monitoring and automatic pruning
+
+
+
+
   - Add cache size monitoring to OfflineStorageService
   - Implement automatic pruning when cache exceeds 50MB limit
   - Use LRU (Least Recently Used) strategy for cache eviction
@@ -159,7 +186,15 @@
   - Log pruning operations for debugging
   - _Requirements: 8.1, 8.2, 8.5_
 
-- [ ] 23. Add service worker registration logging
+- [x] 23. Add service worker registration logging
+
+
+
+
+
+
+
+
   - Log service worker registration success/failure
   - Log service worker update events
   - Log cache operations for debugging
@@ -172,14 +207,23 @@
   - Configure proper cache headers for hosting (no-cache for index.html, long cache for assets)
   - _Requirements: 1.1, 2.1_
 
-- [ ] 25. Write unit tests for offline services
+- [x] 25. Write unit tests for offline services
+
+
+
+
+
   - Write unit tests for OfflineStatusService (connectivity detection, event listeners)
   - Write unit tests for BackgroundSyncService (queue operations, retry logic)
   - Write unit tests for CacheManagementService (cache stats, clearing)
   - Write unit tests for PwaUpdateService (update detection, activation)
   - _Requirements: All_
 
-- [ ] 26. Write integration tests for offline scenarios
+
+- [x] 26. Write integration tests for offline scenarios
+
+
+
   - Test scenario loading while offline (load online, go offline, verify cache access)
   - Test exercise caching and offline access
   - Test background sync after connectivity restoration

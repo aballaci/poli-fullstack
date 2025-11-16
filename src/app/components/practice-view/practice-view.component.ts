@@ -4,6 +4,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { SessionStore } from '../../state/session.store';
 import { GeminiService } from '../../services/gemini.service';
 import { SoundService } from '../../services/sound.service';
+import { OfflineStatusService } from '../../services/offline-status.service';
 import { Language, Sentence, SentencePart, SpeechAssessment } from '../../models';
 
 type PracticeStep = 'initial' | 'prompting' | 'result';
@@ -81,6 +82,7 @@ export class PracticeViewComponent implements OnDestroy {
   soundService = inject(SoundService);
   cdr = inject(ChangeDetectorRef);
   zone = inject(NgZone);
+  offlineStatusService = inject(OfflineStatusService);
 
   // Component State
   practiceStep = signal<PracticeStep>('initial');
@@ -282,7 +284,8 @@ export class PracticeViewComponent implements OnDestroy {
     const transcript = this.userTranscript();
     const sentence = this.sentence();
 
-    if (this.useAI()) {
+    // Check if AI is enabled and we're online
+    if (this.useAI() && this.offlineStatusService.isOnline()) {
       try {
         console.log('[PracticeView] Fetching assessment...');
         const assessment = await this.gemini.assessPronunciation(this.challenge().part.text, transcript, this.challenge().lang);
@@ -329,7 +332,7 @@ export class PracticeViewComponent implements OnDestroy {
         this.cdr.detectChanges();
       }
     } else {
-      // AI is off, create a mock assessment based on string similarity.
+      // AI is off or offline, create a mock assessment based on string similarity.
       const original = this.challenge().part.text;
       const similarity = this.calculateStringSimilarity(original, transcript);
 

@@ -26,11 +26,22 @@
       class="w-full text-left dark:bg-[var(--c-bg-surface)] rounded-lg shadow-sm hover:shadow-md transition-all duration-200 p-4 border border-[var(--c-border-subtle)] hover:border-[var(--color-primary)]/30 group">
       <div class="flex items-start justify-between gap-4">
         <div class="flex-1 min-w-0">
-          <!-- Title -->
-          <h3
-            class="font-bold text-[var(--c-text-headings)] text-base mb-1.5 group-hover:text-[var(--color-primary)] transition-colors">
-            {{ item.name }}
-          </h3>
+          <!-- Title with offline badge -->
+          <div class="flex items-center gap-2 mb-1.5">
+            <h3
+              class="font-bold text-[var(--c-text-headings)] text-base group-hover:text-[var(--color-primary)] transition-colors">
+              {{ item.name }}
+            </h3>
+            @if (isScenarioOffline(item.scenarioId)) {
+            <svg class="w-4 h-4 text-[var(--color-primary)] flex-shrink-0" xmlns="http://www.w3.org/2000/svg"
+              fill="none" viewBox="0 0 24 24" stroke="currentColor"
+              [attr.aria-label]="'scenario_history.offline_available' | transloco">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4" />
+            </svg>
+            }
+          </div>
           <!-- Description -->
           <p class="text-sm text-[var(--c-text-muted)] mb-3 line-clamp-2">
             {{ item.description }}

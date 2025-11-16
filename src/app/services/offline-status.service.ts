@@ -25,11 +25,13 @@ export class OfflineStatusService {
     }
 
     private handleOnline(): void {
+        console.log('[OfflineStatus] 🌐 Network connection restored');
         this.isOnline.set(true);
         this.verifyConnectivity();
     }
 
     private handleOffline(): void {
+        console.warn('[OfflineStatus] ⚠ Network connection lost - entering offline mode');
         this.isOnline.set(false);
     }
 
@@ -55,8 +57,14 @@ export class OfflineStatusService {
                 method: 'HEAD',
                 cache: 'no-cache'
             });
-            this.isOnline.set(response.ok);
+            const isConnected = response.ok;
+            this.isOnline.set(isConnected);
+
+            if (!isConnected) {
+                console.warn('[OfflineStatus] ⚠ Connectivity verification failed - may be offline');
+            }
         } catch (error) {
+            console.warn('[OfflineStatus] ⚠ Connectivity verification failed:', error);
             this.isOnline.set(false);
         }
     }
@@ -65,8 +73,11 @@ export class OfflineStatusService {
      * Manually trigger connectivity check
      */
     async checkConnectivity(): Promise<boolean> {
+        console.log('[OfflineStatus] Manual connectivity check requested');
         await this.verifyConnectivity();
-        return this.isOnline();
+        const status = this.isOnline();
+        console.log(`[OfflineStatus] Connectivity check result: ${status ? 'ONLINE' : 'OFFLINE'}`);
+        return status;
     }
 
     /**

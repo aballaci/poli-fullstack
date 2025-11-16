@@ -36,6 +36,7 @@ export class ExerciseService {
     getExercise(scenarioId: string, exerciseType: ExerciseType): Observable<ExerciseData | null> {
         // Check if offline first
         if (this.offlineService.isOffline()) {
+            console.warn(`[ExerciseService] ⚠ Operating in offline mode - retrieving exercise from cache: ${scenarioId} - ${exerciseType}`);
             return from(this.offlineService.getCachedExercise(scenarioId, exerciseType));
         }
 

@@ -231,6 +231,27 @@
             </div>
         </div>
 
+        <!-- Advanced Cache Management -->
+        <div class="bg-[var(--c-bg-surface)] p-6 rounded-lg shadow-sm border border-[var(--c-border-subtle)]">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-[var(--c-text-headings)]">{{ 'settings.cache_management' |
+                    transloco }}</h2>
+                <button (click)="toggleCacheSettings()" type="button"
+                    class="text-sm text-sky-500 hover:text-sky-600 transition-colors flex items-center gap-2">
+                    <span>{{ showCacheSettings() ? ('settings.hide_details' | transloco) : ('settings.show_details' |
+                        transloco) }}</span>
+                    <i class="fa-solid" [class.fa-chevron-up]="showCacheSettings()"
+                        [class.fa-chevron-down]="!showCacheSettings()"></i>
+                </button>
+            </div>
+
+            @if (showCacheSettings()) {
+            <app-cache-settings></app-cache-settings>
+            } @else {
+            <p class="text-[var(--c-text-muted)] text-sm">{{ 'settings.cache_management_description' | transloco }}</p>
+            }
+        </div>
+
         <!-- Admin Section -->
         @if (isAdmin()) {
         <div class="bg-[var(--c-bg-surface)] p-6 rounded-lg shadow-sm border border-[var(--c-border-subtle)]">

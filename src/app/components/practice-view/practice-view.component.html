@@ -12,6 +12,16 @@
       </div>
     </div>
 
+    <!-- Offline Warning for Pronunciation Assessment -->
+    @if (!offlineStatusService.isOnline() && useAI()) {
+    <div class="p-3 bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800">
+      <div class="flex items-center justify-center gap-2 text-sm">
+        <i class="fa-solid fa-wifi-slash text-amber-600 dark:text-amber-400"></i>
+        <span class="text-amber-800 dark:text-amber-300">{{ 'offline.pronunciation_disabled' | transloco }}</span>
+      </div>
+    </div>
+    }
+
     @if (practiceStep() === 'initial') {
     <p
       class="p-4 text-center text-sm text-[var(--c-text-muted)] bg-[var(--c-bg-muted)] border-b border-[var(--c-border-subtle)]">

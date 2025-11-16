@@ -1,0 +1,11 @@
+@if (showIndicator()) {
+<div class="sync-indicator" [class.syncing]="isSyncing()" [class.error]="syncError()">
+    <span class="sync-icon" [class.spinning]="isSyncing()">{{ statusIcon() }}</span>
+    <span class="sync-message">
+        {{ statusMessage() | transloco }}
+        @if (pendingOperations() > 0 && !isSyncing()) {
+        <span class="pending-count">({{ pendingOperations() }})</span>
+        }
+    </span>
+</div>
+}

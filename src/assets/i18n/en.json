@@ -204,7 +204,8 @@
         "title": "Scenario Catalog",
         "offline_only": "Show offline only",
         "save_offline": "Save for offline",
-        "remove_offline": "Remove from offline"
+        "remove_offline": "Remove from offline",
+        "offline_available": "Available offline"
     },
     "offline": {
         "banner": {
@@ -219,12 +220,23 @@
             "clear_all": "Clear All Offline Data",
             "clear_confirm": "Are you sure you want to clear all offline data?",
             "manage": "Manage Offline Scenarios"
-        }
+        },
+        "feature_unavailable": "This feature requires an internet connection",
+        "scenario_generation_disabled": "Scenario generation is not available offline. Please connect to the internet to create new scenarios.",
+        "custom_text_disabled": "Custom text processing requires an internet connection. Please go online to use this feature.",
+        "pronunciation_disabled": "Pronunciation assessment requires an internet connection. You can still practice, but AI feedback will not be available.",
+        "ai_features_disabled": "AI-powered features are not available offline"
+    },
+    "sync": {
+        "syncing": "Syncing data...",
+        "pending": "Pending sync",
+        "error": "Sync failed"
     },
     "scenario_history": {
         "empty_message": "No history found. Start practicing to build your history!",
         "error_occurred": "An Error Occurred",
-        "title": "History"
+        "title": "History",
+        "offline_available": "Available offline"
     },
     "scenario_selector": {
         "back_to_categories": "Back to Categories",
@@ -404,14 +416,18 @@
         "adjust_text_size": "Adjust text size",
         "application": "Application",
         "back_to_practice": "Back to Practice",
+        "cache_management": "Advanced Cache Management",
+        "cache_management_description": "View detailed cache statistics and manage offline storage for scenarios, exercises, and service worker caches.",
         "change_languages": "Change Languages or Difficulty",
         "dev_only": "Dev Only",
         "difficulty_level": "Difficulty Level",
+        "hide_details": "Hide Details",
         "interface_language": "Interface Language",
         "learning_path": "Learning Path",
         "mock_api_mode": "Mock API Mode",
         "native_language": "Native Language",
         "reading_text_size": "Reading Text Size",
+        "show_details": "Show Details",
         "sign_out": "Sign Out",
         "target_language": "Target Language",
         "theme": "Theme",

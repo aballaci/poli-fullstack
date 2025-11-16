@@ -1,0 +1,73 @@
+.sync-indicator {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(59, 130, 246, 0.95);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    z-index: 1000;
+    animation: slideIn 0.3s ease-out;
+    backdrop-filter: blur(10px);
+}
+
+.sync-indicator.error {
+    background: rgba(239, 68, 68, 0.95);
+}
+
+.sync-icon {
+    font-size: 18px;
+    display: inline-block;
+}
+
+.sync-icon.spinning {
+    animation: spin 1s linear infinite;
+}
+
+.sync-message {
+    font-weight: 500;
+}
+
+.pending-count {
+    opacity: 0.9;
+    font-size: 12px;
+    margin-left: 4px;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Mobile responsive */
+@media (max-width: 640px) {
+    .sync-indicator {
+        bottom: 10px;
+        right: 10px;
+        left: 10px;
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+}

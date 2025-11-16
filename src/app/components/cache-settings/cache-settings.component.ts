@@ -10,7 +10,7 @@ import { CacheManagementService, CacheStats } from '../../services/cache-managem
   styleUrl: './cache-settings.component.css'
 })
 export class CacheSettingsComponent implements OnInit {
-  private cacheService = inject(CacheManagementService);
+  cacheService = inject(CacheManagementService);
 
   stats = signal<CacheStats | null>(null);
   loading = signal<boolean>(false);

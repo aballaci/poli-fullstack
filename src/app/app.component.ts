@@ -14,6 +14,7 @@ import { FooterComponent } from './components/footer/footer.component';
 import { UndoNotificationComponent } from './components/undo-notification/undo-notification.component';
 import { OfflineBannerComponent } from './components/offline-banner/offline-banner.component';
 import { UpdateNotificationComponent } from './components/update-notification/update-notification.component';
+import { SyncIndicatorComponent } from './components/sync-indicator/sync-indicator.component';
 import { OfflineStorageService } from './services/offline-storage.service';
 
 Amplify.configure(outputs);
@@ -23,7 +24,7 @@ Amplify.configure(outputs);
   standalone: true,
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
-  imports: [RouterOutlet, CommonModule, AmplifyAuthenticatorModule, HeaderComponent, FooterComponent, UndoNotificationComponent, OfflineBannerComponent, UpdateNotificationComponent],
+  imports: [RouterOutlet, CommonModule, AmplifyAuthenticatorModule, HeaderComponent, FooterComponent, UndoNotificationComponent, OfflineBannerComponent, UpdateNotificationComponent, SyncIndicatorComponent],
 })
 export class AppComponent {
   title = 'amplify-angular-template';
