@@ -201,7 +201,25 @@
         "empty_message": "Nessuno scenario disponibile ancora. Genera uno scenario per iniziare!",
         "error_occurred": "Si è Verificato un Errore",
         "filter_by_level": "Filtra per livello attuale ({{level}})",
-        "title": "Catalogo Scenari"
+        "title": "Catalogo Scenari",
+        "offline_only": "Mostra solo offline",
+        "save_offline": "Salva offline",
+        "remove_offline": "Rimuovi da offline"
+    },
+    "offline": {
+        "banner": {
+            "message": "Modalità offline - Funzionalità IA non disponibili",
+            "dismiss": "Chiudi"
+        },
+        "settings": {
+            "title": "Archiviazione offline",
+            "save_for_offline": "Salva automaticamente scenari offline",
+            "storage_usage": "Utilizzo dello spazio",
+            "saved_scenarios": "{{count}} scenari salvati",
+            "clear_all": "Cancella tutti i dati offline",
+            "clear_confirm": "Sei sicuro di voler cancellare tutti i dati offline?",
+            "manage": "Gestisci scenari offline"
+        }
     },
     "scenario_history": {
         "empty_message": "Nessuna cronologia trovata. Inizia a praticare per costruire la tua cronologia!",

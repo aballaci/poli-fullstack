@@ -201,7 +201,25 @@
         "empty_message": "尚无可用场景。请先生成一个场景！",
         "error_occurred": "发生错误",
         "filter_by_level": "按当前级别筛选 ({{level}})",
-        "title": "场景目录"
+        "title": "场景目录",
+        "offline_only": "仅显示离线",
+        "save_offline": "保存离线",
+        "remove_offline": "从离线中删除"
+    },
+    "offline": {
+        "banner": {
+            "message": "离线模式 - AI功能不可用",
+            "dismiss": "关闭"
+        },
+        "settings": {
+            "title": "离线存储",
+            "save_for_offline": "自动保存场景以供离线使用",
+            "storage_usage": "存储使用情况",
+            "saved_scenarios": "已保存{{count}}个场景",
+            "clear_all": "清除所有离线数据",
+            "clear_confirm": "您确定要清除所有离线数据吗？",
+            "manage": "管理离线场景"
+        }
     },
     "scenario_history": {
         "empty_message": "未找到历史记录。开始练习以建立您的历史记录！",

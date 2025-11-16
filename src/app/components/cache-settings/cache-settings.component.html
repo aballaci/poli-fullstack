@@ -1,0 +1,129 @@
+<div class="cache-settings">
+    <h2 class="title">Cache Management</h2>
+
+    @if (loading()) {
+    <div class="loading">
+        <i class="fas fa-spinner fa-spin"></i>
+        <span>Loading cache statistics...</span>
+    </div>
+    }
+
+    @if (message()) {
+    <div class="message" [class.success]="message()!.type === 'success'" [class.error]="message()!.type === 'error'">
+        <i class="fas" [class.fa-check-circle]="message()!.type === 'success'"
+            [class.fa-exclamation-circle]="message()!.type === 'error'"></i>
+        <span>{{ message()!.text }}</span>
+    </div>
+    }
+
+    @if (stats() && !loading()) {
+    <div class="stats-grid">
+        <!-- Total Cache Size -->
+        <div class="stat-card highlight">
+            <div class="stat-icon">
+                <i class="fas fa-database"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-label">Total Cache Size</div>
+                <div class="stat-value">{{ stats()!.total.sizeFormatted }}</div>
+            </div>
+        </div>
+
+        <!-- Scenarios -->
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-book"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-label">Cached Scenarios</div>
+                <div class="stat-value">{{ stats()!.indexedDB.scenarioCount }}</div>
+            </div>
+        </div>
+
+        <!-- Exercises -->
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-dumbbell"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-label">Cached Exercises</div>
+                <div class="stat-value">{{ stats()!.indexedDB.exerciseCount }}</div>
+            </div>
+        </div>
+
+        <!-- Service Worker Caches -->
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-cog"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-label">Service Worker Caches</div>
+                <div class="stat-value">{{ stats()!.serviceWorker.cacheNames.length }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Details -->
+    <div class="details-section">
+        <h3 class="section-title">Cache Details</h3>
+
+        <div class="detail-row">
+            <span class="detail-label">IndexedDB Size:</span>
+            <span class="detail-value">{{ cacheService.formatSize(stats()!.indexedDB.size) }}</span>
+        </div>
+
+        <div class="detail-row">
+            <span class="detail-label">Service Worker Size:</span>
+            <span class="detail-value">{{ cacheService.formatSize(stats()!.serviceWorker.size) }}</span>
+        </div>
+
+        @if (stats()!.indexedDB.oldestItem) {
+        <div class="detail-row">
+            <span class="detail-label">Oldest Item:</span>
+            <span class="detail-value">{{ formatDate(stats()!.indexedDB.oldestItem) }}</span>
+        </div>
+        }
+
+        @if (stats()!.indexedDB.newestItem) {
+        <div class="detail-row">
+            <span class="detail-label">Newest Item:</span>
+            <span class="detail-value">{{ formatDate(stats()!.indexedDB.newestItem) }}</span>
+        </div>
+        }
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+        <button class="btn-refresh" (click)="loadStats()" [disabled]="loading()">
+            <i class="fas fa-sync-alt"></i>
+            Refresh Stats
+        </button>
+
+        <button class="btn-clear" (click)="confirmClearCache()" [disabled]="loading()">
+            <i class="fas fa-trash-alt"></i>
+            Clear All Cache
+        </button>
+    </div>
+    }
+
+    <!-- Confirmation Dialog -->
+    @if (showConfirmDialog()) {
+    <div class="dialog-overlay" (click)="cancelClear()">
+        <div class="dialog" (click)="$event.stopPropagation()">
+            <div class="dialog-header">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Clear All Cache?</h3>
+            </div>
+            <div class="dialog-body">
+                <p>This will remove all cached scenarios, exercises, and offline data. You'll need to reload content
+                    when online.</p>
+                <p class="warning">This action cannot be undone.</p>
+            </div>
+            <div class="dialog-actions">
+                <button class="btn-cancel" (click)="cancelClear()">Cancel</button>
+                <button class="btn-confirm" (click)="clearCache()">Clear Cache</button>
+            </div>
+        </div>
+    </div>
+    }
+</div>

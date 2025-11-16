@@ -11,6 +11,12 @@
   <amplify-authenticator class="auth-wrapper bg-[var(--c-bg-body)]">
     <ng-template amplifySlot="authenticated" let-user="user" let-signOut="signOut">
       <div class="bg-[var(--c-bg-body)] text-[var(--c-text-body)] min-h-screen font-sans flex flex-col">
+        <!-- Update Notification -->
+        <app-update-notification></app-update-notification>
+
+        <!-- Offline Banner -->
+        <app-offline-banner></app-offline-banner>
+
         <app-header></app-header>
 
         <!-- Main Content -->
@@ -29,6 +35,12 @@
 } @else {
 <!-- Public routes (home, intro, help-center, contact-us, privacy-policy, terms-of-service) don't require authentication -->
 <div class="bg-[var(--c-bg-body)] text-[var(--c-text-body)] min-h-screen font-sans flex flex-col">
+  <!-- Update Notification -->
+  <app-update-notification></app-update-notification>
+
+  <!-- Offline Banner -->
+  <app-offline-banner></app-offline-banner>
+
   <app-header></app-header>
 
   <!-- Main Content -->

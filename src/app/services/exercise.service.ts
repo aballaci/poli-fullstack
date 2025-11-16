@@ -2,7 +2,7 @@ import { Injectable, inject, signal, computed } from '@angular/core';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../../../amplify/data/resource';
 import { Observable, from, of, throwError } from 'rxjs';
-import { map, catchError, retry } from 'rxjs/operators';
+import { map, catchError, retry, switchMap } from 'rxjs/operators';
 import {
     ExerciseType,
     ExerciseData,
@@ -12,6 +12,7 @@ import {
     SwipeExercise
 } from '../models/exercise.models';
 import { SessionStore } from '../state/session.store';
+import { OfflineStorageService } from './offline-storage.service';
 
 @Injectable({
     providedIn: 'root'
@@ -19,6 +20,7 @@ import { SessionStore } from '../state/session.store';
 export class ExerciseService {
     private client = generateClient<Schema>();
     private sessionStore = inject(SessionStore);
+    private offlineService = inject(OfflineStorageService);
 
     // Track completed exercises using signals
     private completedExercisesSignal = signal<Set<ExerciseType>>(new Set());
@@ -32,29 +34,52 @@ export class ExerciseService {
      * Fetch exercise data by scenario ID and exercise type
      */
     getExercise(scenarioId: string, exerciseType: ExerciseType): Observable<ExerciseData | null> {
-        return from(
-            this.client.queries.getExerciseForScenario({
-                scenarioId,
-                exerciseType
-            })
-        ).pipe(
-            map(response => {
-                if (!response.data) {
-                    console.warn(`No exercise data found for scenario ${scenarioId} and type ${exerciseType}`);
-                    return null;
+        // Check if offline first
+        if (this.offlineService.isOffline()) {
+            return from(this.offlineService.getCachedExercise(scenarioId, exerciseType));
+        }
+
+        // Try cache first even when online
+        return from(this.offlineService.getCachedExercise(scenarioId, exerciseType)).pipe(
+            switchMap(cachedData => {
+                if (cachedData) {
+                    return of(cachedData);
                 }
 
-                // Parse the JSON response
-                const exerciseData = this.parseExerciseData(response.data, exerciseType);
-                return exerciseData;
-            }),
-            retry({
-                count: 2,
-                delay: 1000
-            }),
-            catchError(error => {
-                console.error(`Error fetching exercise for scenario ${scenarioId}:`, error);
-                return of(null);
+                // Fetch from server if not cached
+                return from(
+                    this.client.queries.getExerciseForScenario({
+                        scenarioId,
+                        exerciseType
+                    })
+                ).pipe(
+                    map(response => {
+                        if (!response.data) {
+                            console.warn(`No exercise data found for scenario ${scenarioId} and type ${exerciseType}`);
+                            return null;
+                        }
+
+                        // Parse the JSON response
+                        const exerciseData = this.parseExerciseData(response.data, exerciseType);
+
+                        // Cache the exercise data for offline use
+                        if (exerciseData) {
+                            this.offlineService.cacheExercise(scenarioId, exerciseType, exerciseData).catch(err => {
+                                console.warn('Failed to cache exercise:', err);
+                            });
+                        }
+
+                        return exerciseData;
+                    }),
+                    retry({
+                        count: 2,
+                        delay: 1000
+                    }),
+                    catchError(error => {
+                        console.error(`Error fetching exercise for scenario ${scenarioId}:`, error);
+                        return of(null);
+                    })
+                );
             })
         );
     }

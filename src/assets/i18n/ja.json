@@ -201,7 +201,25 @@
         "empty_message": "利用可能なシナリオはまだありません。シナリオを生成して始めましょう！",
         "error_occurred": "エラーが発生しました",
         "filter_by_level": "現在のレベル ({{level}}) でフィルター",
-        "title": "シナリオカタログ"
+        "title": "シナリオカタログ",
+        "offline_only": "オフラインのみ表示",
+        "save_offline": "オフライン保存",
+        "remove_offline": "オフラインから削除"
+    },
+    "offline": {
+        "banner": {
+            "message": "オフラインモード - AI機能は利用できません",
+            "dismiss": "閉じる"
+        },
+        "settings": {
+            "title": "オフラインストレージ",
+            "save_for_offline": "シナリオを自動的にオフライン保存",
+            "storage_usage": "ストレージ使用量",
+            "saved_scenarios": "{{count}}個のシナリオを保存",
+            "clear_all": "すべてのオフラインデータをクリア",
+            "clear_confirm": "すべてのオフラインデータをクリアしてもよろしいですか？",
+            "manage": "オフラインシナリオを管理"
+        }
     },
     "scenario_history": {
         "empty_message": "履歴が見つかりません。練習を始めて履歴を作成しましょう！",

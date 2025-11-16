@@ -1,10 +1,11 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { SessionStore } from '../../state/session.store';
 import { ThemeService } from '../../services/theme.service';
 import { LanguageService } from '../../services/language.service';
+import { OfflineStorageService } from '../../services/offline-storage.service';
 import { getCurrentUser, fetchUserAttributes, fetchAuthSession, signOut } from 'aws-amplify/auth';
 
 interface UserInfo {
@@ -25,6 +26,7 @@ export class SettingsComponent implements OnInit {
   store = inject(SessionStore);
   themeService = inject(ThemeService);
   languageService = inject(LanguageService);
+  offlineService = inject(OfflineStorageService);
   router = inject(Router);
   cdr = inject(ChangeDetectorRef);
 
@@ -35,6 +37,11 @@ export class SettingsComponent implements OnInit {
   readonly mockApiMode = this.store.mockApiMode;
   readonly readingFontSize = this.store.readingFontSize;
   readonly isDevMode = this.languageService.isDevMode;
+
+  // Offline storage
+  readonly saveForOfflineEnabled = signal<boolean>(false);
+  readonly offlineStorageUsage = this.offlineService.storageUsage;
+  readonly savedScenariosCount = computed(() => this.offlineService.savedScenarios().length);
 
   userInfo = signal<UserInfo | null>(null);
   isAdmin = signal(false);
@@ -54,6 +61,7 @@ export class SettingsComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.loadUserInfo();
+    this.saveForOfflineEnabled.set(this.offlineService.getSaveForOfflineEnabled());
   }
 
   /**
@@ -195,5 +203,31 @@ export class SettingsComponent implements OnInit {
   selectUiLanguage(code: string): void {
     this.languageService.changeLanguage(code);
     this.isLanguageDropdownOpen.set(false);
+  }
+
+  toggleSaveForOffline(): void {
+    const newValue = !this.saveForOfflineEnabled();
+    this.saveForOfflineEnabled.set(newValue);
+    this.offlineService.setSaveForOfflineEnabled(newValue);
+  }
+
+  async clearOfflineStorage(): Promise<void> {
+    // Use a simple confirm for now - translation will be handled by the browser
+    if (confirm('Are you sure you want to clear all offline data?')) {
+      try {
+        await this.offlineService.clearAllOfflineData();
+        this.cdr.markForCheck();
+      } catch (error) {
+        console.error('Failed to clear offline storage:', error);
+      }
+    }
+  }
+
+  formatStorageSize(bytes: number): string {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
   }
 }

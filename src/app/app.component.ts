@@ -12,6 +12,9 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { UndoNotificationComponent } from './components/undo-notification/undo-notification.component';
+import { OfflineBannerComponent } from './components/offline-banner/offline-banner.component';
+import { UpdateNotificationComponent } from './components/update-notification/update-notification.component';
+import { OfflineStorageService } from './services/offline-storage.service';
 
 Amplify.configure(outputs);
 
@@ -20,13 +23,14 @@ Amplify.configure(outputs);
   standalone: true,
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
-  imports: [RouterOutlet, CommonModule, AmplifyAuthenticatorModule, HeaderComponent, FooterComponent, UndoNotificationComponent],
+  imports: [RouterOutlet, CommonModule, AmplifyAuthenticatorModule, HeaderComponent, FooterComponent, UndoNotificationComponent, OfflineBannerComponent, UpdateNotificationComponent],
 })
 export class AppComponent {
   title = 'amplify-angular-template';
   store = inject(SessionStore);
   themeService = inject(ThemeService); // to initialize it
   languageService = inject(LanguageService); // to initialize it
+  offlineService = inject(OfflineStorageService); // to initialize it
   router = inject(Router);
 
   // Track current route to determine if authentication is needed
@@ -52,6 +56,39 @@ export class AppComponent {
   constructor(public authenticator: AuthenticatorService) {
     Amplify.configure(outputs);
     this.initializeS3Url();
+    this.restoreSession();
+  }
+
+  private async restoreSession(): Promise<void> {
+    try {
+      const savedState = await this.offlineService.restoreSessionState();
+
+      if (savedState && savedState.activeScenarioId) {
+        console.log('[AppComponent] Found saved session state, attempting to restore...');
+
+        // Try to restore the scenario
+        const scenario = await this.offlineService.getOfflineScenario(savedState.activeScenarioId);
+
+        if (scenario) {
+          console.log('[AppComponent] Restored scenario from offline storage');
+          this.store.activeScenario.set(scenario);
+          this.store.conversationHistory.set(savedState.conversationHistory || []);
+
+          // Navigate to the saved route if it's not a public route
+          if (savedState.currentRoute && !this.publicRoutes.some(route => savedState.currentRoute.startsWith(route))) {
+            console.log('[AppComponent] Navigating to saved route:', savedState.currentRoute);
+            setTimeout(() => {
+              this.router.navigateByUrl(savedState.currentRoute);
+            }, 100);
+          }
+        } else {
+          console.log('[AppComponent] Scenario not found in offline storage, clearing session state');
+          await this.offlineService.clearSessionState();
+        }
+      }
+    } catch (error) {
+      console.error('[AppComponent] Failed to restore session state:', error);
+    }
   }
 
   private async initializeS3Url(): Promise<void> {

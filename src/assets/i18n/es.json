@@ -201,7 +201,25 @@
         "empty_message": "No hay escenarios disponibles todavía. ¡Genera un escenario para comenzar!",
         "error_occurred": "Ocurrió un Error",
         "filter_by_level": "Filtrar por nivel actual ({{level}})",
-        "title": "Catálogo de Escenarios"
+        "title": "Catálogo de Escenarios",
+        "offline_only": "Mostrar solo sin conexión",
+        "save_offline": "Guardar sin conexión",
+        "remove_offline": "Eliminar de sin conexión"
+    },
+    "offline": {
+        "banner": {
+            "message": "Modo sin conexión - Funciones de IA no disponibles",
+            "dismiss": "Descartar"
+        },
+        "settings": {
+            "title": "Almacenamiento sin conexión",
+            "save_for_offline": "Guardar escenarios automáticamente sin conexión",
+            "storage_usage": "Uso de almacenamiento",
+            "saved_scenarios": "{{count}} escenarios guardados",
+            "clear_all": "Borrar todos los datos sin conexión",
+            "clear_confirm": "¿Estás seguro de que quieres borrar todos los datos sin conexión?",
+            "manage": "Administrar escenarios sin conexión"
+        }
     },
     "scenario_history": {
         "empty_message": "No se encontró historial. ¡Empieza a practicar para construir tu historial!",

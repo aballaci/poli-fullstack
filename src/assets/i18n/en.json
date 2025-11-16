@@ -201,7 +201,25 @@
         "empty_message": "No scenarios available yet. Generate a scenario to get started!",
         "error_occurred": "An Error Occurred",
         "filter_by_level": "Filter by current level ({{level}})",
-        "title": "Scenario Catalog"
+        "title": "Scenario Catalog",
+        "offline_only": "Show offline only",
+        "save_offline": "Save for offline",
+        "remove_offline": "Remove from offline"
+    },
+    "offline": {
+        "banner": {
+            "message": "Offline Mode - AI features unavailable",
+            "dismiss": "Dismiss"
+        },
+        "settings": {
+            "title": "Offline Storage",
+            "save_for_offline": "Auto-save scenarios for offline",
+            "storage_usage": "Storage Usage",
+            "saved_scenarios": "{{count}} scenarios saved",
+            "clear_all": "Clear All Offline Data",
+            "clear_confirm": "Are you sure you want to clear all offline data?",
+            "manage": "Manage Offline Scenarios"
+        }
     },
     "scenario_history": {
         "empty_message": "No history found. Start practicing to build your history!",

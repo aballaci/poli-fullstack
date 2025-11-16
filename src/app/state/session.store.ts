@@ -1,6 +1,7 @@
 import { Injectable, computed, signal, effect, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { ConversationScenario, HighlightedWord, Language, Sentence, SpeechAssessment } from '../models';
+import { OfflineStorageService } from '../services/offline-storage.service';
 
 const SOURCE_LANG_KEY = 'poli_source_lang';
 const TARGET_LANG_KEY = 'poli_target_lang';
@@ -22,6 +23,7 @@ export interface SentenceResult extends Sentence {
 @Injectable({ providedIn: 'root' })
 export class SessionStore {
   private platformId = inject(PLATFORM_ID);
+  private offlineService = inject(OfflineStorageService);
 
   // Writable signals for core state
   readonly sourceLanguage = signal<Language | null>(this.load(SOURCE_LANG_KEY));
@@ -30,7 +32,7 @@ export class SessionStore {
   readonly mockApiMode = signal<boolean>(this.load(MOCK_API_KEY) ?? false);
   readonly s3BaseUrl = signal<string | null>(null);
   readonly readingFontSize = signal<number>(this.load(FONT_SIZE_KEY) ?? 16);
-  
+
   // App-level visibility states
   readonly introSeen = signal<boolean>(this.load(INTRO_SEEN_KEY) ?? false);
   readonly practiceInstructionsSeen = signal<boolean>(this.load(PRACTICE_INSTRUCTIONS_SEEN_KEY) ?? false);
@@ -39,7 +41,7 @@ export class SessionStore {
   readonly practiceMode = signal<'practice' | 'challenge'>(this.load(PRACTICE_MODE_KEY) ?? 'practice');
   readonly useAIComparison = signal<boolean>(this.load(USE_AI_KEY) ?? true);
   readonly flowDirection = signal<'source-to-target' | 'target-to-source'>(this.load(FLOW_DIRECTION_KEY) ?? 'source-to-target');
-  
+
   // Active session state
   readonly activeScenario = signal<ConversationScenario | null>(null);
   readonly conversationHistory = signal<SentenceResult[]>([]);
@@ -48,21 +50,21 @@ export class SessionStore {
   readonly isConfigured = computed(() => {
     return !!this.sourceLanguage() && !!this.targetLanguage() && !!this.difficultyLevel();
   });
-  
+
   // All highlighted words from the current scenario, for flashcards
   // Only collects from target language to ensure examples are always in target language
   readonly allHighlightedWords = computed(() => {
     const scenario = this.activeScenario();
     if (!scenario) return [];
-    
+
     const words = new Map<string, HighlightedWord>();
     scenario.sentences.forEach(s => {
-        // Only collect from target language sentences to ensure examples are in target language
-        s.target.highlighted_words.forEach(w => {
-            if (!words.has(w.word.toLowerCase())) {
-                words.set(w.word.toLowerCase(), w);
-            }
-        });
+      // Only collect from target language sentences to ensure examples are in target language
+      s.target.highlighted_words.forEach(w => {
+        if (!words.has(w.word.toLowerCase())) {
+          words.set(w.word.toLowerCase(), w);
+        }
+      });
     });
     return Array.from(words.values());
   });
@@ -100,6 +102,23 @@ export class SessionStore {
     effect(() => this.save(PRACTICE_MODE_KEY, this.practiceMode()));
     effect(() => this.save(USE_AI_KEY, this.useAIComparison()));
     effect(() => this.save(FLOW_DIRECTION_KEY, this.flowDirection()));
+
+    // Effect to auto-save session state for offline recovery
+    effect(() => {
+      const scenario = this.activeScenario();
+      const history = this.conversationHistory();
+
+      if (scenario) {
+        this.offlineService.saveSessionStateDebounced({
+          activeScenarioId: scenario.id,
+          conversationHistory: history,
+          currentSentenceIndex: history.length,
+          currentRoute: window.location.pathname,
+          exerciseProgress: {},
+          timestamp: new Date().toISOString()
+        });
+      }
+    });
   }
 
   // --- Actions ---
@@ -139,11 +158,11 @@ export class SessionStore {
   setPracticeMode(mode: 'practice' | 'challenge'): void {
     this.practiceMode.set(mode);
   }
-  
+
   setUseAIComparison(useAI: boolean): void {
     this.useAIComparison.set(useAI);
   }
-  
+
   setFlowDirection(direction: 'source-to-target' | 'target-to-source'): void {
     this.flowDirection.set(direction);
   }
@@ -152,9 +171,18 @@ export class SessionStore {
     this.flowDirection.update(d => d === 'source-to-target' ? 'target-to-source' : 'source-to-target');
   }
 
-  startConversation(scenario: ConversationScenario): void {
+  async startConversation(scenario: ConversationScenario): Promise<void> {
     this.activeScenario.set(scenario);
     this.conversationHistory.set([]); // Clear previous history
+
+    // Auto-save for offline if enabled
+    if (this.offlineService.getSaveForOfflineEnabled() && !this.offlineService.isOffline()) {
+      try {
+        await this.offlineService.saveScenarioForOffline(scenario);
+      } catch (error) {
+        console.warn('Failed to auto-save scenario for offline:', error);
+      }
+    }
   }
 
   addSentenceResult(sentence: Sentence, assessment: SpeechAssessment | null, userTranscript?: string): void {
@@ -173,13 +201,13 @@ export class SessionStore {
       }
     });
   }
-  
+
   endConversation(): void {
-      // We keep the active scenario and history for the summary view.
-      // The summary view component will be responsible for clearing them
-      // when the user decides to start a new scenario.
+    // We keep the active scenario and history for the summary view.
+    // The summary view component will be responsible for clearing them
+    // when the user decides to start a new scenario.
   }
-  
+
   resetConversation(): void {
     this.activeScenario.set(null);
     this.conversationHistory.set([]);
@@ -187,6 +215,12 @@ export class SessionStore {
 
   resetConversationHistory(): void {
     this.conversationHistory.set([]);
+  }
+
+  async isCurrentScenarioAvailableOffline(): Promise<boolean> {
+    const scenario = this.activeScenario();
+    if (!scenario) return false;
+    return await this.offlineService.isScenarioSavedOffline(scenario.id);
   }
 
   // --- Private persistence helpers ---

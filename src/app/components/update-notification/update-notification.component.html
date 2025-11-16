@@ -1,0 +1,18 @@
+@if (pwaUpdateService.updateAvailable()) {
+<div class="update-banner" role="alert" aria-live="polite">
+    <div class="update-content">
+        <div class="update-message">
+            <i class="fas fa-sync-alt"></i>
+            <span>A new version is available!</span>
+        </div>
+        <div class="update-actions">
+            <button class="btn-update" (click)="updateNow()">
+                Update Now
+            </button>
+            <button class="btn-dismiss" (click)="dismiss()" aria-label="Dismiss update notification">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+</div>
+}

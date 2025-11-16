@@ -1,0 +1,74 @@
+.offline-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+.offline-banner-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.offline-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    flex-shrink: 0;
+}
+
+.offline-message {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.dismiss-button {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.25rem;
+    transition: background-color 0.2s;
+}
+
+.dismiss-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dismiss-button svg {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+@media (max-width: 640px) {
+    .offline-banner {
+        padding: 0.5rem 0.75rem;
+    }
+
+    .offline-message {
+        font-size: 0.8125rem;
+    }
+}

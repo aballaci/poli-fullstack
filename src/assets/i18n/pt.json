@@ -201,7 +201,25 @@
         "empty_message": "Nenhum cenário disponível ainda. Gere um cenário para começar!",
         "error_occurred": "Ocorreu um Erro",
         "filter_by_level": "Filtrar pelo nível atual ({{level}})",
-        "title": "Catálogo de Cenários"
+        "title": "Catálogo de Cenários",
+        "offline_only": "Mostrar apenas offline",
+        "save_offline": "Salvar offline",
+        "remove_offline": "Remover do offline"
+    },
+    "offline": {
+        "banner": {
+            "message": "Modo offline - Recursos de IA indisponíveis",
+            "dismiss": "Dispensar"
+        },
+        "settings": {
+            "title": "Armazenamento offline",
+            "save_for_offline": "Salvar cenários automaticamente offline",
+            "storage_usage": "Uso de armazenamento",
+            "saved_scenarios": "{{count}} cenários salvos",
+            "clear_all": "Limpar todos os dados offline",
+            "clear_confirm": "Tem certeza de que deseja limpar todos os dados offline?",
+            "manage": "Gerenciar cenários offline"
+        }
     },
     "scenario_history": {
         "empty_message": "Nenhum histórico encontrado. Comece a praticar para construir seu histórico!",

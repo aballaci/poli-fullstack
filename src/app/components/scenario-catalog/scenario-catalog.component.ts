@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { GeminiService } from '../../services/gemini.service';
 import { SessionStore } from '../../state/session.store';
 import { ScenarioSummary } from '../../models';
 import { TranslocoModule } from '@jsverse/transloco';
+import { OfflineStorageService } from '../../services/offline-storage.service';
 
 @Component({
     selector: 'app-scenario-catalog',
@@ -17,24 +18,36 @@ export class ScenarioCatalogComponent implements OnInit, OnDestroy {
     geminiService = inject(GeminiService);
     store = inject(SessionStore);
     router = inject(Router);
+    route = inject(ActivatedRoute);
+    offlineService = inject(OfflineStorageService);
 
     // Catalog state
     scenarios = signal<ScenarioSummary[]>([]);
     selectedScenarioId = signal<string | null>(null);
     filterByCurrentLevel = signal(false);
+    showOfflineOnly = signal(false);
     loadingMessage = signal('Loading scenarios...');
     error = signal<string | null>(null);
+    savingScenarioId = signal<string | null>(null);
 
     // Flatten catalog to a simple list for card display
     readonly catalogList = computed(() => {
         const scenarios = this.scenarios();
         const currentDifficulty = this.store.difficultyLevel();
         const filterByLevel = this.filterByCurrentLevel();
+        const offlineOnly = this.showOfflineOnly();
+        const savedScenarios = this.offlineService.savedScenarios();
 
         // Filter by current difficulty level if toggle is on
         let filteredScenarios = filterByLevel && currentDifficulty
             ? scenarios.filter(s => s.difficulty_level === currentDifficulty)
             : scenarios;
+
+        // Filter by offline availability if toggle is on
+        if (offlineOnly) {
+            const savedIds = new Set(savedScenarios.map(s => s.id));
+            filteredScenarios = filteredScenarios.filter(s => savedIds.has(s.id));
+        }
 
         // Sort by name alphabetically
         return filteredScenarios.sort((a, b) => a.name.localeCompare(b.name));
@@ -84,6 +97,13 @@ export class ScenarioCatalogComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.loadCatalog();
+
+        // Check if offline filter is requested via query param
+        this.route.queryParams.subscribe(params => {
+            if (params['offline'] === 'true') {
+                this.showOfflineOnly.set(true);
+            }
+        });
     }
 
     private startLoadingMessages(): void {
@@ -130,10 +150,27 @@ export class ScenarioCatalogComponent implements OnInit, OnDestroy {
         this.error.set(null);
         this.startLoadingMessages();
         try {
-            const scenario = await this.geminiService.getScenarioById(id);
+            let scenario;
+
+            // Try to load from offline storage first if offline
+            if (this.offlineService.isOffline()) {
+                scenario = await this.offlineService.getOfflineScenario(id);
+                if (!scenario) {
+                    throw new Error('This scenario is not available offline');
+                }
+            } else {
+                scenario = await this.geminiService.getScenarioById(id);
+                // Auto-save for offline if enabled
+                if (this.offlineService.getSaveForOfflineEnabled()) {
+                    await this.offlineService.saveScenarioForOffline(scenario);
+                }
+            }
+
             this.store.startConversation(scenario);
-            // Save to history when loading from catalog
-            await this.geminiService.saveToHistory(scenario);
+            // Save to history when loading from catalog (only if online)
+            if (!this.offlineService.isOffline()) {
+                await this.geminiService.saveToHistory(scenario);
+            }
             this.router.navigate(['/conversation']);
         } catch (e: any) {
             console.error(`[ScenarioCatalog] Error loading scenario ${id}`, e);
@@ -142,6 +179,33 @@ export class ScenarioCatalogComponent implements OnInit, OnDestroy {
             this.stopLoadingMessages();
             this.selectedScenarioId.set(null);
         }
+    }
+
+    async saveScenarioForOffline(id: string): Promise<void> {
+        this.savingScenarioId.set(id);
+        try {
+            const scenario = await this.geminiService.getScenarioById(id);
+            await this.offlineService.saveScenarioForOffline(scenario);
+        } catch (e: any) {
+            console.error(`[ScenarioCatalog] Error saving scenario ${id} for offline`, e);
+            this.error.set(e.message || 'Failed to save scenario for offline use.');
+        } finally {
+            this.savingScenarioId.set(null);
+        }
+    }
+
+    async removeFromOffline(id: string): Promise<void> {
+        try {
+            await this.offlineService.removeScenarioFromOffline(id);
+        } catch (e: any) {
+            console.error(`[ScenarioCatalog] Error removing scenario ${id} from offline`, e);
+            this.error.set(e.message || 'Failed to remove scenario from offline storage.');
+        }
+    }
+
+    isScenarioOffline(id: string): boolean {
+        const savedScenarios = this.offlineService.savedScenarios();
+        return savedScenarios.some(s => s.id === id);
     }
 
     formatDate(): string {

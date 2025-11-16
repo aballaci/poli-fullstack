@@ -192,7 +192,25 @@
         "empty_message": "Noch keine Szenarien verfügbar. Generiere ein Szenario, um zu beginnen!",
         "error_occurred": "Ein Fehler ist aufgetreten",
         "filter_by_level": "Nach aktuellem Niveau filtern ({{level}})",
-        "title": "Szenarienkatalog"
+        "title": "Szenarienkatalog",
+        "offline_only": "Nur offline anzeigen",
+        "save_offline": "Offline speichern",
+        "remove_offline": "Aus Offline entfernen"
+    },
+    "offline": {
+        "banner": {
+            "message": "Offline-Modus - KI-Funktionen nicht verfügbar",
+            "dismiss": "Schließen"
+        },
+        "settings": {
+            "title": "Offline-Speicher",
+            "save_for_offline": "Szenarien automatisch offline speichern",
+            "storage_usage": "Speichernutzung",
+            "saved_scenarios": "{{count}} Szenarien gespeichert",
+            "clear_all": "Alle Offline-Daten löschen",
+            "clear_confirm": "Möchten Sie wirklich alle Offline-Daten löschen?",
+            "manage": "Offline-Szenarien verwalten"
+        }
     },
     "scenario_history": {
         "empty_message": "Kein Verlauf gefunden. Beginne zu üben, um deinen Verlauf aufzubauen!",

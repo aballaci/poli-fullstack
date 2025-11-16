@@ -201,7 +201,25 @@
         "empty_message": "Aucun scénario disponible pour le moment. Générez un scénario pour commencer !",
         "error_occurred": "Une erreur est survenue",
         "filter_by_level": "Filtrer par niveau actuel ({{level}})",
-        "title": "Catalogue de scénarios"
+        "title": "Catalogue de scénarios",
+        "offline_only": "Afficher hors ligne uniquement",
+        "save_offline": "Enregistrer hors ligne",
+        "remove_offline": "Supprimer du mode hors ligne"
+    },
+    "offline": {
+        "banner": {
+            "message": "Mode hors ligne - Fonctionnalités IA indisponibles",
+            "dismiss": "Fermer"
+        },
+        "settings": {
+            "title": "Stockage hors ligne",
+            "save_for_offline": "Enregistrer automatiquement les scénarios hors ligne",
+            "storage_usage": "Utilisation du stockage",
+            "saved_scenarios": "{{count}} scénarios enregistrés",
+            "clear_all": "Effacer toutes les données hors ligne",
+            "clear_confirm": "Êtes-vous sûr de vouloir effacer toutes les données hors ligne ?",
+            "manage": "Gérer les scénarios hors ligne"
+        }
     },
     "scenario_history": {
         "empty_message": "Aucun historique trouvé. Commencez à pratiquer pour construire votre historique !",

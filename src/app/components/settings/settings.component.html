@@ -177,6 +177,60 @@
             </div>
         </div>
 
+        <!-- Offline Storage -->
+        <div class="bg-[var(--c-bg-surface)] p-6 rounded-lg shadow-sm border border-[var(--c-border-subtle)]">
+            <h2 class="text-xl font-semibold mb-4 text-[var(--c-text-headings)]">{{ 'offline.settings.title' | transloco
+                }}</h2>
+            <div class="space-y-4">
+                <!-- Auto-save Toggle -->
+                <div class="flex justify-between items-center">
+                    <label for="save-offline-toggle" class="text-[var(--c-text-muted)]">{{
+                        'offline.settings.save_for_offline' | transloco }}</label>
+                    <button id="save-offline-toggle" (click)="toggleSaveForOffline()" type="button"
+                        class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
+                        [class.bg-sky-500]="saveForOfflineEnabled()" [class.bg-slate-300]="!saveForOfflineEnabled()"
+                        role="switch" [attr.aria-checked]="saveForOfflineEnabled()">
+                        <span aria-hidden="true"
+                            class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                            [class.translate-x-5]="saveForOfflineEnabled()"
+                            [class.translate-x-0]="!saveForOfflineEnabled()"></span>
+                    </button>
+                </div>
+
+                <!-- Storage Usage -->
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-[var(--c-text-muted)]">{{ 'offline.settings.storage_usage' | transloco
+                            }}</span>
+                        <span class="text-[var(--c-text-body)] font-medium">{{
+                            formatStorageSize(offlineStorageUsage().used) }} / {{
+                            formatStorageSize(offlineStorageUsage().used + offlineStorageUsage().available) }}</span>
+                    </div>
+                    <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
+                        <div class="bg-sky-500 h-full transition-all duration-300"
+                            [style.width.%]="offlineStorageUsage().percentage"></div>
+                    </div>
+                </div>
+
+                <!-- Saved Scenarios Count -->
+                <div class="flex justify-between items-center">
+                    <span class="text-[var(--c-text-muted)]">{{ 'offline.settings.saved_scenarios' | transloco: { count:
+                        savedScenariosCount() } }}</span>
+                </div>
+
+                <!-- Clear All Button -->
+                @if (savedScenariosCount() > 0) {
+                <div class="pt-4 border-t border-[var(--c-border-subtle)]">
+                    <button (click)="clearOfflineStorage()"
+                        class="w-full sm:w-auto px-4 py-2 text-sm font-medium rounded-md bg-red-600 text-white hover:bg-red-700 transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-trash"></i>
+                        <span>{{ 'offline.settings.clear_all' | transloco }}</span>
+                    </button>
+                </div>
+                }
+            </div>
+        </div>
+
         <!-- Admin Section -->
         @if (isAdmin()) {
         <div class="bg-[var(--c-bg-surface)] p-6 rounded-lg shadow-sm border border-[var(--c-border-subtle)]">
